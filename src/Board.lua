@@ -13,11 +13,11 @@ end
 
 function Board:render()
 	--BACKGROUND
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	love.graphics.setColor(200/255, 124/255, 73/255, 255/255)
 	love.graphics.rectangle('fill', 0, 0 + self.yOffset, self.width, self.height)
 
 	--HORIZONTAL LINES FOR GRID
-	love.graphics.setColor(120/255, 100/255, 90/255, 255/255)
+	love.graphics.setColor(100/255, 50/255, 8/255, 255/255)
 	love.graphics.rectangle('fill', 0, 0 + self.yOffset, 720, 12)
 
 	love.graphics.rectangle('fill', 0, 144 - 12 + self.yOffset, 720, 24)

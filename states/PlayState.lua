@@ -14,13 +14,17 @@ function PlayState:init()
 	end
 	mouseXGrid = 0
 	mouseYGrid = 0
+	turn = 0
 end
 
 function PlayState:update(dt)
 	mouseX, mouseY = love.mouse.getPosition()
+	mouseMasterX, mouseMasterY = love.mouse.getPosition()
 
 	--shifts mouseY to be top of grid, need to test on 16:9 monitor
 	mouseY = mouseY - 40
+	mouseMasterY = mouseMasterY - 40
+
 	if mouseY < 0 or mouseY > 720 or mouseX > 720 then
 		mouseY = nil
 		mouseX = nil
@@ -70,12 +74,24 @@ function PlayState:update(dt)
 		end
 	end
 
+	function love.mousepressed(x, y, button)
+		if button == 1 then
+			sounds['stone']:play()
+		end
+	end
+
+	if turn == 0 then
+		if love.mousepressed and mouseXgrid ~= nil and mouseYgrid ~= nil then
+			sounds['stone']:play()
+		end
+	end
+
 end
 
 
 function PlayState:render()
 
-	love.graphics.clear(0/255, 0/255, 0/255, 255/255)
+	love.graphics.clear(80/255, 80/255, 80/255, 255/255)
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(pixelFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
@@ -97,4 +113,8 @@ function PlayState:render()
 			end
 		end
 	end
+
+	--Renders stone to place
+	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	love.graphics.rectangle('fill', mouseMasterX - 50, mouseMasterY, 100, 100)
 end 

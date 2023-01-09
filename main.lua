@@ -36,6 +36,7 @@ function love.load()
 	sounds = {
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
+		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
 		['1'] = love.audio.newSource('music/1.mp3', 'static'),
 		['2'] = love.audio.newSource('music/2.mp3', 'static'),
 		['3'] = love.audio.newSource('music/3.mp3', 'static'),
