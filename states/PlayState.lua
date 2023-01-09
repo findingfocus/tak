@@ -77,12 +77,13 @@ function PlayState:render()
 
 	love.graphics.clear(0/255, 0/255, 0/255, 255/255)
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	love.graphics.setFont(pixelFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
-	love.graphics.setFont(smallPixelFont)
 	--love.graphics.print('[2][5].y ' .. tostring(grid[2][5].y), VIRTUAL_WIDTH - 400, 200)
 	board:render()
 
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
+	love.graphics.setFont(smallPixelFont)
 	love.graphics.print('mouseX: ' .. tostring(mouseX), VIRTUAL_WIDTH - 400, 250)
 	love.graphics.print('mouseY: ' .. tostring(mouseY), VIRTUAL_WIDTH - 400, 300)
 
