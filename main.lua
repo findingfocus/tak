@@ -14,11 +14,11 @@ require '/src/Occupant'
 
 --1280 800
 WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_HEIGHT = 800
 
 
-VIRTUAL_WIDTH = 1920
-VIRTUAL_HEIGHT = 1080
+VIRTUAL_WIDTH = 1280
+VIRTUAL_HEIGHT = 800
 
 function love.load()
 	love.graphics.setDefaultFilter('nearest', 'nearest')

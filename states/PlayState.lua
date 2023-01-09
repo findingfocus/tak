@@ -19,10 +19,10 @@ end
 function PlayState:update(dt)
 	mouseX, mouseY = love.mouse.getPosition()
 	--shifts mouseY to be top of grid, need to test on 16:9 monitor
-	mouseY = mouseY - 40
+	--mouseY = mouseY - 40
 	if mouseY < 0 or mouseY > 720 or mouseX > 720 then
-		mouseY = nil
-		mouseX = nil
+		--mouseY = nil
+		--mouseX = nil
 	end
 
 	--Math to find which Row mouse is in

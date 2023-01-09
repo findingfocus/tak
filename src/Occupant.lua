@@ -7,7 +7,7 @@ function Occupant:init()
 	self.height = 144
 	self.highlighted = false
 	self.outlineThickness = 12
-	self.yOffset = 40
+	self.yOffset = 0
 end
 
 function Occupant:update(dt)

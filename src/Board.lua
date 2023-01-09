@@ -4,7 +4,7 @@ function Board:init()
 	self.x = 0
 	self.width = 144 * 5
 	self.height = 144 * 5
-	self.yOffset = 40
+	self.yOffset = 0
 end
 
 function Board:update(dt)
