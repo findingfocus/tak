@@ -34,9 +34,6 @@ function love.load()
 	love.graphics.setFont(pixelFont)
 
 	sounds = {
-		--['titleMusic'] = love.audio.newSource('music/titlemusic.mp3', 'static'),
-		--['playMusic'] = love.audio.newSource('music/playstatemusic.mp3', 'static'),
-		--['tripMusic'] = love.audio.newSource('music/trippingmusic.mp3', 'static'),
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
 		['1'] = love.audio.newSource('music/1.mp3', 'static'),
@@ -61,7 +58,6 @@ function love.load()
 	gStateMachine = StateMachine {
 		['titleState'] = function() return TitleScreenState() end,
 		['playState'] = function() return PlayState() end,
-		['tripState'] = function() return TripState() end,
 		['helpState'] = function() return HelpState() end
 	}
 
