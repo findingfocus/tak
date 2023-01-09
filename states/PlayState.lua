@@ -18,6 +18,9 @@ end
 
 function PlayState:update(dt)
 	mouseX, mouseY = love.mouse.getPosition()
+	mouseX = (mouseX / WINDOW_WIDTH) * VIRTUAL_WIDTH
+	mouseY = (mouseY / WINDOW_HEIGHT) * VIRTUAL_HEIGHT
+
 	--shifts mouseY to be top of grid, need to test on 16:9 monitor
 	--mouseY = mouseY - 40
 	if mouseY < 0 or mouseY > 720 or mouseX > 720 then
