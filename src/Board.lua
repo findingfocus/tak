@@ -40,5 +40,5 @@ function Board:render()
 
 	love.graphics.rectangle('fill', 144 * 4 - 12, 0, 24, 720)
 
-	love.graphics.rectangle('fill', 144 * 5 - 12, 0, 24, 720)
+	love.graphics.rectangle('fill', 144 * 5 - 12, 0, 12, 720)
 end

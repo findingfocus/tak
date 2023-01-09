@@ -10,6 +10,7 @@ require '/states/PlayState'
 require '/states/HelpState'
 
 require '/src/Board'
+require '/src/Occupant'
 
 --1280 800
 WINDOW_WIDTH = 1280
@@ -25,6 +26,7 @@ function love.load()
 	love.window.setTitle('Tak: A Beautiful Game')
 
 	pixelFont = love.graphics.newFont('fonts/Pixel.ttf', 160)
+	smallPixelFont = love.graphics.newFont('fonts/Pixel.ttf', 40)
 	love.graphics.setFont(pixelFont)
 
 	sounds = {
