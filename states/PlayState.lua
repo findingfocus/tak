@@ -14,7 +14,7 @@ function PlayState:init()
 	end
 	mouseXGrid = 0
 	mouseYGrid = 0
-	turn = 0
+	player = 1
 end
 
 function PlayState:update(dt)
@@ -75,17 +75,20 @@ function PlayState:update(dt)
 	end
 
 	function love.mousepressed(x, y, button)
-		if button == 1 then
-			sounds['stone']:play()
+		if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then
+			if not grid[mouseYGrid][mouseXGrid].occupied then
+				sounds['stone']:play()
+				if player == 1 then
+					grid[mouseYGrid][mouseXGrid].occupied = true
+					grid[mouseYGrid][mouseXGrid].occupiedWhite = true
+				elseif player == 2 then
+					grid[mouseYGrid][mouseXGrid].occupied = true
+					grid[mouseYGrid][mouseXGrid].occupiedBlack = true
+				end
+				player = player == 1 and 2 or 1
+			end
 		end
 	end
-
-	if turn == 0 then
-		if love.mousepressed and mouseXgrid ~= nil and mouseYgrid ~= nil then
-			sounds['stone']:play()
-		end
-	end
-
 end
 
 
@@ -108,13 +111,37 @@ function PlayState:render()
 	--Render Mouse Grid Highlight
 	for i = 1, 5 do
 		for j = 1, 5 do
+			--Render Grid Highlight if not occupied
 			if grid[i][j].highlighted then
+				grid[i][j]:render()
+			end
+
+			--Renders white stones
+			if grid[i][j].occupiedWhite then
+				grid[i][j]:render()
+			end
+
+			--Renders black stones
+			if grid[i][j].occupiedBlack then
 				grid[i][j]:render()
 			end
 		end
 	end
 
 	--Renders stone to place
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	if player == 1 then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	elseif player == 2 then
+		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+	end
 	love.graphics.rectangle('fill', mouseMasterX - 50, mouseMasterY, 100, 100)
-end 
+
+	if player == 1 then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.print('It is White\'s move', 25, VIRTUAL_HEIGHT - 35)
+	elseif player == 2 then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.print('It is Black\'s move', 25, VIRTUAL_HEIGHT - 35)
+	end
+
+end
