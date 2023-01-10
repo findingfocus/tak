@@ -12,9 +12,16 @@ function PlayState:init()
 			grid[i][j].y = i * 144 - 144
 		end
 	end
+
 	mouseXGrid = 0
 	mouseYGrid = 0
 	player = 1
+	player1stones = 21
+	player1capstone = 1
+	player2capstone = 1
+	player2stones = 21
+	stoneSelect = 1
+
 end
 
 function PlayState:update(dt)
@@ -30,6 +37,83 @@ function PlayState:update(dt)
 		mouseY = nil
 		mouseX = nil
 	end
+
+	if player1capstone == 1 then
+		p1SelectLimit = 3
+	else
+		p1SelectLimit = 2
+	end
+
+	if player2capstone == 1 then
+		p2SelectLimit = 3
+	else
+		p2SelectLimit = 2
+	end
+
+	--Resets Grid to Default Occupants
+	if love.keyboard.wasPressed('r') then
+		for i = 1, 5 do
+			for j = 1, 5 do
+				grid[i][j] = Occupant()
+				grid[i][j].x = j * 144 - 144
+				grid[i][j].y = i * 144 - 144
+				player = 1
+			end
+		end
+	end
+
+--NEED TO FACTOR DOWN WAS PRESSED
+	if player == 1 then
+		if love.keyboard.wasPressed('right') and stoneSelect < p1SelectLimit then
+			sounds['beep']:play()
+			stoneSelect = stoneSelect + 1
+		elseif love.keyboard.wasPressed('right') and stoneSelect == p1SelectLimit then
+			sounds['beep']:play()
+			stoneSelect = 1
+		end
+
+		if love.keyboard.wasPressed('left') and stoneSelect > 1 then
+			sounds['beep']:play()
+			stoneSelect = stoneSelect - 1
+		elseif love.keyboard.wasPressed('left') and stoneSelect == 1 then
+			sounds['beep']:play()
+			stoneSelect = p1SelectLimit
+		end
+
+	elseif player == 2 then
+		if love.keyboard.wasPressed('right') and stoneSelect < p2SelectLimit then
+			sounds['beep']:play()
+			stoneSelect = stoneSelect + 1
+		elseif love.keyboard.wasPressed('right') and stoneSelect == p2SelectLimit then
+			sounds['beep']:play()
+			stoneSelect = 1
+		end
+
+		if love.keyboard.wasPressed('left') and stoneSelect > 1 then
+			sounds['beep']:play()
+			stoneSelect = stoneSelect - 1
+		elseif love.keyboard.wasPressed('left') and stoneSelect == 1 then
+			sounds['beep']:play()
+			stoneSelect = p2SelectLimit
+		end
+	end
+
+
+
+
+
+--[[
+	if love.keyboard.wasPressed('right') and stoneSelect < 3 then
+		sounds['beep']:play()
+		stoneSelect = stoneSelect + 1
+	end
+
+	if love.keyboard.wasPressed('left') and stoneSelect > 1 then
+		sounds['beep']:play()
+		stoneSelect = stoneSelect - 1
+	end
+--]]
+
 
 	--Math to find which Row mouse is in
 	if mouseY ~= nil then
@@ -75,21 +159,55 @@ function PlayState:update(dt)
 		end
 	end
 
+
+	--CLICK DETECTION
 	function love.mousepressed(x, y, button)
-		if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then
-			if not grid[mouseYGrid][mouseXGrid].occupied then
+		if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then --ENSURES WE CLICKED WITHIN GRID
+			if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
 				sounds['stone']:play()
-				if player == 1 then
-					grid[mouseYGrid][mouseXGrid].occupied = true
-					grid[mouseYGrid][mouseXGrid].occupiedWhite = true
-				elseif player == 2 then
-					grid[mouseYGrid][mouseXGrid].occupied = true
-					grid[mouseYGrid][mouseXGrid].occupiedBlack = true
+				if stoneSelect == 1 then --LAYSTONE PLACEMENT
+					if player == 1 then
+						player1stones = player1stones - 1
+						grid[mouseYGrid][mouseXGrid].occupied = true
+						grid[mouseYGrid][mouseXGrid].occupiedWhite = true
+					elseif player == 2 then
+						player2stones = player2stones - 1
+						grid[mouseYGrid][mouseXGrid].occupied = true
+						grid[mouseYGrid][mouseXGrid].occupiedBlack = true
+					end
+				elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
+					if player == 1 then
+						player1stones = player1stones - 1
+						grid[mouseYGrid][mouseXGrid].occupied = true
+						grid[mouseYGrid][mouseXGrid].occupiedWhiteSS = true
+					elseif player == 2 then
+						player2stones = player2stones - 1
+						grid[mouseYGrid][mouseXGrid].occupied = true
+						grid[mouseYGrid][mouseXGrid].occupiedBlackSS = true
+					end
+				elseif stoneSelect == 3 then
+					if player == 1 then
+						player1capstone = 0
+						grid[mouseYGrid][mouseXGrid].occupied = true 
+						grid[mouseYGrid][mouseXGrid].occupiedWhiteCS = true
+					elseif player == 2 then
+						player2capstone = 0
+						grid[mouseYGrid][mouseXGrid].occupied = true
+						grid[mouseYGrid][mouseXGrid].occupiedBlackCS = true
+					end
 				end
+
+				--SWAPS PLAYER
 				player = player == 1 and 2 or 1
+				stoneSelect = 1
 			end
 		end
 	end
+
+
+
+
+
 end
 
 
@@ -97,17 +215,8 @@ function PlayState:render()
 
 	love.graphics.clear(80/255, 80/255, 80/255, 255/255)
 	board:render()
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	love.graphics.setFont(pixelFont)
-	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
-	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
-	love.graphics.setFont(smallPixelFont)
-	love.graphics.print('mouseX: ' .. tostring(mouseX), VIRTUAL_WIDTH - 400, 250)
-	love.graphics.print('mouseY: ' .. tostring(mouseY), VIRTUAL_WIDTH - 400, 300)
-
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 400, 400)
 	
-	--Render Mouse Grid Highlight
+	--Cycles through Grid
 	for i = 1, 5 do
 		for j = 1, 5 do
 			--Render Grid Highlight if not occupied
@@ -116,12 +225,12 @@ function PlayState:render()
 			end
 
 			--Renders white stones
-			if grid[i][j].occupiedWhite then
+			if grid[i][j].occupiedWhite or grid[i][j].occupiedWhiteSS or grid[i][j].occupiedWhiteCS then
 				grid[i][j]:render()
 			end
 
 			--Renders black stones
-			if grid[i][j].occupiedBlack then
+			if grid[i][j].occupiedBlack or grid[i][j].occupiedBlackSS or grid[i][j].occupiedBlackCS then
 				grid[i][j]:render()
 			end
 		end
@@ -133,8 +242,14 @@ function PlayState:render()
 	elseif player == 2 then
 		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
 	end
-	love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
 
+	if stoneSelect == 1 then
+		love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
+	elseif stoneSelect == 2 then
+		love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
+	elseif stoneSelect == 3 then
+		love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+	end
 
 
 	--Renders Player Turn
@@ -146,4 +261,16 @@ function PlayState:render()
 		love.graphics.print('It is Black\'s move', 45, VIRTUAL_HEIGHT - 38)
 	end
 
+	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	love.graphics.setFont(pixelFont)
+	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
+	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
+	love.graphics.setFont(smallPixelFont)
+	--love.graphics.print('mouseX: ' .. tostring(mouseX), VIRTUAL_WIDTH - 400, 250)
+	--love.graphics.print('mouseY: ' .. tostring(mouseY), VIRTUAL_WIDTH - 400, 300)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 400, 220)
+	love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
+
+	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
+	love.graphics.print('player2 stones: ' .. tostring(player2stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 50)
 end

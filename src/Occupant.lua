@@ -9,6 +9,10 @@ function Occupant:init()
 	self.occupied = false
 	self.occupiedWhite = false
 	self.occupiedBlack = false
+	self.occupiedWhiteSS = false
+	self.occupiedBlackSS = false
+	self.occupiedWhiteCS = false
+	self.occupiedBlackCS = false
 	self.outlineThickness = 12
 end
 
@@ -39,4 +43,25 @@ function Occupant:render()
 		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET + self.outlineThickness, self.y + Y_OFFSET + self.outlineThickness, 120, 120)
 	end
+
+	if self.occupiedWhiteSS then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.rectangle('fill', self.x + X_OFFSET + self.outlineThickness, self.y + Y_OFFSET + 50, 120, 44)
+	end
+
+	if self.occupiedBlackSS then
+		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+		love.graphics.rectangle('fill', self.x + X_OFFSET + self.outlineThickness, self.y + Y_OFFSET + 50, 120, 44)
+	end
+
+	if self.occupiedWhiteCS then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
+	end
+
+	if self.occupiedBlackCS then
+		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+		love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
+	end
+
 end
