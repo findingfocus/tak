@@ -4,21 +4,13 @@ Class = require 'dependencies/class'
 
 require '/dependencies/StateMachine'
 require '/dependencies/BaseState'
+require '/dependencies/Constants'
 
 require '/states/TitleScreenState'
 require '/states/PlayState'
-require '/states/HelpState'
 
 require '/src/Board'
 require '/src/Occupant'
-
---1280 800
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 800
-
-
-VIRTUAL_WIDTH = 1280
-VIRTUAL_HEIGHT = 800
 
 function love.load()
 
@@ -59,13 +51,14 @@ function love.load()
 	gStateMachine = StateMachine {
 		['titleState'] = function() return TitleScreenState() end,
 		['playState'] = function() return PlayState() end,
-		['helpState'] = function() return HelpState() end
 	}
 
 	gStateMachine:change('playState')
 
 	love.keyboard.keysPressed = {}
 
+	yTextOffset = 750
+	lineOffset = 100
 end
 
 function love.resize(w, h)
@@ -77,6 +70,10 @@ function love.keypressed(key)
 
 	if key == 'escape' then
 		love.event.quit()
+	end
+
+	if key == 'h' then
+		helpState = helpState == 1 and 2 or 1
 	end
 end
 
@@ -118,4 +115,18 @@ function displayFPS()
 	love.graphics.setFont(smallPixelFont)
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 	--love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 6)
+
+	if helpState == 1 then
+		love.graphics.setFont(smallPixelFont)
+		love.graphics.setColor(50/255, 0/255, 200/255, 180/255)
+		love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.printf('Select to place a stone, or move a stack in your control', 0, VIRTUAL_HEIGHT - yTextOffset, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Laystones count as road and stack control', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Standing stones don\'t count as road, but count as control', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 2, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Capstone can crush standing stone if by itself', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 3, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Up to 5 pieces can be picked up to move in one direction', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 4, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('At least one stone needs to be dropped in each space while moving in a single direction', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 5, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('First to have a road across the board wins', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 6 + 50, VIRTUAL_WIDTH, 'center')
+	end
 end

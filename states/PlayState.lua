@@ -6,7 +6,7 @@ function PlayState:init()
 	for i = 1, 5 do
 		grid[i] = {}
 		for j = 1, 5 do
-			--Populates Grid Table with proper x and y fields
+			--Populates Grid Table with proper x and y fields and Occupant Object
 			grid[i][j] = Occupant()
 			grid[i][j].x = j * 144 - 144
 			grid[i][j].y = i * 144 - 144
@@ -22,10 +22,11 @@ function PlayState:update(dt)
 	mouseMasterX, mouseMasterY = love.mouse.getPosition()
 
 	--shifts mouseY to be top of grid, need to test on 16:9 monitor
-	mouseY = mouseY - 40
-	mouseMasterY = mouseMasterY - 40
+	mouseY = mouseY - Y_OFFSET
+	mouseX = mouseX - X_OFFSET
+	--mouseMasterY = mouseMasterY - 40
 
-	if mouseY < 0 or mouseY > 720 or mouseX > 720 then
+	if mouseY < 0 or mouseY > 720 or mouseX < X_OFFSET or mouseX > 720 then
 		mouseY = nil
 		mouseX = nil
 	end
@@ -95,12 +96,10 @@ end
 function PlayState:render()
 
 	love.graphics.clear(80/255, 80/255, 80/255, 255/255)
+	board:render()
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(pixelFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
-	--love.graphics.print('[2][5].y ' .. tostring(grid[2][5].y), VIRTUAL_WIDTH - 400, 200)
-	board:render()
-
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 	love.graphics.setFont(smallPixelFont)
 	love.graphics.print('mouseX: ' .. tostring(mouseX), VIRTUAL_WIDTH - 400, 250)
@@ -128,20 +127,23 @@ function PlayState:render()
 		end
 	end
 
-	--Renders stone to place
+	--Renders stone to mouse location
 	if player == 1 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	elseif player == 2 then
 		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
 	end
-	love.graphics.rectangle('fill', mouseMasterX - 50, mouseMasterY, 100, 100)
+	love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
 
+
+
+	--Renders Player Turn
 	if player == 1 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is White\'s move', 25, VIRTUAL_HEIGHT - 35)
+		love.graphics.print('It is White\'s move', 45, VIRTUAL_HEIGHT - 38)
 	elseif player == 2 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is Black\'s move', 25, VIRTUAL_HEIGHT - 35)
+		love.graphics.print('It is Black\'s move', 45, VIRTUAL_HEIGHT - 38)
 	end
 
 end
