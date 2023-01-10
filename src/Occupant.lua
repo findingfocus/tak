@@ -5,7 +5,7 @@ function Occupant:init()
 	self.y = y
 	self.width = 144
 	self.height = 144
-	self.highlighted = false
+	self.selectionHighlight = false
 	self.occupied = false
 	self.occupiedWhite = false
 	self.occupiedBlack = false
@@ -21,17 +21,12 @@ function Occupant:update(dt)
 end
 
 function Occupant:render()
-	if self.highlighted and not self.occupied then
-		--Highlight Grid Outline
+	if self.selectionHighlight then -- HIGHLIGHTS GRID SPACE OUTLINE
 		love.graphics.setColor(255/255, 0/255, 0/255, 255/255)
-		--TopLine
-		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, self.outlineThickness)
-		--BottomLine
-		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + self.height - self.outlineThickness + Y_OFFSET, self.width, self.outlineThickness)
-		--LeftLine
-		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.outlineThickness, self.height)
-		--RightLine
-		love.graphics.rectangle('fill', self.x + self.width - self.outlineThickness + X_OFFSET, self.y + Y_OFFSET, self.outlineThickness, self.height)
+		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, self.outlineThickness) --TOP
+		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + self.height - self.outlineThickness + Y_OFFSET, self.width, self.outlineThickness) --BOTTOM
+		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.outlineThickness, self.height) --LEFT
+		love.graphics.rectangle('fill', self.x + self.width - self.outlineThickness + X_OFFSET, self.y + Y_OFFSET, self.outlineThickness, self.height) --RIGHT
 	end
 
 	if self.occupiedWhite then

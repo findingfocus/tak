@@ -18,27 +18,15 @@ function Board:render()
 	--HORIZONTAL LINES FOR GRID
 	love.graphics.setColor(100/255, 50/255, 8/255, 255/255)
 	love.graphics.rectangle('fill', X_OFFSET, 0 + Y_OFFSET, 720, 12)
-
-	love.graphics.rectangle('fill', X_OFFSET, 144 - 12 + Y_OFFSET, 720, 24)
-
-	love.graphics.rectangle('fill', X_OFFSET, 144 * 2 - 12 + Y_OFFSET, 720, 24)
-
-	love.graphics.rectangle('fill', X_OFFSET, 144 * 3 - 12 + Y_OFFSET, 720, 24)
-
-	love.graphics.rectangle('fill', X_OFFSET, 144 * 4 - 12 + Y_OFFSET, 720, 24)
-
+	for i = 1, 4 do
+		love.graphics.rectangle('fill', X_OFFSET, 144 * i - 12 + Y_OFFSET, 720, 24)
+	end
 	love.graphics.rectangle('fill', X_OFFSET, 144 * 5 - 12 + Y_OFFSET, 720, 12)
 
 	--VERTICAL LINES FOR GRID
 	love.graphics.rectangle('fill', X_OFFSET, 0 + Y_OFFSET, 12, 720)
-
-	love.graphics.rectangle('fill', X_OFFSET + 144 - 12, 0 + Y_OFFSET, 24, 720)
-
-	love.graphics.rectangle('fill', X_OFFSET + 144 * 2 - 12, 0 + Y_OFFSET, 24, 720)
-
-	love.graphics.rectangle('fill', X_OFFSET + 144 * 3 - 12, 0 + Y_OFFSET, 24, 720)
-
-	love.graphics.rectangle('fill', X_OFFSET + 144 * 4 - 12, 0 + Y_OFFSET, 24, 720)
-
+	for i = 1, 4 do
+		love.graphics.rectangle('fill', X_OFFSET + 144 * i - 12, 0 + Y_OFFSET, 24, 720)
+	end
 	love.graphics.rectangle('fill', X_OFFSET + 144 * 5 - 12, 0 + Y_OFFSET, 12, 720)
 end
