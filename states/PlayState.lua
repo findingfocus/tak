@@ -11,6 +11,7 @@ function PlayState:init()
 	player2capstone = 1
 	player2stones = 21
 	stoneSelect = 1
+	hideMouseStone = false
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -18,14 +19,10 @@ function PlayState:init()
 		for j = 1, 5 do
 			grid[i][j] = {}
 			grid[i][j] = Occupant()
-			--grid[i][j].members.stoneColor = true
-			--grid[i][j].members.stoneType = true
 			grid[i][j].x = j * 144 - 144
 			grid[i][j].y = i * 144 - 144
 			for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
 				grid[i][j].members[1] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
-				--grid[i][j].members[1].stoneColor = 1
-				--self.members.stoneType = 1
 			end
 		end
 	end
@@ -63,15 +60,25 @@ function PlayState:update(dt)
 --]]
 
 ---[[GRID RESET
-	if love.keyboard.wasPressed('r') then
+	if love.keyboard.wasPressed('r') then		
 		for i = 1, 5 do
+			grid[i] = {}
 			for j = 1, 5 do
+				grid[i][j] = {}
 				grid[i][j] = Occupant()
 				grid[i][j].x = j * 144 - 144
 				grid[i][j].y = i * 144 - 144
-				player = 1
+				for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
+					grid[i][j].members[1] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
+				end
 			end
 		end
+	end
+--]]
+
+---[[TOGGLE MOUSE STONE
+	if love.keyboard.wasPressed('e') then
+		hideMouseStone = hideMouseStone == false and true or false
 	end
 --]]
 
@@ -172,50 +179,42 @@ function PlayState:update(dt)
 				if stoneSelect == 1 then --LAYSTONE PLACEMENT
 					if player == 1 then
 						player1stones = player1stones - 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 1 --NEED TO REMOVE 1 FROM INDEX TO SCALE IT
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 1
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE' --NEED TO REMOVE 1 FROM INDEX TO SCALE IT
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
 						grid[mouseYGrid][mouseXGrid].occupied = true
-
-						--grid[mouseYGrid][mouseXGrid].members = + 1
-						--grid[mouseYGrid][mouseXGrid].occupiedWhite = true
 					elseif player == 2 then
 						player2stones = player2stones - 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 2
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 1
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
 						grid[mouseYGrid][mouseXGrid].occupied = true
-						--grid[mouseYGrid][mouseXGrid].occupiedBlack = true
 					end
 				elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
 					if player == 1 then
 						player1stones = player1stones - 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 2
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
 						grid[mouseYGrid][mouseXGrid].occupied = true
-						--grid[mouseYGrid][mouseXGrid].occupiedWhiteSS = true
 					elseif player == 2 then
 						player2stones = player2stones - 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 2
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 2
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
 						grid[mouseYGrid][mouseXGrid].occupied = true
-						--grid[mouseYGrid][mouseXGrid].occupiedBlackSS = true
 					end
 				elseif stoneSelect == 3 then --CAPSTONE PLACEMENT
 					if player == 1 then
 						player1capstone = 0
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 1
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 3
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'CS'
 						grid[mouseYGrid][mouseXGrid].occupied = true 
-						--grid[mouseYGrid][mouseXGrid].occupiedWhiteCS = true
 					elseif player == 2 then
 						player2capstone = 0
-						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 2
-						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 3
+						grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'CS'
 						grid[mouseYGrid][mouseXGrid].occupied = true
-						--grid[mouseYGrid][mouseXGrid].occupiedBlackCS = true
 					end
 				end
 
-				--SWAPS PLAYER
+				--SWAPS PLAYER AFTER SELECTION
 				player = player == 1 and 2 or 1
 				stoneSelect = 1
 			end
@@ -239,34 +238,26 @@ function PlayState:render()
 				grid[i][j]:render()
 			end
 
-			--RENDERS WHITE STONES
+			--RENDERS ONLY FIRST MEMBER STONES
 			grid[i][j].members[1]:render()
-			--[[
-			if grid[i][j].occupiedWhite or grid[i][j].occupiedWhiteSS or grid[i][j].occupiedWhiteCS then
-				grid[i][j]:render()
-			end
-			--]]
-
-			--RENDERS BLACK STONES
-			if grid[i][j].occupiedBlack or grid[i][j].occupiedBlackSS or grid[i][j].occupiedBlackCS then
-				--grid[i][j]:render()
-			end
 		end
 	end
 --]]
 
 ---[[RENDERS STONE SELECTION AT MOUSE POSITION
-	if player == 1 then
-		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	elseif player == 2 then
-		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
-	end
-	if stoneSelect == 1 then
-		love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
-	elseif stoneSelect == 2 then
-		love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
-	elseif stoneSelect == 3 then
-		love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+	if not hideMouseStone then
+		if player == 1 then
+			love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		elseif player == 2 then
+			love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+		end
+		if stoneSelect == 1 then
+			love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
+		elseif stoneSelect == 2 then
+			love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
+		elseif stoneSelect == 3 then
+			love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+		end
 	end
 --]]
 
@@ -290,10 +281,8 @@ function PlayState:render()
 	love.graphics.setFont(smallPixelFont)
 	love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
 
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 450, 220)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 450, 270)
-
-	--love.graphics.print(tostring(grid[mouseYGrid][mouseXGrid].members.stoneColor), 0, 0)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
 
 	--STONE COUNT
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
