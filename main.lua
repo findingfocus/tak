@@ -86,8 +86,11 @@ function love.keyboard.wasPressed(key)
 	end
 end
 
-
-
+function displayFPS()
+	love.graphics.setFont(smallPixelFont)
+	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
+	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 6)
+end
 
 
 function love.update(dt)
@@ -107,15 +110,7 @@ function love.draw()
 
 	gStateMachine:render()
 
-	displayFPS()
-
-	push:finish()
-end
-
-function displayFPS()
-	love.graphics.setFont(smallPixelFont)
-	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
-	--love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 6)
+	--displayFPS()
 
 	if helpState == 1 then
 		love.graphics.setFont(smallPixelFont)
@@ -130,4 +125,6 @@ function displayFPS()
 		love.graphics.printf('At least one stone needs to be dropped in each space while moving in a single direction', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 5, VIRTUAL_WIDTH, 'center')
 		love.graphics.printf('First to have a road across the board wins', 0, VIRTUAL_HEIGHT - yTextOffset + lineOffset * 6 + 50, VIRTUAL_WIDTH, 'center')
 	end
+
+	push:finish()
 end

@@ -159,7 +159,7 @@ function PlayState:update(dt)
 	end
 --]]
 
----[[SETS SELECTION HIGHLIGHT TO TRUE IF UNDER MOUSE CURSOR
+---[[SETS SELECTION HIGHLIGHT IF UNDER MOUSE CURSOR
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if mouseXGrid == j and mouseYGrid == i then
