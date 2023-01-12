@@ -24,11 +24,23 @@ function Member:render()
 		--love.graphics.print('MEMBER RENDER', 5, 5)
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 		--love.graphics.rectangle('fill', 0, 0, 120, 120)
-		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
+		if self.stoneType == 1 then
+			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
+		elseif self.stoneType == 2 then
+			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + 50, 120, 44)
+		elseif self.stoneType == 3 then
+			love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
+		end
 	elseif self.stoneColor == 2 then
 		--love.graphics.print('MEMBER RENDER', 5, 5)
 		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
 		--love.graphics.rectangle('fill', 0, 0, 120, 120)
-		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
+		if self.stoneType == 1 then
+			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
+		elseif self.stoneType == 2 then
+			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + 50, 120, 44)
+		elseif self.stoneType == 3 then
+			love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
+		end
 	end
 end
