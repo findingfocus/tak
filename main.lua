@@ -11,6 +11,7 @@ require '/states/PlayState'
 
 require '/src/Board'
 require '/src/Occupant'
+require '/src/Member'
 
 function love.load()
 
