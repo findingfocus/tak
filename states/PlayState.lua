@@ -11,7 +11,9 @@ function PlayState:init()
 	player2capstone = 1
 	player2stones = 21
 	stoneSelect = 1
+	toggleMouseStone = false
 	hideMouseStone = false
+	moveSelect = 'place'
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -78,9 +80,18 @@ function PlayState:update(dt)
 
 ---[[TOGGLE MOUSE STONE
 	if love.keyboard.wasPressed('e') then
-		hideMouseStone = hideMouseStone == false and true or false
+		toggleMouseStone = toggleMouseStone == false and true or false
 	end
 --]]
+
+	if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
+		sounds['beep']:play()
+		if moveSelect == 'place' then
+			moveSelect = 'move'
+		elseif moveSelect == 'move' then
+			moveSelect = 'place'
+		end
+	end
 
 ---[[STONE SELECT
 	if player == 1 then
@@ -229,7 +240,6 @@ function PlayState:render()
 	love.graphics.clear(80/255, 80/255, 80/255, 255/255)
 	board:render()
 	
-	
 ---[[RENDERS PLACED STONES
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -245,18 +255,20 @@ function PlayState:render()
 --]]
 
 ---[[RENDERS STONE SELECTION AT MOUSE POSITION
-	if not hideMouseStone then
-		if player == 1 then
-			love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		elseif player == 2 then
-			love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
-		end
-		if stoneSelect == 1 then
-			love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
-		elseif stoneSelect == 2 then
-			love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
-		elseif stoneSelect == 3 then
-			love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+	if not toggleMouseStone then
+		if moveSelect == 'place' then
+			if player == 1 then
+				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+			elseif player == 2 then
+				love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+			end
+			if stoneSelect == 1 then
+				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
+			elseif stoneSelect == 2 then
+				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
+			elseif stoneSelect == 3 then
+				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+			end
 		end
 	end
 --]]
@@ -279,7 +291,12 @@ function PlayState:render()
 	--DEBUG INF0
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 	love.graphics.setFont(smallPixelFont)
-	love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
+	--love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
+	if moveSelect == 'place' then
+		love.graphics.print('moveType: place', VIRTUAL_WIDTH - 400, 180)
+	elseif moveSelect == 'move' then
+		love.graphics.print('moveType: move', VIRTUAL_WIDTH - 400, 180)
+	end
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)

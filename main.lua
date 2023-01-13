@@ -14,8 +14,10 @@ require '/src/Occupant'
 require '/src/Member'
 
 function love.load()
-
 	math.randomseed(os.time())
+
+	love.mouse.setVisible(false)
+
 	randomSongIndex = math.random(6)
 
 	love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -75,6 +77,11 @@ function love.keypressed(key)
 
 	if key == 'h' then
 		helpState = helpState == 1 and 2 or 1
+	end
+
+	if key == 'tab' then
+		local mouseState = not love.mouse.isVisible()
+		love.mouse.setVisible(mouseState)
 	end
 end
 
