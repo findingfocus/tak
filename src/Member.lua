@@ -9,6 +9,7 @@ function Member:init(stoneColor, stoneType, x, y)
 	self.stoneType = stoneType
 	self.x = x
 	self.y = y
+	self.control = 'unassigned'
 end
 
 function Member:update(dt)
