@@ -107,6 +107,15 @@ function PlayState:update(dt)
 	--cycle through all Occupants, check control
 	--make player control spots clickable for logic
 	--only render player control spots highlights
+	--once clicked, top five stones move with mouse, can arrown key to move less
+	--available orthogonal directions highlight red
+	--initial spot renders lighter
+	--arrow key to control how many stones dropped
+	--drop upon click
+	--lock in direction
+	--highlight new appropriate directions, w/ lighter renders on past spaces
+	--arrow keys to drop stone
+	--click to drop
 
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -215,17 +224,17 @@ function PlayState:update(dt)
 					if mouseXGrid == j and mouseYGrid == i then
 						if grid[i][j].control == 'WHITE' then
 							grid[i][j].controlHighlight = true
-						else
-							grid[i][j].controlHighlight = false
 						end
+					else
+						grid[i][j].controlHighlight = false
 					end
 				elseif player == 2 then
 					if mouseXGrid == j and mouseYGrid == i then
 						if grid[i][j].control == 'BLACK' then
 							grid[i][j].controlHighlight = true
-						else
-							grid[i][j].controlHighlight = false
 						end
+					else
+						grid[i][j].controlHighlight = false
 					end
 				end
 			end
