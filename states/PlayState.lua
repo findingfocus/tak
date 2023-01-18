@@ -103,9 +103,16 @@ function PlayState:update(dt)
 		end
 	end
 
+
+	--Move stone to cursor, take stone out of grid
+
+	--Once move is complete, save current board state to undo variable. If undo is clicked, revert state and player turn
+
 ---Detect which spaces player has control over if moveType == move
+	--add stack order for Members, e.g if theres two members, what color is members[2], set control
 	--cycle through all Occupants, check control
-	--make player control spots clickable for logic
+	--highlight orthogonal spots that are empty or laystone
+	--decide how many stones to be move
 	--only render player control spots highlights
 	--once clicked, top five stones move with mouse, can arrown key to move less
 	--available orthogonal directions highlight red
@@ -114,8 +121,9 @@ function PlayState:update(dt)
 	--drop upon click
 	--lock in direction
 	--highlight new appropriate directions, w/ lighter renders on past spaces
-	--arrow keys to drop stone
+	--arrow keys to decide how manys stones to drop
 	--click to drop
+
 
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -296,6 +304,20 @@ function PlayState:update(dt)
 					--SWAPS PLAYER AFTER SELECTION
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
+				end
+
+			elseif moveType == 'move' then
+				for i = 1, 5 do
+					for j = 1, 5 do 
+						if grid[i][j].controlHighlight then
+							--remove stone in that grid
+							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
+							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
+							--grid[mouseYGrid][mouseXGrid].control = nil
+
+							--render stone to mouse position
+						end
+					end
 				end
 			end
 		end

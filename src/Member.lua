@@ -9,7 +9,7 @@ function Member:init(stoneColor, stoneType, x, y)
 	self.stoneType = stoneType
 	self.x = x
 	self.y = y
-	self.control = 'unassigned'
+	self.control = 'unassigned' --proabbly turn off once control is in Occupant class
 end
 
 function Member:update(dt)

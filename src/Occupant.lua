@@ -10,6 +10,7 @@ function Occupant:init()
 	self.controlHighlight = false
 	self.occupied = false
 	self.members = {}
+	--self.stackControl = 'WHITE'
 end
 
 function Occupant:update(dt)
