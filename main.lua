@@ -47,7 +47,7 @@ function love.load()
 --]]
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
-		fullscreen = false,
+		fullscreen = true,
 		resizable = false
 	})
 
@@ -106,8 +106,8 @@ function love.update(dt)
 
 	love.keyboard.keysPressed = {} 
 
-	--sounds[tostring(randomSongIndex)]:setLooping(true)
-	--sounds[tostring(randomSongIndex)]:play()
+	sounds[tostring(randomSongIndex)]:setLooping(true)
+	sounds[tostring(randomSongIndex)]:play()
 end
 
 

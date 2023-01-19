@@ -14,6 +14,7 @@ function PlayState:init()
 	stoneSelect = 1
 	toggleMouseStone = false
 	hideMouseStone = false
+	firstMovementLocked = false
 	moveType = 'place'
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
@@ -314,7 +315,7 @@ function PlayState:update(dt)
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
 							--grid[mouseYGrid][mouseXGrid].control = nil
-
+							firstMovementLocked = true
 							--render stone to mouse position
 						end
 					end
@@ -355,6 +356,19 @@ function PlayState:render()
 ---[[RENDERS STONE SELECTION AT MOUSE POSITION
 	if not toggleMouseStone then
 		if moveType == 'place' then
+			if player == 1 then
+				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+			elseif player == 2 then
+				love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+			end
+			if stoneSelect == 1 then
+				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
+			elseif stoneSelect == 2 then
+				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
+			elseif stoneSelect == 3 then
+				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
+			end
+		elseif moveType == 'move' and firstMovementLocked then
 			if player == 1 then
 				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 			elseif player == 2 then
