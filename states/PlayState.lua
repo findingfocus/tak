@@ -316,6 +316,7 @@ function PlayState:update(dt)
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
 							--grid[mouseYGrid][mouseXGrid].control = nil
 							firstMovementLocked = true
+							grid[mouseYGrid][mouseXGrid].firstMovementLocked = true
 							--render stone to mouse position
 						end
 					end
@@ -342,7 +343,7 @@ function PlayState:render()
 				end
 
 			elseif moveType == 'move' then
-				if grid[i][j].controlHighlight then
+				if grid[i][j].controlHighlight and not firstMovementLocked then
 					grid[i][j]:render()
 				end
 			end
