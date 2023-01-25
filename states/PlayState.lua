@@ -20,16 +20,32 @@ function PlayState:init()
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
 		grid[i] = {}
-		for j = 1, 5 do
+		for j = 1, 5 do --first bracket is row, second bracket is column
 			grid[i][j] = {}
 			grid[i][j] = Occupant()
 			grid[i][j].x = j * 144 - 144
 			grid[i][j].y = i * 144 - 144
 			for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
-				grid[i][j].members[1] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
+				grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
 			end
 		end
 	end
+
+	grid[1][1].members[1].stoneColor = 'WHITE'
+	grid[1][1].members[1].stoneType = 'LS'
+	grid[1][1].occupied = true
+	grid[1][1].stackControl = 'WHITE'
+	grid[1][1].members[1].stackOrder = 1
+
+	grid[1][1].members[2].stoneColor = 'BLACK'
+	grid[1][1].members[2].stoneType = 'LS'
+	grid[1][1].stackControl = 'BLACK'
+	grid[1][1].members[2].stackOrder = 2
+
+	grid[1][1].members[3].stoneColor = 'WHITE'
+	grid[1][1].members[3].stoneType = 'SS'
+	grid[1][1].stackControl = 'WHITE'
+	grid[1][1].members[3].stackOrder = 3
 
 	--POPULATES CONTROL GRID ALL TO unassigned
 	for i = 1, 5 do
@@ -306,7 +322,7 @@ function PlayState:update(dt)
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
 				end
-
+			--[[
 			elseif moveType == 'move' then
 				for i = 1, 5 do
 					for j = 1, 5 do 
@@ -320,7 +336,9 @@ function PlayState:update(dt)
 						end
 					end
 				end
+				--]]
 			end
+			
 		end
 	end
 	--]]
@@ -349,6 +367,8 @@ function PlayState:render()
 
 			--RENDERS ONLY FIRST MEMBER STONES
 			grid[i][j].members[1]:render()
+			grid[i][j].members[2]:render()
+			grid[i][j].members[3]:render()
 		end
 	end
 --]]
@@ -413,7 +433,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
 
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].control), VIRTUAL_WIDTH - 490, 320)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 
 
 	--STONE COUNT
