@@ -239,7 +239,7 @@ function PlayState:update(dt)
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if moveType == 'place' then
-				if mouseXGrid == j and mouseYGrid == i then
+				if mouseXGrid == j and mouseYGrid == i then --MODIFIES OCCUPANT.SELECTIONHIGHLIGHT THAT IS UNDER MOUSE LOCATION
 					grid[i][j].selectionHighlight = true
 				else
 					grid[i][j].selectionHighlight = false
@@ -247,7 +247,7 @@ function PlayState:update(dt)
 			elseif moveType == 'move' then
 				if player == 1 then
 					if mouseXGrid == j and mouseYGrid == i then
-						if grid[i][j].control == 'WHITE' then
+						if grid[i][j].stackControl == 'WHITE' then
 							grid[i][j].controlHighlight = true
 						end
 					else
@@ -255,7 +255,7 @@ function PlayState:update(dt)
 					end
 				elseif player == 2 then
 					if mouseXGrid == j and mouseYGrid == i then
-						if grid[i][j].control == 'BLACK' then
+						if grid[i][j].stackControl == 'BLACK' then
 							grid[i][j].controlHighlight = true
 						end
 					else
@@ -275,47 +275,41 @@ function PlayState:update(dt)
 			if moveType == 'place' then
 				if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
 					sounds['stone']:play()
+					grid[mouseYGrid][mouseXGrid].occupied = true
+					grid[mouseYGrid][mouseXGrid].members[1].stackOrder = 1
+
 					if stoneSelect == 1 then --LAYSTONE PLACEMENT
-						if player == 1 then
-							player1stones = player1stones - 1
-							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE' --NEED TO REMOVE 1 FROM INDEX TO SCALE IT
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'WHITE'
-						elseif player == 2 then
-							player2stones = player2stones - 1
-							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'BLACK'
-						end
-					elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
+						grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
 						if player == 1 then
 							player1stones = player1stones - 1
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'WHITE'
+							grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
 						elseif player == 2 then
 							player2stones = player2stones - 1
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+							grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+						end
+					elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'BLACK'
+						if player == 1 then
+							player1stones = player1stones - 1
+							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+							grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+						elseif player == 2 then
+							player2stones = player2stones - 1
+							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+							grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
 						end
 					elseif stoneSelect == 3 then --CAPSTONE PLACEMENT
+							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'CS'
 						if player == 1 then
 							player1capstone = 0
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'CS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'WHITE' 
+							grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE' 
 						elseif player == 2 then
 							player2capstone = 0
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'CS'
-							grid[mouseYGrid][mouseXGrid].occupied = true
-							grid[mouseYGrid][mouseXGrid].control = 'BLACK'
+							grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
 						end
 					end
 					--SWAPS PLAYER AFTER SELECTION
