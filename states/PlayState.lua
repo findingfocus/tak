@@ -276,6 +276,7 @@ function PlayState:update(dt)
 				if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
 					sounds['stone']:play()
 					grid[mouseYGrid][mouseXGrid].occupied = true
+					grid[mouseYGrid][mouseXGrid].occupants = 1
 					grid[mouseYGrid][mouseXGrid].members[1].stackOrder = 1
 
 					if stoneSelect == 1 then --LAYSTONE PLACEMENT
@@ -316,16 +317,18 @@ function PlayState:update(dt)
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
 				end
-			--[[
+			---[[
 			elseif moveType == 'move' then
 				for i = 1, 5 do
 					for j = 1, 5 do 
-						if grid[i][j].controlHighlight then
+						if grid[i][j].controlHighlight and grid[i][j].occupants == 1 then
 							--remove stone in that grid
+							grid[mouseYGrid][mouseXGrid].occupied = false
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
-							--grid[mouseYGrid][mouseXGrid].control = nil
+							grid[mouseYGrid][mouseXGrid].stackControl = nil
 							firstMovementLocked = true
+							grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
 							--render stone to mouse position
 						end
 					end
@@ -354,7 +357,7 @@ function PlayState:render()
 				end
 
 			elseif moveType == 'move' then
-				if grid[i][j].controlHighlight then
+				if grid[i][j].controlHighlight or grid[i][j].moveLockedHighlight then
 					grid[i][j]:render()
 				end
 			end
@@ -428,6 +431,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 
 
 	--STONE COUNT
