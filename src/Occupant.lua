@@ -7,7 +7,7 @@ function Occupant:init()
 	self.height = 144
 	self.occupants = 0
 	self.selectionHighlight = false
-	self.controlHighlight = false
+	self.legalMoveHighlight = false
 	self.moveLockedHighlight = false
 	self.occupied = false
 	self.members = {}
@@ -27,7 +27,7 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
 
-	if self.controlHighlight and not firstMovementLocked then
+	if self.legalMoveHighlight and not firstMovementLocked then
 		love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + self.height - OUTLINE + Y_OFFSET, self.width, OUTLINE) --BOTTOM

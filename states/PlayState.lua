@@ -15,7 +15,10 @@ function PlayState:init()
 	toggleMouseStone = false
 	hideMouseStone = false
 	firstMovementLocked = false
+	noMovementLocked = true
 	moveType = 'place'
+	moveLockedRow = 0
+	moveLockedColumn = 0
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -246,20 +249,20 @@ function PlayState:update(dt)
 				end
 			elseif moveType == 'move' then
 				if player == 1 then
-					if mouseXGrid == j and mouseYGrid == i then
+					if mouseXGrid == j and mouseYGrid == i and noMovementLocked then
 						if grid[i][j].stackControl == 'WHITE' then
-							grid[i][j].controlHighlight = true
+							grid[i][j].legalMoveHighlight = true
 						end
 					else
-						grid[i][j].controlHighlight = false
+						grid[i][j].legalMoveHighlight = false
 					end
 				elseif player == 2 then
-					if mouseXGrid == j and mouseYGrid == i then
+					if mouseXGrid == j and mouseYGrid == i  and noMovementLocked then
 						if grid[i][j].stackControl == 'BLACK' then
-							grid[i][j].controlHighlight = true
+							grid[i][j].legalMoveHighlight = true
 						end
 					else
-						grid[i][j].controlHighlight = false
+						grid[i][j].legalMoveHighlight = false
 					end
 				end
 			end
@@ -321,15 +324,18 @@ function PlayState:update(dt)
 			elseif moveType == 'move' then
 				for i = 1, 5 do
 					for j = 1, 5 do 
-						if grid[i][j].controlHighlight and grid[i][j].occupants == 1 then
+						if grid[i][j].legalMoveHighlight and grid[i][j].occupants == 1 and not firstMovementLocked then
 							--remove stone in that grid
 							grid[mouseYGrid][mouseXGrid].occupied = false
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
 							grid[mouseYGrid][mouseXGrid].stackControl = nil
+							noMovementLocked = false
 							firstMovementLocked = true
 							grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
-							--render stone to mouse position
+							moveLockedRow = i
+							moveLockedColumn = j
+							grid[i][j].legalMoveHighlight = false
 						end
 					end
 				end
@@ -357,7 +363,7 @@ function PlayState:render()
 				end
 
 			elseif moveType == 'move' then
-				if grid[i][j].controlHighlight or grid[i][j].moveLockedHighlight then
+				if grid[i][j].legalMoveHighlight or grid[i][j].moveLockedHighlight then
 					grid[i][j]:render()
 				end
 			end
@@ -432,6 +438,7 @@ function PlayState:render()
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LMH: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 420)
 
 
 	--STONE COUNT
