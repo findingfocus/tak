@@ -34,6 +34,7 @@ function PlayState:init()
 		end
 	end
 
+--[[
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -49,6 +50,7 @@ function PlayState:init()
 	grid[1][1].members[3].stoneType = 'SS'
 	grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[3].stackOrder = 3
+--]]
 
 	--POPULATES CONTROL GRID ALL TO unassigned
 	for i = 1, 5 do
@@ -344,7 +346,44 @@ function PlayState:update(dt)
 			
 		end
 	end
+
+	--MOVE 1 LEGAL HIGHLIGHTS
+	if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES
+		grid[1][2].legalMoveHighlight = true
+		grid[2][1].legalMoveHighlight = true
+	elseif moveLockedRow == 1 and moveLockedColumn == 5 then
+		grid[1][4].legalMoveHighlight = true
+		grid[2][5].legalMoveHighlight = true
+	elseif moveLockedRow == 5 and moveLockedColumn == 1 then
+		grid[4][1].legalMoveHighlight = true
+		grid[5][2].legalMoveHighlight = true
+	elseif moveLockedRow == 5 and moveLockedColumn == 5 then
+		grid[5][4].legalMoveHighlight = true
+		grid[4][5].legalMoveHighlight = true
+	end
+	--EDGECASES
+	if moveLockedColumn == 1 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --LEFT EDGE
+		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
+	elseif moveLockedColumn == 5 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --RIGHT EDGE
+		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+	elseif moveLockedRow == 1 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --TOP EDGE
+		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
+	elseif moveLockedRow == 5 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --BOTTOM EDGE
+		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
+	end
+
+	--MIDDLECASES
 	--]]
+
+	
 end
 
 
@@ -439,6 +478,9 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LMH: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 420)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
+	love.graphics.print('.5,4LMH: ' .. tostring(grid[5][4].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
 
 
 	--STONE COUNT
