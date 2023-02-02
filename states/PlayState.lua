@@ -348,7 +348,9 @@ function PlayState:update(dt)
 	end
 
 	--MOVE 1 LEGAL HIGHLIGHTS
-	if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES
+
+	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
+	if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
 		grid[1][2].legalMoveHighlight = true
 		grid[2][1].legalMoveHighlight = true
 	elseif moveLockedRow == 1 and moveLockedColumn == 5 then
@@ -381,8 +383,12 @@ function PlayState:update(dt)
 	end
 
 	--MIDDLECASES
-	--]]
-
+	if moveLockedColumn > 1 and moveLockedColumn < 5 and moveLockedRow > 1 and moveLockedRow < 5 then
+		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+	end
 	
 end
 
