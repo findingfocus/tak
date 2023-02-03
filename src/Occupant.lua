@@ -7,6 +7,7 @@ function Occupant:init()
 	self.height = 144
 	self.occupants = 0
 	self.selectionHighlight = false
+	self.legalMove = false
 	self.legalMoveHighlight = false
 	self.moveLockedHighlight = false
 	self.occupied = false

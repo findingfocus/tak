@@ -255,6 +255,12 @@ function PlayState:update(dt)
 						if grid[i][j].stackControl == 'WHITE' then
 							grid[i][j].legalMoveHighlight = true
 						end
+					elseif mouseXGrid == j and mouseYGrid == i and not noMovementLocked then
+						if grid[i][j].legalMove then
+							grid[i][j].legalMoveHighlight = true
+						else
+							grid[i][j].legalMoveHighlight = false
+						end
 					else
 						grid[i][j].legalMoveHighlight = false
 					end
@@ -262,6 +268,12 @@ function PlayState:update(dt)
 					if mouseXGrid == j and mouseYGrid == i  and noMovementLocked then
 						if grid[i][j].stackControl == 'BLACK' then
 							grid[i][j].legalMoveHighlight = true
+						end
+					elseif mouseXGrid == j and mouseYGrid == i and not noMovementLocked then
+						if grid[i][j].legalMove then
+							grid[i][j].legalMoveHighlight = true
+						else
+							grid[i][j].legalMoveHighlight = false
 						end
 					else
 						grid[i][j].legalMoveHighlight = false
@@ -351,45 +363,53 @@ function PlayState:update(dt)
 
 	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
 	if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
-		grid[1][2].legalMoveHighlight = true
-		grid[2][1].legalMoveHighlight = true
+		grid[1][2].legalMove = true
+		grid[2][1].legalMove = true
 	elseif moveLockedRow == 1 and moveLockedColumn == 5 then
-		grid[1][4].legalMoveHighlight = true
-		grid[2][5].legalMoveHighlight = true
+		grid[1][4].legalMove = true
+		grid[2][5].legalMove = true
 	elseif moveLockedRow == 5 and moveLockedColumn == 1 then
-		grid[4][1].legalMoveHighlight = true
-		grid[5][2].legalMoveHighlight = true
+		grid[4][1].legalMove = true
+		grid[5][2].legalMove = true
 	elseif moveLockedRow == 5 and moveLockedColumn == 5 then
-		grid[5][4].legalMoveHighlight = true
-		grid[4][5].legalMoveHighlight = true
+		grid[5][4].legalMove = true
+		grid[4][5].legalMove = true
 	end
 	--EDGECASES
 	if moveLockedColumn == 1 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --LEFT EDGE
-		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
+		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
 	elseif moveLockedColumn == 5 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --RIGHT EDGE
-		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
 	elseif moveLockedRow == 1 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --TOP EDGE
-		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
 	elseif moveLockedRow == 5 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --BOTTOM EDGE
-		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
-		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
 	end
 
 	--MIDDLECASES
 	if moveLockedColumn > 1 and moveLockedColumn < 5 and moveLockedRow > 1 and moveLockedRow < 5 then
-		grid[moveLockedRow - 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn + 1].legalMoveHighlight = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMoveHighlight = true
+		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
 	end
-	
+---[[
+	for i = 1, 5 do
+		for j = 1, 5 do
+			if grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then
+				grid[i][j].legalMove = false
+			end
+		end
+	end
+	--]]
 end
 
 
@@ -483,10 +503,9 @@ function PlayState:render()
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LMH: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 420)
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
-	love.graphics.print('.5,4LMH: ' .. tostring(grid[5][4].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
 
 
 	--STONE COUNT
