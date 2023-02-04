@@ -103,7 +103,7 @@ function PlayState:update(dt)
 				grid[i][j].x = j * 144 - 144
 				grid[i][j].y = i * 144 - 144
 				for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
-					grid[i][j].members[1] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
+					grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
 				end
 			end
 		end
@@ -253,6 +253,7 @@ function PlayState:update(dt)
 				if player == 1 then
 					if mouseXGrid == j and mouseYGrid == i and noMovementLocked then
 						if grid[i][j].stackControl == 'WHITE' then
+							grid[i][j].legalMove = true
 							grid[i][j].legalMoveHighlight = true
 						end
 					elseif mouseXGrid == j and mouseYGrid == i and not noMovementLocked then
@@ -267,6 +268,7 @@ function PlayState:update(dt)
 				elseif player == 2 then
 					if mouseXGrid == j and mouseYGrid == i  and noMovementLocked then
 						if grid[i][j].stackControl == 'BLACK' then
+							grid[i][j].legalMove = true
 							grid[i][j].legalMoveHighlight = true
 						end
 					elseif mouseXGrid == j and mouseYGrid == i and not noMovementLocked then
@@ -338,7 +340,7 @@ function PlayState:update(dt)
 			elseif moveType == 'move' then
 				for i = 1, 5 do
 					for j = 1, 5 do 
-						if grid[i][j].legalMoveHighlight and grid[i][j].occupants == 1 and not firstMovementLocked then
+						if grid[i][j].legalMove and grid[i][j].occupants == 1 and not firstMovementLocked then
 							--remove stone in that grid
 							grid[mouseYGrid][mouseXGrid].occupied = false
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
@@ -433,15 +435,20 @@ function PlayState:render()
 				end
 			end
 
-			--RENDERS ONLY FIRST MEMBER STONES
-			grid[i][j].members[1]:render()
-			grid[i][j].members[2]:render()
-			grid[i][j].members[3]:render()
+			--RENDERS MEMBER STONES
+			for i = 1, 5 do
+				for j = 1, 5 do
+					for k = 1, 10 do
+						grid[i][j].members[k]:render()
+					end
+				end
+			end
+
 		end
 	end
 --]]
 
----[[RENDERS STONE SELECTION AT MOUSE POSITION
+---[[RENDERS STONE SELECTION AT MOUSE POSITION   --ALL NEEDS TO GO, AND BECOME RENDERING BASED ON MOUSESTONE CLASS OR LOCAL VARIABLE
 	if not toggleMouseStone then
 		if moveType == 'place' then
 			if player == 1 then

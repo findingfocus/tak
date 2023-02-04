@@ -36,7 +36,6 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
 
-
 	if self.moveLockedHighlight then
 		love.graphics.setColor(0/255, 150/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
