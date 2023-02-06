@@ -14,6 +14,7 @@ function PlayState:init()
 	stoneSelect = 1
 	toggleMouseStone = false
 	hideMouseStone = false
+	movementOriginLocked = false
 	firstMovementLocked = false
 	noMovementLocked = true
 	moveType = 'place'
@@ -340,14 +341,26 @@ function PlayState:update(dt)
 			elseif moveType == 'move' then
 				for i = 1, 5 do
 					for j = 1, 5 do 
-						if grid[i][j].legalMove and grid[i][j].occupants == 1 and not firstMovementLocked then
-							--remove stone in that grid
+						if grid[i][j].legalMove and grid[i][j].occupants < 6 and not movementOriginLocked then
+							---[[[MOVE ALL 5 occupants to mouse positions
+							for i = 1, grid[i][j].occupants do
+								--mouseStones = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
+								--grid[mouseYGrid][mouseXGrid].members[i].stoneType
+								--grid[mouseYGrid][mouseXGrid].members[i].stackOrder
+							end 
+							--]]
+
+							--Add keyboard detection for dropping stones in origin space
 							grid[mouseYGrid][mouseXGrid].occupied = false
+							for i = 1, grid[i][j].occupants do
+								grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
+								grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
+							end 
 							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
 							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
 							grid[mouseYGrid][mouseXGrid].stackControl = nil
 							noMovementLocked = false
-							firstMovementLocked = true
+							movementOriginLocked = true
 							grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
 							moveLockedRow = i
 							moveLockedColumn = j
@@ -463,7 +476,7 @@ function PlayState:render()
 			elseif stoneSelect == 3 then
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
-		elseif moveType == 'move' and firstMovementLocked then
+		elseif moveType == 'move' and movementOriginLocked then
 			if player == 1 then
 				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 			elseif player == 2 then
