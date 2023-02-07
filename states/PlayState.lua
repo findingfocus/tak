@@ -20,6 +20,9 @@ function PlayState:init()
 	moveType = 'place'
 	moveLockedRow = 0
 	moveLockedColumn = 0
+	mouseStones = Occupant()
+	mouseStones.members[1] = Member('BLACK', 'LS', 0, 0)
+	mouseStones.members[1].stackOrder = 1
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -124,6 +127,13 @@ function PlayState:update(dt)
 		elseif moveType == 'move' then
 			moveType = 'place'
 		end
+	end
+
+	if moveType == 'move' then
+		mouseStones.members[1].x = mouseMasterX - X_OFFSET - OUTLINE - 60
+		mouseStones.members[1].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
+		--mouseStones.members[1].stoneColor = 'WHITE'
+		--mouseStones.members[1].stoneType = 'LS'
 	end
 
 
@@ -477,6 +487,7 @@ function PlayState:render()
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
 		elseif moveType == 'move' and movementOriginLocked then
+			--[[
 			if player == 1 then
 				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 			elseif player == 2 then
@@ -489,6 +500,7 @@ function PlayState:render()
 			elseif stoneSelect == 3 then
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
+			--]]
 		end
 	end
 --]]
@@ -502,6 +514,9 @@ function PlayState:render()
 		love.graphics.print('It is Black\'s move', 45, VIRTUAL_HEIGHT - 38)
 	end
 --]]
+	if moveType == 'move' then
+		mouseStones.members[1]:render()
+	end
 
 	--TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -525,8 +540,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
-
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520) 
 
 	--STONE COUNT
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
