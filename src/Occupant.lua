@@ -13,6 +13,7 @@ function Occupant:init()
 	self.occupied = false
 	self.members = {}
 	self.stackControl = nil
+	self.bottomStoneIndex = 1
 end
 
 function Occupant:update(dt)

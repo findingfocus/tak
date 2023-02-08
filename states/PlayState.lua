@@ -23,8 +23,6 @@ function PlayState:init()
 	mouseStones = Occupant()
 	mouseStones.members = {}
 	mouseStones.members[1] = Member()
-	--mouseStones.members[1] = Member('BLACK', 'LS', 0, 0)
-	--mouseStones.members[1].stackOrder = 1
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -36,11 +34,12 @@ function PlayState:init()
 			grid[i][j].y = i * 144 - 144
 			for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
 				grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
+				mouseStones.members[k] = Member()
 			end
 		end
 	end
 
---[[
+---[[
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -112,6 +111,7 @@ function PlayState:update(dt)
 				grid[i][j].y = i * 144 - 144
 				for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
 					grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
+					mouseStones.members[k] = Member()
 				end
 			end
 		end
@@ -355,33 +355,42 @@ function PlayState:update(dt)
 				end
 			---[[
 			elseif moveType == 'move' then
-				for i = 1, 5 do
-					for j = 1, 5 do 
-						if grid[i][j].legalMove and grid[i][j].occupants < 6 and not movementOriginLocked then
-							---[[[MOVE ALL 5 occupants to mouse positions
-							for i = 1, grid[i][j].occupants do
-								mouseStones.occupants = mouseStones.occupants + 1
-								mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
-								mouseStones.members[i].stoneType = grid[mouseYGrid][mouseXGrid].members[i].stoneType
-								mouseStones.members[i].stackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
-								grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
-								grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
-								grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
-							end 
-							--]]
-							grid[mouseYGrid][mouseXGrid].occupied = false
-							noMovementLocked = false
-							movementOriginLocked = true
-							grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
-							moveLockedRow = i
-							moveLockedColumn = j
-							grid[i][j].legalMoveHighlight = false
-						end
-					end
+				if grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants < 6 and not movementOriginLocked then
+					---[[[MOVE ALL 5 occupants to mouse positions
+					for i = 1, grid[mouseYGrid][mouseXGrid].occupants do
+						mouseStones.occupants = mouseStones.occupants + 1
+						mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
+						mouseStones.members[i].stoneType = grid[mouseYGrid][mouseXGrid].members[i].stoneType
+						mouseStones.members[i].stackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
+						grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
+						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
+						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
+					end 
+					--]]
+					grid[mouseYGrid][mouseXGrid].occupied = false
+					noMovementLocked = false
+					movementOriginLocked = true
+					grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
+					moveLockedRow = mouseYGrid
+					moveLockedColumn = mouseXGrid
+					grid[mouseYGrid][mouseXGrid].legalMoveHighlight = false
 				end
 				--]]
 			end
 			
+		end
+	end
+
+	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then
+
+		--do some checking so we cannot drop or pickup more than we started with
+		if love.keyboard.wasPressed('down') then --DROP STONE IN ORIGIN LOCKED SPACE
+			--Add mousestones.members[bottomStone] into originLocked
+			--increment the bottomstoneIndex by 1
+			--Remove index 1 from mouseStones
+
+		elseif love.keyboard.wasPressed('up') then --PICKUP STONE IN ORIGIN LOCKED SPACE
+			--use occupants as top stone index?
 		end
 	end
 
@@ -472,7 +481,7 @@ function PlayState:render()
 	end
 --]]
 
----[[RENDERS STONE SELECTION AT MOUSE POSITION   --ALL NEEDS TO GO, AND BECOME RENDERING BASED ON MOUSESTONE CLASS OR LOCAL VARIABLE
+---[[RENDERS STONE SELECTION AT MOUSE POSITION
 	if not toggleMouseStone then
 		if moveType == 'place' then
 			if player == 1 then
@@ -488,21 +497,9 @@ function PlayState:render()
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
 		elseif moveType == 'move' and movementOriginLocked then
-			mouseStones.members[1]:render()
-			--[[
-			if player == 1 then
-				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-			elseif player == 2 then
-				love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+			for i = 1, mouseStones.occupants do
+				mouseStones.members[i]:render()
 			end
-			if stoneSelect == 1 then
-				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
-			elseif stoneSelect == 2 then
-				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 22, 120, 44)
-			elseif stoneSelect == 3 then
-				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
-			end
-			--]]
 		end
 	end
 --]]
