@@ -21,8 +21,10 @@ function PlayState:init()
 	moveLockedRow = 0
 	moveLockedColumn = 0
 	mouseStones = Occupant()
-	mouseStones.members[1] = Member('BLACK', 'LS', 0, 0)
-	mouseStones.members[1].stackOrder = 1
+	mouseStones.members = {}
+	mouseStones.members[1] = Member()
+	--mouseStones.members[1] = Member('BLACK', 'LS', 0, 0)
+	--mouseStones.members[1].stackOrder = 1
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -54,6 +56,8 @@ function PlayState:init()
 	grid[1][1].members[3].stoneType = 'SS'
 	grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[3].stackOrder = 3
+	grid[1][1].occupants = 3
+
 --]]
 
 	--POPULATES CONTROL GRID ALL TO unassigned
@@ -130,8 +134,10 @@ function PlayState:update(dt)
 	end
 
 	if moveType == 'move' then
-		mouseStones.members[1].x = mouseMasterX - X_OFFSET - OUTLINE - 60
-		mouseStones.members[1].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
+		for i = 1, mouseStones.occupants do
+			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
+			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
+		end
 		--mouseStones.members[1].stoneColor = 'WHITE'
 		--mouseStones.members[1].stoneType = 'LS'
 	end
@@ -354,21 +360,16 @@ function PlayState:update(dt)
 						if grid[i][j].legalMove and grid[i][j].occupants < 6 and not movementOriginLocked then
 							---[[[MOVE ALL 5 occupants to mouse positions
 							for i = 1, grid[i][j].occupants do
-								--mouseStones = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
-								--grid[mouseYGrid][mouseXGrid].members[i].stoneType
-								--grid[mouseYGrid][mouseXGrid].members[i].stackOrder
-							end 
-							--]]
-
-							--Add keyboard detection for dropping stones in origin space
-							grid[mouseYGrid][mouseXGrid].occupied = false
-							for i = 1, grid[i][j].occupants do
+								mouseStones.occupants = mouseStones.occupants + 1
+								mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
+								mouseStones.members[i].stoneType = grid[mouseYGrid][mouseXGrid].members[i].stoneType
+								mouseStones.members[i].stackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
 								grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
 								grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
+								grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
 							end 
-							grid[mouseYGrid][mouseXGrid].members[1].stoneColor = nil
-							grid[mouseYGrid][mouseXGrid].members[1].stoneType = nil
-							grid[mouseYGrid][mouseXGrid].stackControl = nil
+							--]]
+							grid[mouseYGrid][mouseXGrid].occupied = false
 							noMovementLocked = false
 							movementOriginLocked = true
 							grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
@@ -487,6 +488,7 @@ function PlayState:render()
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
 		elseif moveType == 'move' and movementOriginLocked then
+			mouseStones.members[1]:render()
 			--[[
 			if player == 1 then
 				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -514,9 +516,6 @@ function PlayState:render()
 		love.graphics.print('It is Black\'s move', 45, VIRTUAL_HEIGHT - 38)
 	end
 --]]
-	if moveType == 'move' then
-		mouseStones.members[1]:render()
-	end
 
 	--TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
