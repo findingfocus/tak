@@ -17,6 +17,7 @@ function PlayState:init()
 	movementOriginLocked = false
 	firstMovementLocked = false
 	noMovementLocked = true
+	firstMovementStonesDropped = false
 	moveType = 'place'
 	moveLockedRow = 0
 	moveLockedColumn = 0
@@ -125,11 +126,14 @@ function PlayState:update(dt)
 --]]
 
 	if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
-		sounds['beep']:play()
 		if moveType == 'place' then
+			sounds['beep']:play()
 			moveType = 'move'
 		elseif moveType == 'move' then
-			moveType = 'place'
+			if not movementOriginLocked then
+				sounds['beep']:play()
+				moveType = 'place'
+			end
 		end
 	end
 
@@ -374,6 +378,7 @@ function PlayState:update(dt)
 					moveLockedRow = mouseYGrid
 					moveLockedColumn = mouseXGrid
 					grid[mouseYGrid][mouseXGrid].legalMoveHighlight = false
+					grid[mouseYGrid][mouseXGrid].occupants = 0
 				end
 				--]]
 			end
@@ -391,51 +396,61 @@ function PlayState:update(dt)
 
 		elseif love.keyboard.wasPressed('up') then --PICKUP STONE IN ORIGIN LOCKED SPACE
 			--use occupants as top stone index?
+		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+			firstMovementStonesDropped = true
 		end
 	end
 
 	--MOVE 1 LEGAL HIGHLIGHTS
 
 	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
-	if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
-		grid[1][2].legalMove = true
-		grid[2][1].legalMove = true
-	elseif moveLockedRow == 1 and moveLockedColumn == 5 then
-		grid[1][4].legalMove = true
-		grid[2][5].legalMove = true
-	elseif moveLockedRow == 5 and moveLockedColumn == 1 then
-		grid[4][1].legalMove = true
-		grid[5][2].legalMove = true
-	elseif moveLockedRow == 5 and moveLockedColumn == 5 then
-		grid[5][4].legalMove = true
-		grid[4][5].legalMove = true
+	if firstMovementStonesDropped then
+		if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
+			grid[1][2].legalMove = true
+			grid[2][1].legalMove = true
+		elseif moveLockedRow == 1 and moveLockedColumn == 5 then
+			grid[1][4].legalMove = true
+			grid[2][5].legalMove = true
+		elseif moveLockedRow == 5 and moveLockedColumn == 1 then
+			grid[4][1].legalMove = true
+			grid[5][2].legalMove = true
+		elseif moveLockedRow == 5 and moveLockedColumn == 5 then
+			grid[5][4].legalMove = true
+			grid[4][5].legalMove = true
+		end
 	end
+
 	--EDGECASES
-	if moveLockedColumn == 1 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --LEFT EDGE
-		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
-	elseif moveLockedColumn == 5 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --RIGHT EDGE
-		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
-	elseif moveLockedRow == 1 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --TOP EDGE
-		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
-	elseif moveLockedRow == 5 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --BOTTOM EDGE
-		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
-		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+	if firstMovementStonesDropped then
+		if moveLockedColumn == 1 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --LEFT EDGE
+			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+		elseif moveLockedColumn == 5 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --RIGHT EDGE
+			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+		elseif moveLockedRow == 1 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --TOP EDGE
+			grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+		elseif moveLockedRow == 5 and moveLockedColumn ~= 1 and moveLockedColumn ~= 5 then --BOTTOM EDGE
+			grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+		end
 	end
 
 	--MIDDLECASES
-	if moveLockedColumn > 1 and moveLockedColumn < 5 and moveLockedRow > 1 and moveLockedRow < 5 then
-		grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
-		grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
-		grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+	if firstMovementStonesDropped then
+		if moveLockedColumn > 1 and moveLockedColumn < 5 and moveLockedRow > 1 and moveLockedRow < 5 then
+			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
+			grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
+			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
+		end
 	end
+
 ---[[
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -536,7 +551,8 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520) 
+	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
+	love.graphics.print('firstStonesDrop: ' .. tostring(firstMovementStonesDropped), VIRTUAL_WIDTH - 490, 570)
 
 	--STONE COUNT
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
