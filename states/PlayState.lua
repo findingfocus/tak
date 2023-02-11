@@ -15,9 +15,12 @@ function PlayState:init()
 	toggleMouseStone = false
 	hideMouseStone = false
 	movementOriginLocked = false
+	movementOriginRow = 0
+	movementOriginColumn = 0
 	firstMovementLocked = false
 	noMovementLocked = true
 	firstMovementStonesDropped = false
+	bottomStoneIndex = 1
 	moveType = 'place'
 	moveLockedRow = 0
 	moveLockedColumn = 0
@@ -360,6 +363,8 @@ function PlayState:update(dt)
 			---[[
 			elseif moveType == 'move' then
 				if grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants < 6 and not movementOriginLocked then
+					movementOriginRow = mouseYGrid
+					movementOriginColumn = mouseXGrid
 					---[[[MOVE ALL 5 occupants to mouse positions
 					for i = 1, grid[mouseYGrid][mouseXGrid].occupants do
 						mouseStones.occupants = mouseStones.occupants + 1
@@ -386,10 +391,28 @@ function PlayState:update(dt)
 		end
 	end
 
-	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then
+	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then --FIRST STONES DROP
 
 		--do some checking so we cannot drop or pickup more than we started with
 		if love.keyboard.wasPressed('down') then --DROP STONE IN ORIGIN LOCKED SPACE
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[bottomStoneIndex].stoneColor
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneType = mouseStones.members[bottomStoneIndex].stoneType
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stackOrder = mouseStones.members[bottomStoneIndex].stackOrder
+			--mouseStones.occupants = mouseStones.occupants - 1 --MAKE NEW VARIABLE TO HOLD MOUSE STONE MEMBER NUMBER
+			--if mouseStones.occupants > 0 then
+				grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants + 1
+			--end
+
+			grid[movementOriginRow][movementOriginColumn].occupied = true
+			mouseStones.members[bottomStoneIndex].stoneColor = nil
+			mouseStones.members[bottomStoneIndex].stoneType = nil
+			mouseStones.members[bottomStoneIndex].stackOrder = nil
+			if bottomStoneIndex == grid[movementOriginRow][movementOriginColumn].occupants then
+				bottomStoneIndex = bottomStoneIndex + 1
+			end
+
+
+
 			--Add mousestones.members[bottomStone] into originLocked
 			--increment the bottomstoneIndex by 1
 			--Remove index 1 from mouseStones
