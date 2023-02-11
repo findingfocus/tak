@@ -3,7 +3,6 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init()
 	board = Board()
 	grid = {}
-	controlGrid = {}
 	mouseXGrid = 0
 	mouseYGrid = 0
 	player = 1
@@ -28,7 +27,7 @@ function PlayState:init()
 	mouseStones.members = {}
 	mouseStones.members[1] = Member()
 
-	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
+---[[POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
 		grid[i] = {}
 		for j = 1, 5 do --first bracket is row, second bracket is column
@@ -42,8 +41,10 @@ function PlayState:init()
 			end
 		end
 	end
+--]]
 
----[[
+
+---[[TESTER STACK IN GRID[1][1]
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -63,15 +64,6 @@ function PlayState:init()
 
 --]]
 
-	--POPULATES CONTROL GRID ALL TO unassigned
-	for i = 1, 5 do
-		controlGrid[i] = {}
-		for j = 1, 5 do
-			controlGrid[i][j] = {}
-			controlGrid[i][j] = 'unassigned'
-		end
-	end
-
 end
 
 function PlayState:update(dt)
@@ -81,9 +73,8 @@ function PlayState:update(dt)
 	--SHIFTS MOUSE_X AND MOUSE_Y TO GRID COORDINATES RATHER THAN SCREEN COORDINATES
 	mouseY = mouseY - Y_OFFSET
 	mouseX = mouseX - X_OFFSET
---]]
 
----[[NILLIFY THE MOUSE COORDINATES IF OFF GRID
+	--[NILLIFY THE MOUSE COORDINATES IF OFF GRID
 	if mouseY < 0 or mouseY > 720 or mouseX < X_OFFSET or mouseX > 720 then --COMMENT OUT TO EASE DEBUG CRASH
 		--mouseY = nil
 		--mouseX = nil
@@ -128,6 +119,7 @@ function PlayState:update(dt)
 	end
 --]]
 
+---[[SOUND EFFECTS
 	if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
 		if moveType == 'place' then
 			sounds['beep']:play()
@@ -139,53 +131,16 @@ function PlayState:update(dt)
 			end
 		end
 	end
+--]]
 
+---[[MOUSE STONES POSITION
 	if moveType == 'move' then
 		for i = 1, mouseStones.occupants do
 			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
 			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
 		end
-		--mouseStones.members[1].stoneColor = 'WHITE'
-		--mouseStones.members[1].stoneType = 'LS'
 	end
-
-
-	--Move stone to cursor, take stone out of grid
-
-	--Once move is complete, save current board state to undo variable. If undo is clicked, revert state and player turn
-
----Detect which spaces player has control over if moveType == move
-	--add stack order for Members, e.g if theres two members, what color is members[2], set control
-	--cycle through all Occupants, check control
-	--highlight orthogonal spots that are empty or laystone
-	--decide how many stones to be move
-	--only render player control spots highlights
-	--once clicked, top five stones move with mouse, can arrown key to move less
-	--available orthogonal directions highlight red
-	--initial spot renders lighter
-	--arrow key to control how many stones dropped
-	--drop upon click
-	--lock in direction
-	--highlight new appropriate directions, w/ lighter renders on past spaces
-	--arrow keys to decide how manys stones to drop
-	--click to drop
-
-
-	for i = 1, 5 do
-		for j = 1, 5 do
-			if player == 1 then
-				if grid[i][j].control == 'WHITE' then
-					controlGrid[i][j] = true
-				end
-			elseif player == 2 then
-				if grid[i][j].control == 'BLACK' then
-					controlGrid[i][j] = true
-				end
-			end
-		end
-	end
-
-
+--]]
 
 ---[[STONE SELECT
 	if player == 1 then
@@ -264,7 +219,7 @@ function PlayState:update(dt)
 	end
 --]]
 
----[[SETS SELECTION HIGHLIGHT IF UNDER MOUSE CURSOR
+---[[LEGAL MOVES + PLACEMENT HIGHLIGHTS
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if moveType == 'place' then
@@ -309,8 +264,6 @@ function PlayState:update(dt)
 		end
 	end
 --]]
-
-
 
 ---[[CLICK DETECTION
 	function love.mousepressed(x, y, button)
@@ -360,12 +313,12 @@ function PlayState:update(dt)
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
 				end
-			---[[
+
 			elseif moveType == 'move' then
 				if grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants < 6 and not movementOriginLocked then
 					movementOriginRow = mouseYGrid
 					movementOriginColumn = mouseXGrid
-					---[[[MOVE ALL 5 occupants to mouse positions
+					--MOVE ALL 5 occupants to mouse positions
 					for i = 1, grid[mouseYGrid][mouseXGrid].occupants do
 						mouseStones.occupants = mouseStones.occupants + 1
 						mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
@@ -375,7 +328,7 @@ function PlayState:update(dt)
 						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
 					end 
-					--]]
+					
 					grid[mouseYGrid][mouseXGrid].occupied = false
 					noMovementLocked = false
 					movementOriginLocked = true
@@ -385,14 +338,15 @@ function PlayState:update(dt)
 					grid[mouseYGrid][mouseXGrid].legalMoveHighlight = false
 					grid[mouseYGrid][mouseXGrid].occupants = 0
 				end
-				--]]
+				
 			end
 			
 		end
 	end
+--]]
 
+---[[FIRST STONES DROPPED
 	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then --FIRST STONES DROP
-
 		--do some checking so we cannot drop or pickup more than we started with
 		if love.keyboard.wasPressed('down') then --DROP STONE IN ORIGIN LOCKED SPACE
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[bottomStoneIndex].stoneColor
@@ -407,15 +361,10 @@ function PlayState:update(dt)
 			mouseStones.members[bottomStoneIndex].stoneColor = nil
 			mouseStones.members[bottomStoneIndex].stoneType = nil
 			mouseStones.members[bottomStoneIndex].stackOrder = nil
+
 			if bottomStoneIndex == grid[movementOriginRow][movementOriginColumn].occupants then
 				bottomStoneIndex = bottomStoneIndex + 1
 			end
-
-
-
-			--Add mousestones.members[bottomStone] into originLocked
-			--increment the bottomstoneIndex by 1
-			--Remove index 1 from mouseStones
 
 		elseif love.keyboard.wasPressed('up') then --PICKUP STONE IN ORIGIN LOCKED SPACE
 			--use occupants as top stone index?
@@ -423,9 +372,9 @@ function PlayState:update(dt)
 			firstMovementStonesDropped = true
 		end
 	end
+--]]
 
-	--MOVE 1 LEGAL HIGHLIGHTS
-
+---[[MOVE 1 LEGAL HIGHLIGHTS
 	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
 	if firstMovementStonesDropped then
 		if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
@@ -473,8 +422,9 @@ function PlayState:update(dt)
 			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
 		end
 	end
+--]]
 
----[[
+---[[FALSIFYING LEGAL MOVES
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then
@@ -482,7 +432,7 @@ function PlayState:update(dt)
 			end
 		end
 	end
-	--]]
+--]]
 end
 
 
@@ -552,10 +502,11 @@ function PlayState:render()
 	end
 --]]
 
-	--TITLE
+---[[TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(pixelFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
+--]]
 
 	--DEBUG INF0
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
