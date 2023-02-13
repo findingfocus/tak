@@ -1,6 +1,10 @@
 PlayState = Class{__includes = BaseState}
 
 function PlayState:init()
+	resetBoard()
+end
+
+function resetBoard()
 	board = Board()
 	grid = {}
 	mouseXGrid = 0
@@ -25,9 +29,8 @@ function PlayState:init()
 	moveLockedColumn = 0
 	mouseStones = Occupant()
 	mouseStones.members = {}
-	mouseStones.members[1] = Member()
 
----[[POPULATES GRID TABLE WITH PROPER GRID X AND Y FILEDS AND OCCUPANT OBJECTS
+	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
 		grid[i] = {}
 		for j = 1, 5 do --first bracket is row, second bracket is column
@@ -41,10 +44,8 @@ function PlayState:init()
 			end
 		end
 	end
---]]
 
-
----[[TESTER STACK IN GRID[1][1]
+	---[[TESTER STACK IN GRID[1][1]
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -61,8 +62,7 @@ function PlayState:init()
 	grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[3].stackOrder = 3
 	grid[1][1].occupants = 3
-
---]]
+	--]]
 
 end
 
@@ -96,20 +96,8 @@ function PlayState:update(dt)
 --]]
 
 ---[[GRID RESET
-	if love.keyboard.wasPressed('r') then		
-		for i = 1, 5 do
-			grid[i] = {}
-			for j = 1, 5 do
-				grid[i][j] = {}
-				grid[i][j] = Occupant()
-				grid[i][j].x = j * 144 - 144
-				grid[i][j].y = i * 144 - 144
-				for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
-					grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
-					mouseStones.members[k] = Member()
-				end
-			end
-		end
+	if love.keyboard.wasPressed('r') then
+		resetBoard()
 	end
 --]]
 
@@ -143,41 +131,43 @@ function PlayState:update(dt)
 --]]
 
 ---[[STONE SELECT
-	if player == 1 then
-		if love.keyboard.wasPressed('right') then
-			sounds['beep']:play()
-			if stoneSelect < p1SelectLimit then
-				stoneSelect = stoneSelect + 1
-			elseif stoneSelect == p1SelectLimit then
-				stoneSelect = 1
+	if moveType == 'place' then
+		if player == 1 then
+			if love.keyboard.wasPressed('right') then
+				sounds['beep']:play()
+				if stoneSelect < p1SelectLimit then
+					stoneSelect = stoneSelect + 1
+				elseif stoneSelect == p1SelectLimit then
+					stoneSelect = 1
+				end
 			end
-		end
 
-		if love.keyboard.wasPressed('left') then
-			sounds['beep']:play()
-			if stoneSelect > 1 then
-				stoneSelect = stoneSelect - 1
-			elseif stoneSelect == 1 then
-				stoneSelect = p1SelectLimit
+			if love.keyboard.wasPressed('left') then
+				sounds['beep']:play()
+				if stoneSelect > 1 then
+					stoneSelect = stoneSelect - 1
+				elseif stoneSelect == 1 then
+					stoneSelect = p1SelectLimit
+				end
 			end
-		end
 
-	elseif player == 2 then
-		if love.keyboard.wasPressed('right') then
-			sounds['beep']:play()
-			if stoneSelect < p2SelectLimit then
-				stoneSelect = stoneSelect + 1
-			elseif stoneSelect == p2SelectLimit then
-				stoneSelect = 1
+		elseif player == 2 then
+			if love.keyboard.wasPressed('right') then
+				sounds['beep']:play()
+				if stoneSelect < p2SelectLimit then
+					stoneSelect = stoneSelect + 1
+				elseif stoneSelect == p2SelectLimit then
+					stoneSelect = 1
+				end
 			end
-		end
 
-		if love.keyboard.wasPressed('left') then
-			sounds['beep']:play()
-			if stoneSelect > 1 then
-				stoneSelect = stoneSelect - 1
-			elseif stoneSelect == 1 then
-				stoneSelect = p2SelectLimit
+			if love.keyboard.wasPressed('left') then
+				sounds['beep']:play()
+				if stoneSelect > 1 then
+					stoneSelect = stoneSelect - 1
+				elseif stoneSelect == 1 then
+					stoneSelect = p2SelectLimit
+				end
 			end
 		end
 	end
@@ -349,6 +339,7 @@ function PlayState:update(dt)
 	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then --FIRST STONES DROP
 		--do some checking so we cannot drop or pickup more than we started with
 		if love.keyboard.wasPressed('down') then --DROP STONE IN ORIGIN LOCKED SPACE
+			sounds['stone']:play()
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[bottomStoneIndex].stoneColor
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneType = mouseStones.members[bottomStoneIndex].stoneType
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stackOrder = mouseStones.members[bottomStoneIndex].stackOrder
