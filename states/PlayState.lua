@@ -127,11 +127,16 @@ function PlayState:update(dt)
 			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
 			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
 		end
+
+		if not movementOriginLocked then
+			mouseStones.occupants = 0
+		end
 	end
 --]]
 
 ---[[STONE SELECT
 	if moveType == 'place' then
+		mouseStones.occupants = 1
 		if player == 1 then
 			if love.keyboard.wasPressed('right') then
 				sounds['beep']:play()
@@ -338,15 +343,13 @@ function PlayState:update(dt)
 ---[[FIRST STONES DROPPED
 	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then --FIRST STONES DROP
 		--do some checking so we cannot drop or pickup more than we started with
-		if love.keyboard.wasPressed('down') then --DROP STONE IN ORIGIN LOCKED SPACE
+		if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then --DROP STONE IN ORIGIN LOCKED SPACE
 			sounds['stone']:play()
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[bottomStoneIndex].stoneColor
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneType = mouseStones.members[bottomStoneIndex].stoneType
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stackOrder = mouseStones.members[bottomStoneIndex].stackOrder
-			--mouseStones.occupants = mouseStones.occupants - 1 --MAKE NEW VARIABLE TO HOLD MOUSE STONE MEMBER NUMBER
-			--if mouseStones.occupants > 0 then
-				grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants + 1
-			--end
+			mouseStones.occupants = mouseStones.occupants - 1 --MAKE NEW VARIABLE TO HOLD MOUSE STONE MEMBER NUMBER
+			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants + 1
 
 			grid[movementOriginRow][movementOriginColumn].occupied = true
 			mouseStones.members[bottomStoneIndex].stoneColor = nil
@@ -518,6 +521,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
 	love.graphics.print('firstStonesDrop: ' .. tostring(firstMovementStonesDropped), VIRTUAL_WIDTH - 490, 570)
+	love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 620)
 
 	--STONE COUNT
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
