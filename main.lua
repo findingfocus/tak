@@ -1,17 +1,4 @@
-push = require '/dependencies/push'
-
-Class = require 'dependencies/class'
-
-require '/dependencies/StateMachine'
-require '/dependencies/BaseState'
-require '/dependencies/Constants'
-
-require '/states/TitleScreenState'
-require '/states/PlayState'
-
-require '/src/Board'
-require '/src/Occupant'
-require '/src/Member'
+require 'dependencies'
 
 function love.load()
 	math.randomseed(os.time())
@@ -101,7 +88,6 @@ end
 
 
 function love.update(dt)
-
 	gStateMachine:update(dt)
 
 	love.keyboard.keysPressed = {} 
@@ -109,8 +95,6 @@ function love.update(dt)
 	--sounds[tostring(randomSongIndex)]:setLooping(true)
 	--sounds[tostring(randomSongIndex)]:play()
 end
-
-
 
 function love.draw()
 	push:start()
