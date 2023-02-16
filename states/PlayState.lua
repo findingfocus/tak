@@ -29,6 +29,8 @@ function resetBoard()
 	moveLockedColumn = 0
 	mouseStones = Occupant()
 	mouseStones.members = {}
+	debugY = 220
+	debugYIncrement = 30
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -479,7 +481,7 @@ function PlayState:render()
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
 		elseif moveType == 'move' and movementOriginLocked then
-			for i = 1, mouseStones.occupants do
+			for i = 1, 10 do
 				mouseStones.members[i]:render()
 			end
 		end
@@ -512,8 +514,8 @@ function PlayState:render()
 		love.graphics.print('moveType: move', VIRTUAL_WIDTH - 400, 180)
 	end
 
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
+	--love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
+	--love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
