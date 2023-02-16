@@ -30,4 +30,12 @@ function Member:render()
 	elseif self.stoneType == 'CS' then
 		love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, CS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 3)
 	end
+
+	if self.stoneColor == 'WHITE' and self.stackOrder ~= nil then
+		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+		love.graphics.print(tostring(self.stackOrder), self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2))
+	elseif self.stoneColor == 'BLACK' and self.stackOrder ~= nil then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		love.graphics.print(tostring(self.stackOrder), self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2))
+	end
 end

@@ -31,6 +31,7 @@ function resetBoard()
 	mouseStones.members = {}
 	debugY = 220
 	debugYIncrement = 30
+	PUIndex = 0
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -125,13 +126,16 @@ function PlayState:update(dt)
 
 ---[[MOUSE STONES POSITION
 	if moveType == 'move' then
-		for i = 1, mouseStones.occupants do
+		for i = 1, 10 do
 			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
 			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
 		end
 
 		if not movementOriginLocked then
 			mouseStones.occupants = 0
+		end
+		if mouseStones.occupants > 0 then
+			PUIndex = mouseStones.occupants - 1
 		end
 	end
 --]]
@@ -362,7 +366,20 @@ function PlayState:update(dt)
 				bottomStoneIndex = bottomStoneIndex + 1
 			end
 
-		elseif love.keyboard.wasPressed('up') then --PICKUP STONE IN ORIGIN LOCKED SPACE
+		elseif love.keyboard.wasPressed('up') and grid[movementOriginRow][movementOriginColumn].occupants > 0 then --PICKUP STONE IN ORIGIN LOCKED SPACE
+			sounds['stone']:play()	
+
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor = mouseStones.members[PUIndex].stoneColor
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType = mouseStones.members[PUIndex].stoneType
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder = mouseStones.members[PUIndex].stackOrder
+
+			--grid[movementOriginRow][movementOriginColumn].occupied = true
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor = nil
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType = nil
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder = nil
+			
+			mouseStones.occupants = mouseStones.occupants + 1
+			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants - 1
 			--use occupants as top stone index?
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
 			firstMovementStonesDropped = true
@@ -523,7 +540,8 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
 	love.graphics.print('firstStonesDrop: ' .. tostring(firstMovementStonesDropped), VIRTUAL_WIDTH - 490, 570)
-	love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 620)
+	love.graphics.print('PUIndex: ' .. tostring(PUIndex), VIRTUAL_WIDTH - 490, 620)
+
 
 	--STONE COUNT
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
