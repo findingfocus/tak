@@ -32,6 +32,7 @@ function resetBoard()
 	debugY = 220
 	debugYIncrement = 30
 	PUIndex = 0
+	stonesPickedUp = 0
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -133,9 +134,6 @@ function PlayState:update(dt)
 
 		if not movementOriginLocked then
 			mouseStones.occupants = 0
-		end
-		if mouseStones.occupants > 0 then
-			PUIndex = mouseStones.occupants - 1
 		end
 	end
 --]]
@@ -329,7 +327,8 @@ function PlayState:update(dt)
 						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
 					end 
-					
+
+					stonesPickedUp = mouseStones.occupants
 					grid[mouseYGrid][mouseXGrid].occupied = false
 					noMovementLocked = false
 					movementOriginLocked = true
@@ -366,26 +365,37 @@ function PlayState:update(dt)
 				bottomStoneIndex = bottomStoneIndex + 1
 			end
 
-		elseif love.keyboard.wasPressed('up') and grid[movementOriginRow][movementOriginColumn].occupants > 0 then --PICKUP STONE IN ORIGIN LOCKED SPACE
-			sounds['stone']:play()	
-
-			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor = mouseStones.members[PUIndex].stoneColor
-			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType = mouseStones.members[PUIndex].stoneType
-			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder = mouseStones.members[PUIndex].stackOrder
-
-			--grid[movementOriginRow][movementOriginColumn].occupied = true
+		elseif love.keyboard.wasPressed('up') and mouseStones.occupants < stonesPickedUp then --PICKUP STONE IN ORIGIN LOCKED SPACE
+			sounds['stone']:play()
+			bottomStoneIndex = bottomStoneIndex - 1
+			--mouseStones.occupants = mouseStones.occupants + 1	
+			---[[
+			--COPY MO STONE INTO MOUSESTONE AT APPROPRIATE INDEX
+			mouseStones.members[lowestMSStackOrder - 1].stoneColor = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor 
+			mouseStones.members[lowestMSStackOrder - 1].stoneType = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType
+			mouseStones.members[lowestMSStackOrder - 1].stackOrder = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder
+			--NIL THE TOPMOST STONE IN OUR MO GRID
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor = nil
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType = nil
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder = nil
 			
+			--UPDATE OCCUPANTS
+			lowestMSStackOrder = lowestMSStackOrder + 1
 			mouseStones.occupants = mouseStones.occupants + 1
 			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants - 1
 			--use occupants as top stone index?
+			--]]
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
 			firstMovementStonesDropped = true
 		end
 	end
 --]]
+
+	for i = 10, 1, -1 do
+		if mouseStones.members[i].stackOrder ~= nil then
+			lowestMSStackOrder = mouseStones.members[i].stackOrder
+		end
+	end
 
 ---[[MOVE 1 LEGAL HIGHLIGHTS
 	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
@@ -538,9 +548,9 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.column: ' .. tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 520)
-	love.graphics.print('firstStonesDrop: ' .. tostring(firstMovementStonesDropped), VIRTUAL_WIDTH - 490, 570)
-	love.graphics.print('PUIndex: ' .. tostring(PUIndex), VIRTUAL_WIDTH - 490, 620)
+	love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 520)
+	love.graphics.print('botStInd: ' .. tostring(bottomStoneIndex), VIRTUAL_WIDTH - 490, 570)
+	love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
 
 
 	--STONE COUNT
