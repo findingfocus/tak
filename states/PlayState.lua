@@ -62,10 +62,15 @@ function resetBoard()
 	grid[1][1].members[2].stackOrder = 2
 
 	grid[1][1].members[3].stoneColor = 'WHITE'
-	grid[1][1].members[3].stoneType = 'SS'
+	grid[1][1].members[3].stoneType = 'LS'
 	grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[3].stackOrder = 3
-	grid[1][1].occupants = 3
+
+	grid[1][1].members[4].stoneColor = 'BLACK'
+	grid[1][1].members[4].stoneType = 'SS'
+	grid[1][1].stackControl = 'BLACK'
+	grid[1][1].members[4].stackOrder = 4
+	grid[1][1].occupants = 4
 	--]]
 
 end
@@ -348,7 +353,7 @@ function PlayState:update(dt)
 ---[[FIRST STONES DROPPED
 	if moveType == 'move' and movementOriginLocked and not firstMovementLocked then --FIRST STONES DROP
 		--do some checking so we cannot drop or pickup more than we started with
-		if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then --DROP STONE IN ORIGIN LOCKED SPACE
+		if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN ORIGIN LOCKED SPACE
 			sounds['stone']:play()
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[bottomStoneIndex].stoneColor
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneType = mouseStones.members[bottomStoneIndex].stoneType
@@ -361,7 +366,8 @@ function PlayState:update(dt)
 			mouseStones.members[bottomStoneIndex].stoneType = nil
 			mouseStones.members[bottomStoneIndex].stackOrder = nil
 
-			if bottomStoneIndex == grid[movementOriginRow][movementOriginColumn].occupants then
+		
+			if bottomStoneIndex <= stonesPickedUp then
 				bottomStoneIndex = bottomStoneIndex + 1
 			end
 
@@ -450,7 +456,10 @@ function PlayState:update(dt)
 ---[[FALSIFYING LEGAL MOVES
 	for i = 1, 5 do
 		for j = 1, 5 do
-			if grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then
+			if movementOriginLocked and not firstMovementStonesDropped then --FLUSHES ALL LEGAL MOVES IF MOVEMENT ORIGIN LOCKED
+				grid[i][j].legalMove = false
+			end
+			if movementOriginLocked and grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
 				grid[i][j].legalMove = false
 			end
 		end
@@ -547,7 +556,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
-	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.row: ' .. tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 470)
+	--love.graphics.print('members[3].SO: ' .. tostring(mouseStones.members[3].stackOrder), VIRTUAL_WIDTH - 490, 470)
 	love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 520)
 	love.graphics.print('botStInd: ' .. tostring(bottomStoneIndex), VIRTUAL_WIDTH - 490, 570)
 	love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
