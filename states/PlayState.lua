@@ -20,7 +20,6 @@ function resetBoard()
 	movementOriginLocked = false
 	movementOriginRow = 0
 	movementOriginColumn = 0
-	noMovementLocked = true
 	firstMovementStonesDropped = false
 	droppedInMovementOrigin = 0
 	lowestMSStackOrder = 1
@@ -32,7 +31,6 @@ function resetBoard()
 	debugY = 220
 	debugYIncrement = 30
 	PUIndex = 0
-	stonesInitiallyPickedUp = 0
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -281,42 +279,6 @@ function PlayState:update(dt)
 	end
 --]]
 
----[[LEGAL MOVES + PLACEMENT HIGHLIGHTS
-	for i = 1, 5 do
-		for j = 1, 5 do
-			if moveType == 'place' then
-				if mouseXGrid == j and mouseYGrid == i then --MODIFIES OCCUPANT.SELECTIONHIGHLIGHT THAT IS UNDER MOUSE LOCATION
-					grid[i][j].selectionHighlight = true
-				else
-					grid[i][j].selectionHighlight = false
-				end
-			elseif moveType == 'move' then
-				if player == 1 then
-					if mouseXGrid == j and mouseYGrid == i and noMovementLocked then
-						if grid[i][j].stackControl == 'WHITE' then
-							grid[i][j].legalMove = true
-						end
-					else
-						grid[i][j].legalMoveHighlight = false
-					end
-				elseif player == 2 then
-					if mouseXGrid == j and mouseYGrid == i  and noMovementLocked then
-						if grid[i][j].stackControl == 'BLACK' then
-							grid[i][j].legalMove = true
-						end
-					else
-						grid[i][j].legalMoveHighlight = false
-					end
-				end
-
-				if firstMovementStonesDropped then
-					grid[movementOriginRow][movementOriginColumn].legalMove = false
-				end
-			end
-		end
-	end
---]]
-
 ---[[CLICK DETECTION
 	function love.mousepressed(x, y, button)
 		if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then --ENSURES WE CLICKED WITHIN GRID
@@ -368,7 +330,6 @@ function PlayState:update(dt)
 
 			elseif moveType == 'move' then
 				if grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants < 6 and not movementOriginLocked then
-					stonesInitiallyPickedUp = grid[mouseYGrid][mouseXGrid].occupants
 					movementOriginRow = mouseYGrid
 					movementOriginColumn = mouseXGrid
 					--MOVE ALL 5 occupants to mouse positions
@@ -383,7 +344,6 @@ function PlayState:update(dt)
 					end 
 
 					grid[mouseYGrid][mouseXGrid].occupied = false
-					noMovementLocked = false
 					movementOriginLocked = true
 					grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
 					moveLockedRow = mouseYGrid
@@ -392,7 +352,6 @@ function PlayState:update(dt)
 					grid[mouseYGrid][mouseXGrid].occupants = 0
 
 				elseif grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants > 5 and not movementOriginLocked then
-					stonesInitiallyPickedUp = 5
 					lowestMSStackOrder = grid[mouseYGrid][mouseXGrid].occupants - 4
 					movementOriginRow = mouseYGrid
 					movementOriginColumn = mouseXGrid
@@ -406,7 +365,6 @@ function PlayState:update(dt)
 						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
 					end
-					--noMovementLocked = false --WHY DOES THIS BREAK RENDERING LEGALMOVES???
 					movementOriginLocked = true
 					grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
 					moveLockedRow = mouseYGrid
@@ -535,7 +493,42 @@ function PlayState:update(dt)
 			end
 		end
 	end
---]]
+
+	---[[LEGAL MOVES + PLACEMENT HIGHLIGHTS
+	for i = 1, 5 do
+		for j = 1, 5 do
+			if moveType == 'place' then
+				if mouseXGrid == j and mouseYGrid == i then --MODIFIES OCCUPANT.SELECTIONHIGHLIGHT THAT IS UNDER MOUSE LOCATION
+					grid[i][j].selectionHighlight = true
+				else
+					grid[i][j].selectionHighlight = false
+				end
+			elseif moveType == 'move' then
+				if player == 1 then
+					if mouseXGrid == j and mouseYGrid == i and not movementOriginLocked then
+						if grid[i][j].stackControl == 'WHITE' then
+							grid[i][j].legalMove = true
+						end
+					else
+						grid[i][j].legalMoveHighlight = false
+					end
+				elseif player == 2 then
+					if mouseXGrid == j and mouseYGrid == i  and not movementOriginLocked then
+						if grid[i][j].stackControl == 'BLACK' then
+							grid[i][j].legalMove = true
+						end
+					else
+						grid[i][j].legalMoveHighlight = false
+					end
+				end
+			end
+			if mouseXGrid == j and mouseYGrid == i and grid[i][j].legalMove then --FLUSHES LM HIGHLIGHT IF MOUSE NOT OVER IT
+				grid[i][j].legalMoveHighlight = true
+			else
+				grid[i][j].legalMoveHighlight = false
+			end
+		end
+	end
 end
 
 
