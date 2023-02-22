@@ -47,7 +47,7 @@ function resetBoard()
 		end
 	end
 
----[[10-STACK TESTER
+--[[10-STACK TESTER
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -104,7 +104,7 @@ function resetBoard()
 	grid[1][1].occupants = 10
 --]]
 
---[[3-STACK TESTER
+---[[3-STACK TESTER
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
