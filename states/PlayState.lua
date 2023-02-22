@@ -20,7 +20,8 @@ function resetBoard()
 	movementOriginLocked = false
 	movementOriginRow = 0
 	movementOriginColumn = 0
-	firstMovementStonesDropped = false
+	stonesInHandLocked = false
+	firstMovementGridLocked = false
 	droppedInMovementOrigin = 0
 	lowestMSStackOrder = 1
 	moveType = 'place'
@@ -108,12 +109,12 @@ function resetBoard()
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
-	grid[1][1].stackControl = 'WHITE'
+	--grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[1].stackOrder = 1
 
 	grid[1][1].members[2].stoneColor = 'BLACK'
 	grid[1][1].members[2].stoneType = 'LS'
-	grid[1][1].stackControl = 'BLACK'
+	--grid[1][1].stackControl = 'BLACK'
 	grid[1][1].members[2].stackOrder = 2
 
 	grid[1][1].members[3].stoneColor = 'WHITE'
@@ -123,6 +124,15 @@ function resetBoard()
 
 	grid[1][1].occupants = 3
 --]]
+end
+
+function getStackControl(Occupant)
+	for i = 10, 1, -1 do
+		if Occupant.members[i].stoneColor ~= nil then
+			Occupant.stackControl = Occupant.members[i].stoneColor
+			break
+		end
+	end
 end
 
 function PlayState:update(dt)
@@ -382,7 +392,7 @@ function PlayState:update(dt)
 ---[[FIRST STONES DROPPED
 	if moveType == 'move' and movementOriginLocked then --FIRST STONES DROP
 		--do some checking so we cannot drop or pickup more than we started with
-		if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 and not firstMovementStonesDropped then --DROP STONE IN ORIGIN LOCKED SPACE
+		if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 and not stonesInHandLocked then --DROP STONE IN ORIGIN LOCKED SPACE
 			droppedInMovementOrigin = droppedInMovementOrigin + 1
 			sounds['stone']:play()
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[lowestMSStackOrder].stoneColor
@@ -398,7 +408,7 @@ function PlayState:update(dt)
 
 			lowestMSStackOrder = lowestMSStackOrder + 1
 
-		elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin >= 1 and not firstMovementStonesDropped then --PICKUP STONE IN ORIGIN LOCKED SPACE
+		elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin >= 1 and not stonesInHandLocked then --PICKUP STONE IN ORIGIN LOCKED SPACE
 			sounds['stone']:play()
 			droppedInMovementOrigin = droppedInMovementOrigin - 1
 			lowestMSStackOrder = lowestMSStackOrder - 1
@@ -415,7 +425,8 @@ function PlayState:update(dt)
 			mouseStones.occupants = mouseStones.occupants + 1
 			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants - 1
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
-			firstMovementStonesDropped = true
+			stonesInHandLocked = true
+			getStackControl(grid[movementOriginRow][movementOriginColumn])
 		end
 	end
 --]]
@@ -431,7 +442,7 @@ function PlayState:update(dt)
 
 ---[[MOVE 1 LEGAL HIGHLIGHTS
 	--CHANGE HIGHLIGHT BOOL TO LEGALMOVE BOOL, CONTROL HIGHLIGHT FROM THERE
-	if firstMovementStonesDropped then
+	if stonesInHandLocked then
 		if moveLockedRow == 1 and moveLockedColumn == 1 then --CORNERCASES 
 			grid[1][2].legalMove = true
 			grid[2][1].legalMove = true
@@ -448,7 +459,7 @@ function PlayState:update(dt)
 	end
 
 	--EDGECASES
-	if firstMovementStonesDropped then
+	if stonesInHandLocked then
 		if moveLockedColumn == 1 and moveLockedRow ~= 1 and moveLockedRow ~= 5 then --LEFT EDGE
 			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
 			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
@@ -469,7 +480,7 @@ function PlayState:update(dt)
 	end
 
 	--MIDDLECASES
-	if firstMovementStonesDropped then
+	if stonesInHandLocked then
 		if moveLockedColumn > 1 and moveLockedColumn < 5 and moveLockedRow > 1 and moveLockedRow < 5 then
 			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
 			grid[moveLockedRow + 1][moveLockedColumn].legalMove = true
@@ -482,11 +493,11 @@ function PlayState:update(dt)
 ---[[FALSIFYING LEGAL MOVES
 	for i = 1, 5 do
 		for j = 1, 5 do
-			if movementOriginLocked and not firstMovementStonesDropped then --FLUSHES ALL LEGAL MOVES IF MOVEMENT ORIGIN LOCKED
+			if movementOriginLocked and not stonesInHandLocked then --FLUSHES ALL LEGAL MOVES IF MOVEMENT ORIGIN LOCKED
 				grid[i][j].legalMove = false
 			end
 
-			if movementOriginLocked and firstMovementStonesDropped then
+			if movementOriginLocked and stonesInHandLocked then
 				if grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
 					grid[i][j].legalMove = false
 				end
@@ -620,7 +631,7 @@ function PlayState:render()
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.LM: ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, 420)
-	--love.graphics.print('members[3].SO: ' .. tostring(mouseStones.members[3].stackOrder), VIRTUAL_WIDTH - 490, 470)
+	love.graphics.print('FirstMov: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
 	love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 520)
 	love.graphics.print('LMHighlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
 	love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
