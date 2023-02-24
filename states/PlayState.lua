@@ -135,6 +135,15 @@ function getStackControl(Occupant)
 	end
 end
 
+function getStoneControl(Occupant)
+	for i = 10, 1, -1 do
+		if Occupant.members[i].stoneType ~= nil then
+			Occupant.stoneControl = Occupant.members[i].stoneType
+			break
+		end
+	end
+end
+
 function PlayState:update(dt)
 ---[[MOUSE POSITION VARIABLES
 	mouseMasterX, mouseMasterY = love.mouse.getPosition()
@@ -389,7 +398,7 @@ function PlayState:update(dt)
 	end
 --]]
 
----[[FIRST STONES DROPPED
+---[[STONES IN HAND LOCKED
 	if moveType == 'move' and movementOriginLocked then --FIRST STONES DROP
 		--do some checking so we cannot drop or pickup more than we started with
 		if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 and not stonesInHandLocked then --DROP STONE IN ORIGIN LOCKED SPACE
@@ -427,6 +436,20 @@ function PlayState:update(dt)
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
 			stonesInHandLocked = true
 			getStackControl(grid[movementOriginRow][movementOriginColumn])
+		end
+	end
+
+	if moveType == 'move' and stonesInHandLocked then
+		function love.mousepressed(x, y, button)
+			if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then 
+				if grid[mouseYGrid][mouseXGrid].legalMove and not firstMovementGridLocked then
+					firstMovementGridLocked = true
+					--ADD FALSIFY ALL LEGAL MOVE FUNCTION
+					grid[mouseYGrid][mouseXGrid].legalMoveHighlight = true
+					moveLockedRow = mouseYGrid
+					moveLockedColumn = mouseXGrid
+				end
+			end
 		end
 	end
 --]]
@@ -495,10 +518,9 @@ function PlayState:update(dt)
 		for j = 1, 5 do
 			if movementOriginLocked and not stonesInHandLocked then --FLUSHES ALL LEGAL MOVES IF MOVEMENT ORIGIN LOCKED
 				grid[i][j].legalMove = false
-			end
-
-			if movementOriginLocked and stonesInHandLocked then
-				if grid[i][j].members[1].stoneType == 'CS' or grid[i][j].members[1].stoneType == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
+			elseif stonesInHandLocked then
+				getStoneControl(grid[moveLockedRow][moveLockedColumn])
+				if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
 					grid[i][j].legalMove = false
 				end
 			end
@@ -520,6 +542,7 @@ function PlayState:update(dt)
 						if grid[i][j].stackControl == 'WHITE' then
 							grid[i][j].legalMove = true
 						end
+					--ADD firstmovementgridlocked highlights
 					else
 						grid[i][j].legalMoveHighlight = false
 					end
