@@ -22,6 +22,10 @@ function resetBoard()
 	movementOriginColumn = 0
 	stonesInHandLocked = false
 	firstMovementGridLocked = false
+	downDirection = false
+	upDirection = false
+	leftDirection = false
+	rightDirection = false
 	droppedInMovementOrigin = 0
 	lowestMSStackOrder = 1
 	moveType = 'place'
@@ -140,6 +144,14 @@ function getStoneControl(Occupant)
 		if Occupant.members[i].stoneType ~= nil then
 			Occupant.stoneControl = Occupant.members[i].stoneType
 			break
+		end
+	end
+end
+
+function falsifyAllOccupantsLegalMove()
+	for i = 1, 5 do
+		for j = 1, 5 do
+			grid[i][j].legalMove = false
 		end
 	end
 end
@@ -443,9 +455,20 @@ function PlayState:update(dt)
 		function love.mousepressed(x, y, button)
 			if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then 
 				if grid[mouseYGrid][mouseXGrid].legalMove and not firstMovementGridLocked then
+					stonesInHandLocked = false
 					firstMovementGridLocked = true
-					--ADD FALSIFY ALL LEGAL MOVE FUNCTION
-					grid[mouseYGrid][mouseXGrid].legalMoveHighlight = true
+					grid[mouseYGrid][mouseXGrid].moveLockedHighlight = true
+					falsifyAllOccupantsLegalMove()
+					if mouseYGrid > moveLockedRow then
+						downDirection = true
+					elseif mouseYGrid < moveLockedRow then
+						topDirection = true
+					elseif mouseXGrid > moveLockedColumn then
+						rightDirection = true
+					elseif mouseXGrid < moveLockedColumn then
+						leftDirection = true
+					end
+
 					moveLockedRow = mouseYGrid
 					moveLockedColumn = mouseXGrid
 				end
@@ -479,6 +502,8 @@ function PlayState:update(dt)
 			grid[5][4].legalMove = true
 			grid[4][5].legalMove = true
 		end
+	elseif firstMovementGridLocked then --Maybe actually if firstmovementstonesdropped
+
 	end
 
 	--EDGECASES
@@ -500,6 +525,8 @@ function PlayState:update(dt)
 			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
 			grid[moveLockedRow - 1][moveLockedColumn].legalMove = true
 		end
+	elseif firstMovementGridLocked then
+
 	end
 
 	--MIDDLECASES
@@ -510,6 +537,8 @@ function PlayState:update(dt)
 			grid[moveLockedRow][moveLockedColumn + 1].legalMove = true
 			grid[moveLockedRow][moveLockedColumn - 1].legalMove = true
 		end
+	elseif firstMovementGridLocked then
+
 	end
 --]]
 
@@ -649,7 +678,7 @@ function PlayState:render()
 	end
 
 	--love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
-	--love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneType: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneType), VIRTUAL_WIDTH - 490, 270)
+	love.graphics.print('right: ' ..tostring(rightDirection), VIRTUAL_WIDTH - 490, 270)
 
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.control: ' .. tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, 320)
 	love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, 370)
