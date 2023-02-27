@@ -10,6 +10,7 @@ function Member:init(stoneColor, stoneType, x, y)
 	self.x = x
 	self.y = y
 	self.stackOrder = nil
+	self.originalStackOrder = nil
 end
 
 function Member:update(dt)

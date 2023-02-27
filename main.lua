@@ -11,9 +11,9 @@ function love.load()
 
 	love.window.setTitle('Tak: A Beautiful Game')
 
-	pixelFont = love.graphics.newFont('fonts/Pixel.ttf', 160)
-	smallPixelFont = love.graphics.newFont('fonts/Pixel.ttf', 40)
-	love.graphics.setFont(pixelFont)
+	titleFont = love.graphics.newFont('fonts/spqr.ttf', 140)
+	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
+	love.graphics.setFont(titleFont)
 
 	sounds = {
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
@@ -81,7 +81,7 @@ function love.keyboard.wasPressed(key)
 end
 
 function displayFPS()
-	love.graphics.setFont(smallPixelFont)
+	love.graphics.setFont(smallFont)
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 6)
 end
@@ -104,7 +104,7 @@ function love.draw()
 	--displayFPS()
 
 	if helpState == 1 then
-		love.graphics.setFont(smallPixelFont)
+		love.graphics.setFont(smallFont)
 		love.graphics.setColor(50/255, 0/255, 200/255, 180/255)
 		love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)

@@ -35,10 +35,7 @@ function resetBoard()
 	moveLockedColumn = 0
 	mouseStones = Occupant()
 	mouseStones.members = {}
-	debugY = 220
-	debugYIncrement = 30
 	PUIndex = 0
-	DMO = false
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -55,7 +52,7 @@ function resetBoard()
 		end
 	end
 
---[[10-STACK TESTER
+---[[10-STACK TESTER
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -101,18 +98,16 @@ function resetBoard()
 	grid[1][1].members[9].stoneType = 'LS'
 	grid[1][1].stackControl = 'WHITE'
 	grid[1][1].members[9].stackOrder = 9
-
+--[[
 	grid[1][1].members[10].stoneColor = 'BLACK'
 	grid[1][1].members[10].stoneType = 'LS'
 	grid[1][1].stackControl = 'BLACK'
 	grid[1][1].members[10].stackOrder =10
 
-
-
 	grid[1][1].occupants = 10
 --]]
 
----[[3-STACK TESTER
+--[[3-STACK TESTER
 	grid[1][1].members[1].stoneColor = 'WHITE'
 	grid[1][1].members[1].stoneType = 'LS'
 	grid[1][1].occupied = true
@@ -130,10 +125,12 @@ function resetBoard()
 	grid[1][1].members[3].stackOrder = 3
 
 	grid[1][1].occupants = 3
+
+	updateStoneControl(grid[1][1])
 --]]
 end
 
-function getStackControl(Occupant)
+function updateStackControl(Occupant)
 	for i = 10, 1, -1 do
 		if Occupant.members[i].stoneColor ~= nil then
 			Occupant.stackControl = Occupant.members[i].stoneColor
@@ -142,7 +139,7 @@ function getStackControl(Occupant)
 	end
 end
 
-function getStoneControl(Occupant)
+function updateStoneControl(Occupant)
 	for i = 10, 1, -1 do
 		if Occupant.members[i].stoneType ~= nil then
 			Occupant.stoneControl = Occupant.members[i].stoneType
@@ -158,6 +155,33 @@ function falsifyAllOccupantsLegalMove()
 		end
 	end
 end
+
+function playerSwapGridReset()
+	player = player == 1 and 2 or 1
+	falsifyAllOccupantsLegalMove()
+	for i = 1, 5 do
+		for j = 1, 5 do
+			grid[i][j].moveLockedHighlight = false
+		end
+	end
+
+	lowestMSStackOrder = 1
+	moveLockedRow = 0
+	moveLockedColumn = 0
+	movementOriginLocked = false
+	movementOriginRow = 0
+	movementOriginColumn = 0
+	droppedInMovementOrigin = 0
+	stonesInHandLocked = false
+	firstMovementGridLocked = false
+	droppedInFirstMovement = 0
+	firstMovementStonesDropped = false
+	downDirection = false
+	upDirection = false
+	leftDirection = false
+	rightDirection = false
+end
+
 
 function PlayState:update(dt)
 ---[[MOUSE POSITION VARIABLES
@@ -360,9 +384,10 @@ function PlayState:update(dt)
 					--SWAPS PLAYER AFTER SELECTION
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
+					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 				end
 
-			elseif moveType == 'move' then
+			elseif moveType == 'move' then --PICKING UP STONES FROM MOVEMENT ORIGIN
 				if grid[mouseYGrid][mouseXGrid].legalMove and grid[mouseYGrid][mouseXGrid].occupants < 6 and not movementOriginLocked then
 					movementOriginRow = mouseYGrid
 					movementOriginColumn = mouseXGrid
@@ -372,9 +397,11 @@ function PlayState:update(dt)
 						mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
 						mouseStones.members[i].stoneType = grid[mouseYGrid][mouseXGrid].members[i].stoneType
 						mouseStones.members[i].stackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
+						mouseStones.members[i].originalStackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
 						grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
+
 					end 
 
 					grid[mouseYGrid][mouseXGrid].occupied = false
@@ -395,6 +422,7 @@ function PlayState:update(dt)
 						mouseStones.members[i].stoneColor = grid[mouseYGrid][mouseXGrid].members[i].stoneColor
 						mouseStones.members[i].stoneType = grid[mouseYGrid][mouseXGrid].members[i].stoneType
 						mouseStones.members[i].stackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
+						mouseStones.members[i].originalStackOrder = grid[mouseYGrid][mouseXGrid].members[i].stackOrder
 						grid[mouseYGrid][mouseXGrid].members[i].stoneColor = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stoneType = nil
 						grid[mouseYGrid][mouseXGrid].members[i].stackOrder = nil
@@ -418,11 +446,11 @@ function PlayState:update(dt)
 		--do some checking so we cannot drop or pickup more than we started with
 		if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 and not stonesInHandLocked then --DROP STONE IN ORIGIN LOCKED SPACE
 			droppedInMovementOrigin = droppedInMovementOrigin + 1
-			DMO = DMO == false and true or false
 			sounds['stone']:play()
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneColor = mouseStones.members[lowestMSStackOrder].stoneColor
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stoneType = mouseStones.members[lowestMSStackOrder].stoneType
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].stackOrder = mouseStones.members[lowestMSStackOrder].stackOrder
+			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants + 1].originalStackOrder = mouseStones.members[lowestMSStackOrder].originalStackOrder
 			mouseStones.occupants = mouseStones.occupants - 1 --MAKE NEW VARIABLE TO HOLD MOUSE STONE MEMBER NUMBER
 			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants + 1
 
@@ -435,13 +463,13 @@ function PlayState:update(dt)
 
 		elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin >= 1 and not stonesInHandLocked then --PICKUP STONE IN ORIGIN LOCKED SPACE
 			sounds['stone']:play()
-			DMO = DMO == false and true or false
 			droppedInMovementOrigin = droppedInMovementOrigin - 1
 			lowestMSStackOrder = lowestMSStackOrder - 1
 			--COPY MOVEMENTORIGIN STONE INTO MOUSESTONE AT APPROPRIATE INDEX
 			mouseStones.members[lowestMSStackOrder].stoneColor = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor 
 			mouseStones.members[lowestMSStackOrder].stoneType = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType
 			mouseStones.members[lowestMSStackOrder].stackOrder = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stackOrder
+			mouseStones.members[lowestMSStackOrder].originalStackOrder = grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].originalStackOrder
 			--NIL THE TOPMOST STONE IN OUR MO GRID
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneColor = nil
 			grid[movementOriginRow][movementOriginColumn].members[grid[movementOriginRow][movementOriginColumn].occupants].stoneType = nil
@@ -452,7 +480,8 @@ function PlayState:update(dt)
 			grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants - 1
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
 			stonesInHandLocked = true
-			getStackControl(grid[movementOriginRow][movementOriginColumn])
+			updateStackControl(grid[movementOriginRow][movementOriginColumn])
+			updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 		end
 	end
 
@@ -490,7 +519,8 @@ function PlayState:update(dt)
 			sounds['stone']:play()
 			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants + 1].stoneColor = mouseStones.members[lowestMSStackOrder].stoneColor
 			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants + 1].stoneType = mouseStones.members[lowestMSStackOrder].stoneType
-			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants + 1].stackOrder = mouseStones.members[lowestMSStackOrder].stackOrder
+			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants + 1].stackOrder = grid[moveLockedRow][moveLockedColumn].occupants + 1
+			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants + 1].originalStackOrder = mouseStones.members[lowestMSStackOrder].originalStackOrder
 			mouseStones.occupants = mouseStones.occupants - 1 --MAKE NEW VARIABLE TO HOLD MOUSE STONE MEMBER NUMBER
 			grid[moveLockedRow][moveLockedColumn].occupants = grid[moveLockedRow][moveLockedColumn].occupants + 1
 
@@ -508,7 +538,8 @@ function PlayState:update(dt)
 			--COPY MOVEMENTORIGIN STONE INTO MOUSESTONE AT APPROPRIATE INDEX
 			mouseStones.members[lowestMSStackOrder].stoneColor = grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].stoneColor 
 			mouseStones.members[lowestMSStackOrder].stoneType = grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].stoneType
-			mouseStones.members[lowestMSStackOrder].stackOrder = grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].stackOrder
+			mouseStones.members[lowestMSStackOrder].stackOrder = grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].originalStackOrder
+			mouseStones.members[lowestMSStackOrder].originalStackOrder = grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].originalStackOrder
 			--NIL THE TOPMOST STONE IN OUR MO GRID
 			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].stoneColor = nil
 			grid[moveLockedRow][moveLockedColumn].members[grid[moveLockedRow][moveLockedColumn].occupants].stoneType = nil
@@ -519,7 +550,12 @@ function PlayState:update(dt)
 			grid[moveLockedRow][moveLockedColumn].occupants = grid[moveLockedRow][moveLockedColumn].occupants - 1
 		elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') and droppedInFirstMovement >= 1 then
 			firstMovementStonesDropped = true
-			getStackControl(grid[moveLockedRow][moveLockedColumn])
+			updateStackControl(grid[moveLockedRow][moveLockedColumn])
+			updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+			if mouseStones.occupants == 0 then --DROPPED ALL STONES
+				moveType = 'place'
+				playerSwapGridReset()
+			end
 		end
 	
 	end
@@ -596,7 +632,6 @@ function PlayState:update(dt)
 			if movementOriginLocked and not stonesInHandLocked then --FLUSHES ALL LEGAL MOVES IF MOVEMENT ORIGIN LOCKED
 				grid[i][j].legalMove = false
 			elseif stonesInHandLocked then
-				getStoneControl(grid[moveLockedRow][moveLockedColumn])
 				if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
 					grid[i][j].legalMove = false
 				end
@@ -711,18 +746,18 @@ function PlayState:render()
 
 ---[[TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	love.graphics.setFont(pixelFont)
+	love.graphics.setFont(titleFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
 --]]
 
 	--DEBUG INF0
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
-	love.graphics.setFont(smallPixelFont)
+	love.graphics.setFont(smallFont)
 	--love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
 	if moveType == 'place' then
-		love.graphics.print('moveType: place', VIRTUAL_WIDTH - 400, 180)
+		love.graphics.print('moveType: place', VIRTUAL_WIDTH - 380, 180)
 	elseif moveType == 'move' then
-		love.graphics.print('moveType: move', VIRTUAL_WIDTH - 400, 180)
+		love.graphics.print('moveType: move', VIRTUAL_WIDTH - 380, 180)
 	end
 --[[
 	--love.graphics.print('[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. tostring(']') .. '.stoneColor: ' .. tostring(grid[mouseYGrid][mouseXGrid].members[1].stoneColor), VIRTUAL_WIDTH - 490, 220)
@@ -737,11 +772,13 @@ function PlayState:render()
 	love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
 --]]
 	
-	love.graphics.print('droppedInFM: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, 220)
-	love.graphics.print('MLRow: ' ..tostring(moveLockedRow), VIRTUAL_WIDTH - 490, 270)
-	love.graphics.print('MLColumn: ' ..tostring(moveLockedColumn), VIRTUAL_WIDTH - 490, 320)
-	love.graphics.print('DMO: ' ..tostring(DMO), VIRTUAL_WIDTH - 490, 370)
-	love.graphics.print('LMSStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 420)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
+	love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
+	love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+	love.graphics.print('stackControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
+	love.graphics.print('stoneControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
+	love.graphics.print('mouseStoneOccupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
+	--love.graphics.print('StoneControl: ' .. tostring(grid[mouseYGrid][mouseXGrid].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
+
 	--love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 520)
 	--love.graphics.print('LMHighlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
 	--love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
