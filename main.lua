@@ -49,6 +49,7 @@ function love.load()
 
 	yTextOffset = 750
 	lineOffset = 100
+	musicPlayed = false
 end
 
 function love.resize(w, h)
@@ -93,7 +94,10 @@ function love.update(dt)
 	love.keyboard.keysPressed = {} 
 
 	--sounds[tostring(randomSongIndex)]:setLooping(true)
-	--sounds[tostring(randomSongIndex)]:play()
+	if not musicPlayed then
+		--sounds[tostring(randomSongIndex)]:play()
+		--musicPlayed = true
+	end
 end
 
 function love.draw()
