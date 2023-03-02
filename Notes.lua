@@ -33,3 +33,110 @@ RESETS
 		rightDirection = false
 		droppedInFirstMovement = 0
 		firstMovementStonesDropped = false
+
+
+
+MOVE REHAUL
+
+CLICKDETECTION
+	mEvent = 1 noMoveLocked --SELECT LEGAL MOVE HIGHLIGHT
+		--LEGALMOVE HIGHLIGHT == TRUE UPON MOUSEOVER
+
+	mEvent = 2 movementOriginLocked --DECIDE HOW MANY STONES IN HAND
+	mEvent = 3 stonesInHandLocked --SELECT LEGALMOVE DIRECTION
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+
+IF UP DETECTION
+	mEvent = 1 noMoveLocked --SELECT LEGAL MOVE HIGHLIGHT
+		--LEGALMOVE HIGHLIGHT == TRUE UPON MOUSEOVER
+
+	mEvent = 2 movementOriginLocked --DECIDE HOW MANY STONES IN HAND
+	mEvent = 3 stonesInHandLocked --SELECT LEGALMOVE DIRECTION
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+
+IF DOWN DETECTION
+	mEvent = 1 noMoveLocked --SELECT LEGAL MOVE HIGHLIGHT
+		--LEGALMOVE HIGHLIGHT == TRUE UPON MOUSEOVER
+
+	mEvent = 2 movementOriginLocked --DECIDE HOW MANY STONES IN HAND
+	mEvent = 3 stonesInHandLocked --SELECT LEGALMOVE DIRECTION
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+
+IF ENTER DETECTION
+	mEvent = 1 noMoveLocked --SELECT LEGAL MOVE HIGHLIGHT
+		--LEGALMOVE HIGHLIGHT == TRUE UPON MOUSEOVER
+
+	mEvent = 2 movementOriginLocked --DECIDE HOW MANY STONES IN HAND
+	mEvent = 3 stonesInHandLocked --SELECT LEGALMOVE DIRECTION
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+
+
+
+
+
+
+	mEvent = 1 noMoveLocked --SELECT LEGAL MOVE HIGHLIGHT
+		--SET LEGAL MOVES UPON STACKCONTROL
+		--RENDER LEGALMOVEHIGHLIGHTS UPON MOUSEOVER
+		if Clicked AND LEGALMOVE
+			--PLACE TOP FIVE STONES IN HAND
+			movementOriginRow
+			movementOriginColumn
+			mEvent = 2
+	mEvent = 2 movementOriginLocked --DECIDE HOW MANY STONES IN HAND
+		if Down
+			--DROP
+		if Up 
+			--PICKUP
+		if enter
+			stonesInHandLocked --SELECT LEGALMOVE DIRECTION
+			updateStackControl:movementOriginGrid
+			updateStoneControl:movementOriginGrid
+			mEvent = 3 
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+		--SET LEGALMOVES OTHOGANAL SPACE --AND NOT CS,SS, or end of grid
+		if Down
+			--DROP
+		if Up
+			--Pickup
+		if enter
+			updateStackControl:FirstMovementGrid
+			updateStoneControl:FirstMovementGrid
+			mEvent = 5
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+		if Down
+			--DROP
+		if Up
+			--Pickup
+		if enter
+			updateStackControl:SecondMovementGrid
+			updateStoneControl:SecondMovementGrid
+			mEvent = 6
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+		if Down
+			--DROPOFF
+		if Up
+			--PICKUP
+		if enter
+			updateStackControl:ThirdMovementGrid
+			updateStoneControl:ThirdMovementGrid
+			mEvent = 7
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+		if Down
+			--DROP
+		if enter and mouseOccupants == 0
+			resetVariables
+			swapPlayer()
+
