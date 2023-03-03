@@ -1,17 +1,4 @@
-push = require '/dependencies/push'
-
-Class = require 'dependencies/class'
-
-require '/dependencies/StateMachine'
-require '/dependencies/BaseState'
-require '/dependencies/Constants'
-
-require '/states/TitleScreenState'
-require '/states/PlayState'
-
-require '/src/Board'
-require '/src/Occupant'
-require '/src/Member'
+require 'dependencies'
 
 function love.load()
 	math.randomseed(os.time())
@@ -24,22 +11,22 @@ function love.load()
 
 	love.window.setTitle('Tak: A Beautiful Game')
 
-	pixelFont = love.graphics.newFont('fonts/Pixel.ttf', 160)
-	smallPixelFont = love.graphics.newFont('fonts/Pixel.ttf', 40)
-	love.graphics.setFont(pixelFont)
+	titleFont = love.graphics.newFont('fonts/spqr.ttf', 140)
+	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
+	love.graphics.setFont(titleFont)
 
 	sounds = {
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
 		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
-		['1'] = love.audio.newSource('music/1.mp3', 'static'),
-		['2'] = love.audio.newSource('music/2.mp3', 'static'),
-		['3'] = love.audio.newSource('music/3.mp3', 'static'),
-		['4'] = love.audio.newSource('music/4.mp3', 'static'),
-		['5'] = love.audio.newSource('music/5.mp3', 'static'),
-		['6'] = love.audio.newSource('music/6.mp3', 'static'),
+		--['1'] = love.audio.newSource('music/1.mp3', 'static'),
+		--['2'] = love.audio.newSource('music/2.mp3', 'static'),
+		--['3'] = love.audio.newSource('music/3.mp3', 'static'),
+		--['4'] = love.audio.newSource('music/4.mp3', 'static'),
+		--['5'] = love.audio.newSource('music/5.mp3', 'static'),
+		--['6'] = love.audio.newSource('music/6.mp3', 'static'),
 		--['7'] = love.audio.newSource('music/7.mp3', 'static'),
-		--['8'] = love.audio.newSource('music/8.mp3', 'static'),
+		['8'] = love.audio.newSource('music/8.mp3', 'static'),
 		--['9'] = love.audio.newSource('music/9.mp3', 'static'),
 		--['10'] = love.audio.newSource('music/10.mp3', 'static'),
 		--['11'] = love.audio.newSource('music/11.mp3', 'static')
@@ -62,6 +49,7 @@ function love.load()
 
 	yTextOffset = 750
 	lineOffset = 100
+	musicPlayed = false
 end
 
 function love.resize(w, h)
@@ -94,23 +82,23 @@ function love.keyboard.wasPressed(key)
 end
 
 function displayFPS()
-	love.graphics.setFont(smallPixelFont)
+	love.graphics.setFont(smallFont)
 	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 	love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 6)
 end
 
 
 function love.update(dt)
-
 	gStateMachine:update(dt)
 
 	love.keyboard.keysPressed = {} 
 
-	sounds[tostring(randomSongIndex)]:setLooping(true)
-	sounds[tostring(randomSongIndex)]:play()
+	--sounds[tostring(randomSongIndex)]:setLooping(true)
+	if not musicPlayed then
+		--sounds['8']:play()
+		musicPlayed = true
+	end
 end
-
-
 
 function love.draw()
 	push:start()
@@ -120,7 +108,7 @@ function love.draw()
 	--displayFPS()
 
 	if helpState == 1 then
-		love.graphics.setFont(smallPixelFont)
+		love.graphics.setFont(smallFont)
 		love.graphics.setColor(50/255, 0/255, 200/255, 180/255)
 		love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)

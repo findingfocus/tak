@@ -9,7 +9,8 @@ function Member:init(stoneColor, stoneType, x, y)
 	self.stoneType = stoneType
 	self.x = x
 	self.y = y
-	self.control = 'unassigned' --proabbly turn off once control is in Occupant class
+	self.stackOrder = nil
+	self.originalStackOrder = nil
 end
 
 function Member:update(dt)
@@ -19,21 +20,23 @@ end
 function Member:render()
 	if self.stoneColor == 'WHITE' then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		if self.stoneType == 'LS' then
-			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
-		elseif self.stoneType == 'SS' then
-			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + 50, 120, 44)
-		elseif self.stoneType == 'CS' then
-			love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
-		end
 	elseif self.stoneColor == 'BLACK' then
 		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
-		if self.stoneType == 'LS' then
-			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + OUTLINE, 120, 120)
-		elseif self.stoneType == 'SS' then
-			love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE, self.y + Y_OFFSET + 50, 120, 44)
-		elseif self.stoneType == 'CS' then
-			love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, 50)
-		end
+	end
+
+	if self.stoneType == 'LS' then
+		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), STONE_WIDTH - ((self.stackOrder - 1) * SHRINK), STONE_WIDTH - ((self.stackOrder - 1) * SHRINK))
+	elseif self.stoneType == 'SS' then
+		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + 60 - (SS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 2.5) / 2, STONE_WIDTH - ((self.stackOrder - 1) * SHRINK), SS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 2.5)
+	elseif self.stoneType == 'CS' then
+		love.graphics.circle('fill', self.x + X_OFFSET + 72, self.y + Y_OFFSET + 72, CS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 3)
+	end
+
+	if self.stoneColor == 'WHITE' and self.stackOrder ~= nil then
+		love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+		--love.graphics.print(tostring(self.stackOrder), self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2))
+	elseif self.stoneColor == 'BLACK' and self.stackOrder ~= nil then
+		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+		--love.graphics.print(tostring(self.stackOrder), self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2))
 	end
 end
