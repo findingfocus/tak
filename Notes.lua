@@ -105,7 +105,12 @@ IF ENTER DETECTION
 			updateStackControl:movementOriginGrid
 			updateStoneControl:movementOriginGrid
 			mEvent = 3 
-	mEvent = 3 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
+	mEvent = 3 firstMovementGridLocked
+		LM for all orthognal
+		if Clicked
+			lock in FMGrid
+
+	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE IN FM GRID --FIRSTDARKGREEN BOX
 		--SET LEGALMOVES OTHOGANAL SPACE --AND NOT CS,SS, or end of grid
 		if Down
 			--DROP
@@ -114,8 +119,8 @@ IF ENTER DETECTION
 		if enter
 			updateStackControl:FirstMovementGrid
 			updateStoneControl:FirstMovementGrid
-			mEvent = 4
-	mEvent = 4 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
+			mEvent = 5
+	mEvent = 5 secondMovementLocked --DROP AT LEAST ONE STONE --SECONDDARKGREEN BOX
 		if Down
 			--DROP
 		if Up
@@ -123,8 +128,8 @@ IF ENTER DETECTION
 		if enter
 			updateStackControl:SecondMovementGrid
 			updateStoneControl:SecondMovementGrid
-			mEvent = 5
-	mEvent = 5 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
+			mEvent = 6
+	mEvent = 6 thirdMovementLocked --DROP AT LEAST ONE STONE --THIRDDARKGREEN BOX
 		if Down
 			--DROPOFF
 		if Up
@@ -132,8 +137,8 @@ IF ENTER DETECTION
 		if enter
 			updateStackControl:ThirdMovementGrid
 			updateStoneControl:ThirdMovementGrid
-			mEvent = 6
-	mEvent = 6 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
+			mEvent = 7
+	mEvent = 7 fourthMovementLocked --DROP ALL STONES HERE, PRESS ENTER
 		if Down
 			--DROP
 		if enter and mouseOccupants == 0

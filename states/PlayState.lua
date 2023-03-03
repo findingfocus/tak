@@ -447,7 +447,7 @@ function PlayState:update(dt)
 			function love.mousepressed(x, y, button)
 				if button == 1 then
 					if grid[mouseYGrid][mouseXGrid].legalMove then
-						grid[mouseYGrid][mouseXGrid].legalMove = false
+						--grid[mouseYGrid][mouseXGrid].legalMove = false
 						movementOriginRow = mouseXGrid
 						movementOriginColumn = mouseYGrid
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
@@ -471,7 +471,8 @@ function PlayState:update(dt)
 
 						updateStoneControl(grid[mouseYGrid][mouseXGrid])
 						updateStackControl(grid[mouseYGrid][mouseXGrid])
-						falsifyAllOccupantsLegalMove()
+
+						falsifyAllOccupantsLegalMove() --FALSIFY ALL LEGAL MOVES ONCE MOVEMENTORIGIN LOCKED
 
 						for i = 1, 10 do
 							if mouseStones.members[i].stackOrder ~= nil then
@@ -522,21 +523,83 @@ function PlayState:update(dt)
 				lowestMSStackOrder = lowestMSStackOrder - 1
 
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-				if droppedInMovementOrigin >= 1 then
-					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
-					updateStackControl(grid[movementOriginRow][movementOriginColumn])
-					movementEvent = 3
+				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+				updateStackControl(grid[movementOriginRow][movementOriginColumn])
+				movementEvent = 3
+			end
+
+		elseif movementEvent == 3 then --SELECT FM GRID
+		
+			if movementOriginRow == 1 and movementOriginColumn == 1 then --CORNERCASES 
+				grid[1][2].legalMove = true
+				grid[2][1].legalMove = true
+			elseif movementOriginRow == 1 and movementOriginColumn == 5 then
+				grid[1][4].legalMove = true
+				grid[2][5].legalMove = true
+			elseif movementOriginRow == 5 and movementOriginColumn == 1 then
+				grid[4][1].legalMove = true
+				grid[5][2].legalMove = true
+			elseif movementOriginRow == 5 and movementOriginColumn == 5 then
+				grid[5][4].legalMove = true
+				grid[4][5].legalMove = true
+			end
+
+			--EDGECASES
+			if movementOriginRow == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
+				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+			elseif movementOriginColumn == 5 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --RIGHT EDGE
+				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+			elseif movementOriginRow == 1 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --TOP EDGE
+				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+			elseif movementOriginRow == 5 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --BOTTOM EDGE
+				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+			end
+
+
+			--MIDDLECASES
+			if movementOriginColumn > 1 and movementOriginColumn < 5 and movementOriginRow > 1 and movementOriginRow < 5 then
+				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+			end
+
+
+			--FALSIFYING LEGAL MOVES
+			for i = 1, 5 do
+				for j = 1, 5 do
+					if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
+						--grid[i][j].legalMove = false
+					end
 				end
 			end
-		end
+		end --REMOVE THIS FOR MOVEMENT EVENT 4
 
-		elseif movementEvent == 3 then
 
-		elseif movementEvent == 4 then
+		--elseif movementEvent == 4 then
 
-		elseif movementEvent == 5 then
+			--[[	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE IN FM GRID --FIRSTDARKGREEN BOX
+		--SET LEGALMOVES OTHOGANAL SPACE --AND NOT CS,SS, or end of grid
+		if Down
+			--DROP
+		if Up
+			--Pickup
+		if enter
+			updateStackControl:FirstMovementGrid
+			updateStoneControl:FirstMovementGrid
+			mEvent = 4]]
 
-		elseif movementEvent == 6 then
+		--elseif movementEvent == 5 then
+
+		--elseif movementEvent == 6 then
 	end
 	--]]
 
