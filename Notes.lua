@@ -100,11 +100,12 @@ IF ENTER DETECTION
 			--DROP
 		if Up 
 			--PICKUP
-		if enter
+		if enter --HAVE TO HAVE DROPPED 1
 			stonesInHandLocked --SELECT LEGALMOVE DIRECTION
 			updateStackControl:movementOriginGrid
 			updateStoneControl:movementOriginGrid
 			mEvent = 3 
+			SWAP TURNS IF MO == 0
 	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE --FIRSTDARKGREEN BOX
 		--SET LEGALMOVES OTHOGANAL SPACE --AND NOT CS,SS, or end of grid
 		if Down

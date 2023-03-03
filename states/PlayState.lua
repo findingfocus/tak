@@ -29,6 +29,7 @@ function resetBoard()
 	upDirection = false
 	leftDirection = false
 	rightDirection = false
+	occupantIndex = nil
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
@@ -107,7 +108,7 @@ function resetBoard()
 	grid[3][3].stackControl = 'WHITE'
 	grid[3][3].stoneControl = 'LS'
 	grid[3][3].members[9].stackOrder = 9
-	grid[3][3].occupants = 9
+	--grid[3][3].occupants = 9
 
 
 
@@ -188,6 +189,7 @@ function playerSwapGridReset()
 	droppedInMovementOrigin = 0
 	stonesInHandLocked = false
 	firstMovementGridLocked = false
+	occupantIndex = nil
 	droppedInFirstMovement = 0
 	stonesToCopy = 0
 	firstMovementStonesDropped = false
@@ -442,36 +444,85 @@ function PlayState:update(dt)
 						grid[mouseYGrid][mouseXGrid].legalMove = false
 						movementOriginRow = mouseXGrid
 						movementOriginColumn = mouseYGrid
+						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
+							stonesToCopy = 5
+						else
+							stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
+						end
+
+						for i = 1, stonesToCopy do --COPY OVER <5 STONES
+							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor
+							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType
+							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder
+
+							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = nil
+							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = nil
+							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = nil
+
+							mouseStones.occupants = mouseStones.occupants + 1
+							grid[mouseYGrid][mouseXGrid].occupants = grid[mouseYGrid][mouseXGrid].occupants - 1
+						end
+
+						updateStoneControl(grid[mouseYGrid][mouseXGrid])
+						updateStackControl(grid[mouseYGrid][mouseXGrid])
+						falsifyAllOccupantsLegalMove()
+
+						for i = 1, 10 do
+							if mouseStones.members[i].stackOrder ~= nil then
+								lowestMSStackOrder = mouseStones.members[i].stackOrder
+								break
+							end
+						end
+						movementEvent = 2
 					end
-
-					if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
-						stonesToCopy = 5
-					else
-						stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
-					end
-
-					for i = 1, stonesToCopy do --COPY OVER <5 STONES
-						mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor
-						mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType
-						mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder
-
-						grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = nil
-						grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = nil
-						grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = nil
-
-						mouseStones.occupants = mouseStones.occupants + 1
-						grid[mouseYGrid][mouseXGrid].occupants = grid[mouseYGrid][mouseXGrid].occupants - 1
-					end
-
-					updateStoneControl(grid[mouseYGrid][mouseXGrid])
-					updateStackControl(grid[mouseYGrid][mouseXGrid])
-					movementEvent = 2
 				end
 			end
 		--]]
-		end
+
 
 		elseif movementEvent == 2 then
+			if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN MOVEMENT ORIGIN
+				sounds['beep']:play()
+				grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants + 1
+				mouseStones.occupants = mouseStones.occupants - 1
+				---[[
+				occupantIndex = grid[movementOriginRow][movementOriginColumn].occupants
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneColor = mouseStones.members[lowestMSStackOrder].stoneColor
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneType = mouseStones.members[lowestMSStackOrder].stoneType
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stackOrder = mouseStones.members[lowestMSStackOrder].stackOrder
+
+				mouseStones.members[lowestMSStackOrder].stoneColor = nil
+				mouseStones.members[lowestMSStackOrder].stoneType = nil
+				mouseStones.members[lowestMSStackOrder].stackOrder = nil
+
+				droppedInMovementOrigin = droppedInMovementOrigin + 1
+				lowestMSStackOrder = lowestMSStackOrder + 1
+				--]]
+			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
+				sounds['beep']:play()
+				occupantIndex = grid[movementOriginRow][movementOriginColumn].occupants
+				grid[movementOriginRow][movementOriginColumn].occupants = grid[movementOriginRow][movementOriginColumn].occupants - 1
+				mouseStones.occupants = mouseStones.occupants + 1
+
+				mouseStones.members[lowestMSStackOrder - 1].stoneColor = grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneColor
+				mouseStones.members[lowestMSStackOrder - 1].stoneType = grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneType
+				mouseStones.members[lowestMSStackOrder - 1].stackOrder = grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stackOrder
+
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneColor = nil
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stoneType = nil
+				grid[movementOriginRow][movementOriginColumn].members[occupantIndex].stackOrder = nil
+
+				droppedInMovementOrigin = droppedInMovementOrigin - 1
+				lowestMSStackOrder = lowestMSStackOrder - 1
+
+			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
+				if droppedInMovementOrigin >= 1 then
+					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+					updateStackControl(grid[movementOriginRow][movementOriginColumn])
+					movementEvent = 3
+				end
+			end
+		end
 
 		elseif movementEvent == 3 then
 
@@ -504,9 +555,6 @@ function PlayState:update(dt)
 			end
 		end
 	end
-
-
-
 end
 
 
@@ -907,7 +955,7 @@ function PlayState:render()
 			elseif stoneSelect == 3 then
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
-		elseif moveType == 'move' and movementEvent == 2 then
+		elseif moveType == 'move' and movementEvent > 1 then
 			for i = 1, 10 do
 				mouseStones.members[i]:render()
 			end
@@ -957,13 +1005,15 @@ function PlayState:render()
 	love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 	love.graphics.print('stackControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 	love.graphics.print('stoneControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
-	love.graphics.print('mouseStoneOccupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
+	love.graphics.print('MOUSESTONE-occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
+	love.graphics.print('MOUSEGRID-occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+
 	--love.graphics.print('MLRow[' .. tostring(moveLockedRow) .. tostring(']'), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
 	--love.graphics.print('MLCol[' .. tostring(moveLockedColumn) .. tostring(']'), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 	love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 	love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 	love.graphics.print('mOriginColumn: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-	--love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, 520)
+	love.graphics.print('LMSstackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 	--love.graphics.print('LMHighlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
 	--love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
 
