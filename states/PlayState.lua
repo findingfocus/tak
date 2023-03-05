@@ -22,6 +22,8 @@ function resetBoard()
 	movementOriginLocked = false
 	movementOriginRow = nil
 	movementOriginColumn = nil
+	firstMovementRow = nil
+	firstMovementColumn = nil
 	stonesInHandLocked = false
 	firstMovementGridLocked = false
 	firstMovementStonesDropped = false
@@ -187,6 +189,8 @@ function playerSwapGridReset()
 	movementOriginLocked = false
 	movementOriginRow = nil
 	movementOriginColumn = nil
+	firstMovementRow = nil
+	firstMovementColumn = nil
 	droppedInMovementOrigin = 0
 	stonesInHandLocked = false
 	firstMovementGridLocked = false
@@ -577,10 +581,49 @@ function PlayState:update(dt)
 			for i = 1, 5 do
 				for j = 1, 5 do
 					if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
-						--grid[i][j].legalMove = false
+						grid[i][j].legalMove = false
+					end
+
+					if mouseYGrid == i and mouseXGrid == j then --LEGALMOVE HIGHLIGHTS UPON MOUSEOVER
+						if grid[i][j].legalMove then
+							grid[i][j].legalMoveHighlight = true
+						end
+					else
+						grid[i][j].legalMoveHighlight = false
 					end
 				end
 			end
+---[[
+			function love.mousepressed(x, y, button)
+				if button == 1 then
+					for i = 1, 5 do
+						for j = 1, 5 do
+							if mouseYGrid == i and mouseXGrid == j then
+								if grid[i][j].legalMove then
+									grid[i][j].legalMoveHighlight = false
+									grid[i][j].moveLockedHighlight = true
+									grid[i][j].legalMove = false
+									firstMovementRow = i
+									firstMovementColumn = j
+
+									if movementOriginRow < firstMovementRow then
+										downDirection = true
+									elseif movementOriginRow > firstMovementRow then
+										upDirection = true
+									elseif movementOriginColumn < firstMovementColumn then
+										rightDirection = true
+									elseif movementOriginColumn > firstMovementColumn then
+										leftDirection = true
+									end
+									falsifyAllOccupantsLegalMove()
+									movementEvent = 4
+								end
+							end
+						end
+					end
+				end
+			end
+--]]
 		end --REMOVE THIS FOR MOVEMENT EVENT 4
 
 
@@ -1087,6 +1130,12 @@ function PlayState:render()
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+		love.graphics.print('firstMovRow: ' .. tostring(firstMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
+		love.graphics.print('firstMovCol: ' .. tostring(firstMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
+		love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+		love.graphics.print('downLOCK: ' .. tostring(downDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+		love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 	end
 
 	--STONE COUNT

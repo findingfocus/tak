@@ -19,11 +19,7 @@ function Occupant:init()
 end
 
 function Occupant:update(dt)
-	if self.legalMove then
-		self.legalMoveHighlight = true
-	else
-		self.legalMoveHighlight = false
-	end
+	
 end
 
 function Occupant:render()
