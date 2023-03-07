@@ -32,7 +32,12 @@ function resetBoard()
 	upDirection = false
 	leftDirection = false
 	rightDirection = false
+	nextMoveRow = nil
+	nextMoveColumn = nil
+	offGrid = false
 	occupantIndex = nil
+	secondMovementRow = nil
+	secondMovementColumn = nil
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
@@ -61,89 +66,89 @@ function resetBoard()
 		end
 	end
 
----[[10-STACK TESTER
-	grid[3][3].members[1].stoneColor = 'WHITE'
-	grid[3][3].members[1].stoneType = 'LS'
-	grid[3][3].occupied = true
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[1].stackOrder = 1
+--[[10-STACK TESTER
+	grid[1][4].members[1].stoneColor = 'WHITE'
+	grid[1][4].members[1].stoneType = 'LS'
+	grid[1][4].occupied = true
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[1].stackOrder = 1
 
-	grid[3][3].members[2].stoneColor = 'BLACK'
-	grid[3][3].members[2].stoneType = 'LS'
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[2].stackOrder = 2
+	grid[1][4].members[2].stoneColor = 'BLACK'
+	grid[1][4].members[2].stoneType = 'LS'
+	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[2].stackOrder = 2
 
-	grid[3][3].members[3].stoneColor = 'WHITE'
-	grid[3][3].members[3].stoneType = 'LS'
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[3].stackOrder = 3
+	grid[1][4].members[3].stoneColor = 'WHITE'
+	grid[1][4].members[3].stoneType = 'LS'
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[3].stackOrder = 3
 
-	grid[3][3].members[4].stoneColor = 'BLACK'
-	grid[3][3].members[4].stoneType = 'LS'
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[4].stackOrder = 4
-	grid[3][3].occupants = 4
+	grid[1][4].members[4].stoneColor = 'BLACK'
+	grid[1][4].members[4].stoneType = 'LS'
+	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[4].stackOrder = 4
+	grid[1][4].occupants = 4
 
 ---[[
-	grid[3][3].members[5].stoneColor = 'WHITE'
-	grid[3][3].members[5].stoneType = 'LS'
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[5].stackOrder = 5
-	grid[3][3].occupants = 5
+	grid[1][4].members[5].stoneColor = 'WHITE'
+	grid[1][4].members[5].stoneType = 'LS'
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[5].stackOrder = 5
+	grid[1][4].occupants = 5
 
-	grid[3][3].members[6].stoneColor = 'BLACK'
-	grid[3][3].members[6].stoneType = 'LS'
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[6].stackOrder = 6
+	grid[1][4].members[6].stoneColor = 'BLACK'
+	grid[1][4].members[6].stoneType = 'LS'
+	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[6].stackOrder = 6
 
-	grid[3][3].members[7].stoneColor = 'WHITE'
-	grid[3][3].members[7].stoneType = 'LS'
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[7].stackOrder = 7
+	grid[1][4].members[7].stoneColor = 'WHITE'
+	grid[1][4].members[7].stoneType = 'LS'
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[7].stackOrder = 7
 
-	grid[3][3].members[8].stoneColor = 'BLACK'
-	grid[3][3].members[8].stoneType = 'LS'
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[8].stackOrder = 8
+	grid[1][4].members[8].stoneColor = 'BLACK'
+	grid[1][4].members[8].stoneType = 'LS'
+	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[8].stackOrder = 8
 
-	grid[3][3].members[9].stoneColor = 'WHITE'
-	grid[3][3].members[9].stoneType = 'LS'
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].stoneControl = 'LS'
-	grid[3][3].members[9].stackOrder = 9
-	--grid[3][3].occupants = 9
-
-
+	grid[1][4].members[9].stoneColor = 'WHITE'
+	grid[1][4].members[9].stoneType = 'LS'
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].stoneControl = 'LS'
+	grid[1][4].members[9].stackOrder = 9
+	--grid[1][4].occupants = 9
 
 
-	grid[3][3].members[10].stoneColor = 'BLACK'
-	grid[3][3].members[10].stoneType = 'LS'
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[10].stackOrder =10
 
-	grid[3][3].occupants = 10
+
+	grid[1][4].members[10].stoneColor = 'BLACK'
+	grid[1][4].members[10].stoneType = 'LS'
+	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[10].stackOrder =10
+
+	grid[1][4].occupants = 10
 --]]
 
---[[3-STACK TESTER
-	grid[3][3].members[1].stoneColor = 'WHITE'
-	grid[3][3].members[1].stoneType = 'LS'
-	grid[3][3].occupied = true
-	--grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[1].stackOrder = 1
+---[[3-STACK TESTER
+	grid[1][4].members[1].stoneColor = 'WHITE'
+	grid[1][4].members[1].stoneType = 'LS'
+	grid[1][4].occupied = true
+	--grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[1].stackOrder = 1
 
-	grid[3][3].members[2].stoneColor = 'BLACK'
-	grid[3][3].members[2].stoneType = 'LS'
-	--grid[3][3].stackControl = 'BLACK'
-	grid[3][3].members[2].stackOrder = 2
+	grid[1][4].members[2].stoneColor = 'BLACK'
+	grid[1][4].members[2].stoneType = 'LS'
+	--grid[1][4].stackControl = 'BLACK'
+	grid[1][4].members[2].stackOrder = 2
 
-	grid[3][3].members[3].stoneColor = 'WHITE'
-	grid[3][3].members[3].stoneType = 'LS'
-	grid[3][3].stackControl = 'WHITE'
-	grid[3][3].members[3].stackOrder = 3
+	grid[1][4].members[3].stoneColor = 'WHITE'
+	grid[1][4].members[3].stoneType = 'LS'
+	grid[1][4].stackControl = 'WHITE'
+	grid[1][4].members[3].stackOrder = 3
 
-	grid[3][3].occupants = 3
+	grid[1][4].occupants = 3
 
-	--updateStoneControl(grid[3][3])
+	--updateStoneControl(grid[1][4])
 --]]
 end
 
@@ -182,6 +187,11 @@ function playerSwapGridReset()
 		end
 	end
 
+
+
+
+
+	moveType = 'place'
 	movementEvent = 1
 	lowestMSStackOrder = 1
 	moveLockedRow = 0
@@ -202,12 +212,19 @@ function playerSwapGridReset()
 	upDirection = false
 	leftDirection = false
 	rightDirection = false
+	nextMoveRow = nil
+	nextMoveColumn = nil
+	offGrid = false
+	secondMovementRow = nil
+	secondMovementColumn = nil
 end
 
 
 function PlayState:update(dt)
 	if love.keyboard.isDown('2') then
 		debugOption = 2
+	elseif love.keyboard.isDown('3') then
+		debugOption = 3
 	else
 		debugOption = 1
 	end
@@ -452,8 +469,8 @@ function PlayState:update(dt)
 				if button == 1 then
 					if grid[mouseYGrid][mouseXGrid].legalMove then
 						--grid[mouseYGrid][mouseXGrid].legalMove = false
-						movementOriginRow = mouseXGrid
-						movementOriginColumn = mouseYGrid
+						movementOriginRow = mouseYGrid
+						movementOriginColumn = mouseXGrid
 
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
 							stonesToCopy = 5
@@ -634,6 +651,36 @@ function PlayState:update(dt)
 --]]
 
 		elseif movementEvent == 4 then
+
+			if nextMoveRow == nil then --ASSIGINING NEXT MOVEMENT GRID
+				if upDirection then
+					nextMoveRow = firstMovementRow - 1
+					nextMoveColumn = firstMovementColumn
+				elseif downDirection then
+					nextMoveRow = firstMovementRow + 1
+					nextMoveColumn = firstMovementColumn
+				elseif leftDirection then
+					nextMoveColumn = firstMovementColumn - 1
+					nextMoveRow = firstMovementRow
+				elseif rightDirection then
+					nextMoveColumn = firstMovementColumn + 1
+					nextMoveRow = firstMovementRow
+				end
+			end
+
+
+			if nextMoveRow > 5 then --DETECTS WHETHER OR NOT NEXT MOVEMENT IS OFF THE GRID
+				offGrid = true
+			elseif nextMoveRow < 1 then
+				offGrid = true
+			end
+			if nextMoveColumn > 5 then
+				offGrid = true
+			elseif nextMoveColumn < 1 then
+				offGrid = true
+			end
+
+
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
 				sounds['beep']:play()
 				mouseStones.occupants = mouseStones.occupants - 1
@@ -654,7 +701,7 @@ function PlayState:update(dt)
 				droppedInFirstMovement = droppedInFirstMovement + 1
 				lowestMSStackOrder = lowestMSStackOrder + 1
 			end
----[[
+
 			if love.keyboard.wasPressed('up') and droppedInFirstMovement > 0 then
 				sounds['beep']:play()
 				occupantIndex = grid[firstMovementRow][firstMovementColumn].occupants
@@ -674,7 +721,66 @@ function PlayState:update(dt)
 				droppedInFirstMovement = droppedInFirstMovement - 1
 				lowestMSStackOrder = lowestMSStackOrder - 1
 			end
-	--]]
+
+
+			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
+				if offGrid then
+					if mouseStones.occupants == 0 then
+						updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+						updateStackControl(grid[firstMovementRow][firstMovementColumn])
+						grid[firstMovementRow][firstMovementColumn].occupied = true
+						if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+							grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
+							grid[movementOriginRow][movementOriginColumn].occupied = false
+							grid[movementOriginRow][movementOriginColumn].stoneControl = nil
+							grid[movementOriginRow][movementOriginColumn].stackControl = nil
+						end
+						playerSwapGridReset()
+					end
+				elseif not offGrid and mouseStones.occupants == 0 then
+					updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+					updateStackControl(grid[firstMovementRow][firstMovementColumn])
+					grid[firstMovementRow][firstMovementColumn].occupied = true
+					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+							grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
+							grid[movementOriginRow][movementOriginColumn].occupied = false
+					end
+					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+						grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
+						grid[movementOriginRow][movementOriginColumn].occupied = false
+						grid[movementOriginRow][movementOriginColumn].stoneControl = nil
+						grid[movementOriginRow][movementOriginColumn].stackControl = nil
+					end
+					playerSwapGridReset()
+				elseif not offGrid and droppedInFirstMovement > 0 then
+					updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+					updateStackControl(grid[firstMovementRow][firstMovementColumn])
+					grid[firstMovementRow][firstMovementColumn].occupied = true
+
+					if upDirection then
+						secondMovementRow = firstMovementRow - 1
+						secondMovementColumn = firstMovementColumn 			
+					elseif downDirection then
+						secondMovementRow = firstMovementRow + 1
+						secondMovementColumn = firstMovementColumn
+					elseif leftDirection then
+						secondMovementRow = firstMovementRow
+						secondMovementColumn = firstMovementColumn - 1
+					elseif rightDirection then
+						secondMovementRow = firstMovementRow
+						secondMovementColumn = firstMovementColumn + 1
+					end
+
+					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+						grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
+						grid[movementOriginRow][movementOriginColumn].occupied = false
+						grid[movementOriginRow][movementOriginColumn].stoneControl = nil
+						grid[movementOriginRow][movementOriginColumn].stackControl = nil
+					end
+					movementEvent = 5
+				end
+			end
+
 		end --REMOVE FOR MoveEvent 5
 			--[[	mEvent = 4 firstMovementLocked --DROP AT LEAST ONE STONE IN FM GRID --FIRSTDARKGREEN BOX
 		--SET LEGALMOVES OTHOGANAL SPACE --AND NOT CS,SS, or end of grid
@@ -704,7 +810,7 @@ function PlayState:update(dt)
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if moveType == 'place' then
-				if mouseXGrid == j and mouseYGrid == i then --SELECTIONHIGHLIGHT IF OVER MOUSE LOCATION
+				if mouseXGrid == j and mouseYGrid == i and grid[mouseYGrid][mouseXGrid].occupants == 0 then --SELECTIONHIGHLIGHT IF OVER MOUSE LOCATION
 					grid[i][j].selectionHighlight = true
 				else
 					grid[i][j].selectionHighlight = false
@@ -1173,7 +1279,7 @@ function PlayState:render()
 
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
-		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('firstMovRow: ' .. tostring(firstMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('firstMovCol: ' .. tostring(firstMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
@@ -1181,7 +1287,16 @@ function PlayState:render()
 		love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		love.graphics.print('FMoccupants: ' .. tostring(grid[firstMovementRow][firstMovementColumn].occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		--love.graphics.print('FMoccupants: ' .. tostring(grid[firstMovementRow][firstMovementColumn].occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+	end
+
+	if debugOption == 3 then
+		love.graphics.print('nextMoveRow: ' .. tostring(nextMoveRow), VIRTUAL_WIDTH - 490, DEBUGY)
+		love.graphics.print('nextMoveColumn: ' .. tostring(nextMoveColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+		love.graphics.print('offGrid: ' .. tostring(offGrid), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
+		love.graphics.print('.occupied: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
+		love.graphics.print('secondMovementRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 	end
 
 	--STONE COUNT
