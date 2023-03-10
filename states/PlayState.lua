@@ -308,6 +308,7 @@ function NextMoveOffGrid(currentGridRow, currentGridColumn)
 end
 
 function PlayState:update(dt)
+---[[DEBUG OPTIONS
 	if love.keyboard.isDown('2') then
 		debugOption = 2
 	elseif love.keyboard.isDown('3') then
@@ -315,6 +316,7 @@ function PlayState:update(dt)
 	else
 		debugOption = 1
 	end
+--]]
 
 ---[[MOUSE POSITION VARIABLES
 	mouseMasterX, mouseMasterY = love.mouse.getPosition()
@@ -778,7 +780,7 @@ function PlayState:update(dt)
 					grid[firstMovementRow][secondMovementColumn].occupied = true
 
 					playerSwapGridReset()
-				elseif not offGrid and droppedInFirstMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
+				elseif not offGrid and droppedInSecondMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
 					updateStoneControl(grid[secondMovementRow][secondMovementColumn])
 					updateStackControl(grid[secondMovementRow][secondMovementColumn])
 					grid[secondMovementRow][secondMovementColumn].occupied = true
