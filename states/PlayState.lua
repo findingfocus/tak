@@ -40,9 +40,12 @@ function resetBoard()
 	secondMovementColumn = nil
 	thirdMovementRow = nil
 	thirdMovementColumn = nil
+	fourthMovementRow = nil
+	fourthMovementColumn = nil
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
+	droppedInThirdMovement = 0
 	stonesToCopy = 0
 	lowestMSStackOrder = 1
 	moveType = 'place'
@@ -132,24 +135,28 @@ function resetBoard()
 --]]
 
 ---[[3-STACK TESTER
-	grid[1][3].members[1].stoneColor = 'WHITE'
-	grid[1][3].members[1].stoneType = 'LS'
-	grid[1][3].occupied = true
+	grid[2][3].members[1].stoneColor = 'WHITE'
+	grid[2][3].members[1].stoneType = 'LS'
+	grid[2][3].occupied = true
 	--grid[1][4].stackControl = 'WHITE'
-	grid[1][3].members[1].stackOrder = 1
+	grid[2][3].members[1].stackOrder = 1
 
-	grid[1][3].members[2].stoneColor = 'BLACK'
-	grid[1][3].members[2].stoneType = 'LS'
+	grid[2][3].members[2].stoneColor = 'BLACK'
+	grid[2][3].members[2].stoneType = 'LS'
 	--grid[1][4].stackControl = 'BLACK'
-	grid[1][3].members[2].stackOrder = 2
+	grid[2][3].members[2].stackOrder = 2
 
-	grid[1][3].members[3].stoneColor = 'WHITE'
-	grid[1][3].members[3].stoneType = 'LS'
-	grid[1][3].stackControl = 'WHITE'
-	grid[1][3].members[3].stackOrder = 3
+	grid[2][3].members[3].stoneColor = 'WHITE'
+	grid[2][3].members[3].stoneType = 'LS'
+	grid[2][3].stackControl = 'WHITE'
+	grid[2][3].members[3].stackOrder = 3
 
-	grid[1][3].occupants = 3
+	grid[2][3].members[4].stoneColor = 'BLACK'
+	grid[2][3].members[4].stoneType = 'SS'
+	grid[2][3].stackControl = 'BLACK'
+	grid[2][3].members[4].stackOrder = 4
 
+	grid[2][3].occupants = 4
 	--updateStoneControl(grid[1][4])
 --]]
 end
@@ -211,6 +218,7 @@ function playerSwapGridReset()
 	occupantIndex = nil
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
+	droppedInThirdMovement = 0
 	stonesToCopy = 0
 	firstMovementStonesDropped = false
 	downDirection = false
@@ -224,6 +232,8 @@ function playerSwapGridReset()
 	secondMovementColumn = nil
 	thirdMovementRow = nil
 	thirdMovementColumn = nil
+	fourthMovementRow = nil
+	fourthMovementColumn = nil
 end
 
 function DropStone(Occupant, Option)
@@ -250,6 +260,8 @@ function DropStone(Occupant, Option)
 		droppedInFirstMovement = droppedInFirstMovement + 1
 	elseif Option == 3 then
 		droppedInSecondMovement = droppedInSecondMovement + 1
+	elseif Option == 4 then
+		droppedInThirdMovement = droppedInThirdMovement + 1
 	end
 end
 
@@ -275,6 +287,8 @@ function PickUpStone(Occupant, Option)
 		droppedInFirstMovement = droppedInFirstMovement - 1
 	elseif Option == 3 then
 		droppedInSecondMovement = droppedInSecondMovement - 1
+	elseif Option == 4 then
+		droppedInThirdMovement = droppedInThirdMovement - 1
 	end
 
 	lowestMSStackOrder = lowestMSStackOrder - 1
@@ -799,16 +813,65 @@ function PlayState:update(dt)
 						thirdMovementColumn = secondMovementColumn + 1
 					end
 
-					NextMoveOffGrid(secondMovementRow, secondMovementColumn)
+					NextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+					--IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
 					movementEvent = 6
 				end
 			end
 
 		elseif movementEvent == 6 then
 			grid[thirdMovementRow][thirdMovementColumn].moveLockedHighlight = true
-		end
 
-		--elseif movementEvent == 6 then
+			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				DropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
+			end
+
+			if love.keyboard.wasPressed('up') and droppedInThirdMovement > 0 then
+				PickUpStone(grid[thirdMovementRow][thirdMovementColumn], 4)
+			end
+
+			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
+				if offGrid then
+					if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
+						updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+						grid[thirdMovementRow][thirdMovementColumn].occupied = true
+		
+						playerSwapGridReset()
+					end
+				elseif not offGrid and mouseStones.occupants == 0 then --ENTER PRESSED AFTER DROPPING ALL STONES 
+					updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+					updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+					grid[thirdMovementRow][thirdMovementColumn].occupied = true
+
+					playerSwapGridReset()
+				elseif not offGrid and droppedInThirdMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
+					updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+					updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+					grid[thirdMovementRow][thirdMovementColumn].occupied = true
+
+					if upDirection then
+						fourthMovementRow = thirdMovementRow - 1
+						fourthMovementColumn = thirdMovementColumn 			
+					elseif downDirection then
+						fourthMovementRow = thirdMovementRow + 1
+						fourthMovementColumn = thirdMovementColumn
+					elseif leftDirection then
+						fourthMovementRow = thirdMovementRow
+						fourthMovementColumn = thirdMovementColumn - 1
+					elseif rightDirection then
+						fourthMovementRow = thirdMovementRow
+						fourthMovementColumn = thirdMovementColumn + 1
+					end
+
+					--NextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
+					movementEvent = 7
+				end
+			end
+
+		elseif movementEvent == 7 then
+			grid[fourthMovementRow][fourthMovementColumn].moveLockedHighlight = true
+		end
 
 	end
 	--]]
