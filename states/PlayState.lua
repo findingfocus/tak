@@ -155,8 +155,10 @@ function resetBoard()
 	grid[2][3].members[4].stoneType = 'SS'
 	grid[2][3].stackControl = 'BLACK'
 	grid[2][3].members[4].stackOrder = 4
+	grid[2][3].stoneControl = 'SS'
 
 	grid[2][3].occupants = 4
+	
 	--updateStoneControl(grid[1][4])
 --]]
 end
@@ -701,6 +703,10 @@ function PlayState:update(dt)
 									end
 									falsifyAllOccupantsLegalMove()
 									NextMoveOffGrid(firstMovementRow, firstMovementColumn)
+									if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+										offGrid = true
+									end
+									--IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
 									movementEvent = 4
 								end
 							end
@@ -765,6 +771,9 @@ function PlayState:update(dt)
 					end
 
 					NextMoveOffGrid(secondMovementRow, secondMovementColumn)
+					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+						offGrid = true
+					end
 					movementEvent = 5
 				end
 			end
@@ -814,7 +823,9 @@ function PlayState:update(dt)
 					end
 
 					NextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-					--IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
+					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+						offGrid = true
+					end
 					movementEvent = 6
 				end
 			end
@@ -864,7 +875,10 @@ function PlayState:update(dt)
 						fourthMovementColumn = thirdMovementColumn + 1
 					end
 
-					--NextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
+					NextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
+					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+						offGrid = true
+					end
 					movementEvent = 7
 				end
 			end
