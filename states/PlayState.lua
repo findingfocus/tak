@@ -323,6 +323,14 @@ function NextMoveOffGrid(currentGridRow, currentGridColumn)
 	end
 end
 
+function NextMoveIllegal()
+	if nextMoveRow > 1 and nextMoveRow < 5 and nextMoveColumn > 1 and nextMoveColumn < 5 then
+		if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+			offGrid = true
+		end
+	end
+end
+
 function PlayState:update(dt)
 ---[[DEBUG OPTIONS
 	if love.keyboard.isDown('2') then
@@ -703,9 +711,7 @@ function PlayState:update(dt)
 									end
 									falsifyAllOccupantsLegalMove()
 									NextMoveOffGrid(firstMovementRow, firstMovementColumn)
-									if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
-										offGrid = true
-									end
+									NextMoveIllegal()
 									--IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
 									movementEvent = 4
 								end
@@ -771,9 +777,7 @@ function PlayState:update(dt)
 					end
 
 					NextMoveOffGrid(secondMovementRow, secondMovementColumn)
-					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
-						offGrid = true
-					end
+					NextMoveIllegal()
 					movementEvent = 5
 				end
 			end
@@ -823,9 +827,7 @@ function PlayState:update(dt)
 					end
 
 					NextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
-						offGrid = true
-					end
+					NextMoveIllegal()
 					movementEvent = 6
 				end
 			end
@@ -876,15 +878,22 @@ function PlayState:update(dt)
 					end
 
 					NextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
-					if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
-						offGrid = true
-					end
+					NextMoveIllegal()
 					movementEvent = 7
 				end
 			end
 
 		elseif movementEvent == 7 then
 			grid[fourthMovementRow][fourthMovementColumn].moveLockedHighlight = true
+			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				DropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
+			end
+
+			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
+				if mouseStones.occupants == 0 then
+					playerSwapGridReset()
+				end
+			end
 		end
 
 	end
