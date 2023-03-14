@@ -24,10 +24,12 @@ function resetBoard()
 	movementOriginColumn = nil
 	firstMovementRow = nil
 	firstMovementColumn = nil
-	stonesInHandLocked = false
-	firstMovementGridLocked = false
-	firstMovementStonesDropped = false
-	secondMovementStonesDropped = false
+	secondMovementRow = nil
+	secondMovementColumn = nil
+	thirdMovementRow = nil
+	thirdMovementColumn = nil
+	fourthMovementRow = nil
+	fourthMovementColumn = nil
 	downDirection = false
 	upDirection = false
 	leftDirection = false
@@ -36,12 +38,6 @@ function resetBoard()
 	nextMoveColumn = nil
 	offGrid = false
 	occupantIndex = nil
-	secondMovementRow = nil
-	secondMovementColumn = nil
-	thirdMovementRow = nil
-	thirdMovementColumn = nil
-	fourthMovementRow = nil
-	fourthMovementColumn = nil
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
@@ -49,12 +45,9 @@ function resetBoard()
 	stonesToCopy = 0
 	lowestMSStackOrder = 1
 	moveType = 'place'
-	moveLockedRow = 0
-	moveLockedColumn = 0
 	mouseStones = Occupant()
 	mouseStones.members = {}
 	mouseStones.occupants = 0
-	PUIndex = 0
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -207,22 +200,23 @@ function playerSwapGridReset()
 	moveType = 'place'
 	movementEvent = 1
 	lowestMSStackOrder = 1
-	moveLockedRow = 0
-	moveLockedColumn = 0
 	movementOriginLocked = false
 	movementOriginRow = nil
 	movementOriginColumn = nil
 	firstMovementRow = nil
 	firstMovementColumn = nil
+	secondMovementRow = nil
+	secondMovementColumn = nil
+	thirdMovementRow = nil
+	thirdMovementColumn = nil
+	fourthMovementRow = nil
+	fourthMovementColumn = nil
 	droppedInMovementOrigin = 0
-	stonesInHandLocked = false
-	firstMovementGridLocked = false
 	occupantIndex = nil
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
 	droppedInThirdMovement = 0
 	stonesToCopy = 0
-	firstMovementStonesDropped = false
 	downDirection = false
 	upDirection = false
 	leftDirection = false
@@ -230,12 +224,6 @@ function playerSwapGridReset()
 	nextMoveRow = nil
 	nextMoveColumn = nil
 	offGrid = false
-	secondMovementRow = nil
-	secondMovementColumn = nil
-	thirdMovementRow = nil
-	thirdMovementColumn = nil
-	fourthMovementRow = nil
-	fourthMovementColumn = nil
 end
 
 function DropStone(Occupant, Option)
@@ -477,10 +465,22 @@ function PlayState:update(dt)
 			sounds['beep']:play()
 			moveType = 'move'
 		end
+		if player == 1 and player1stones < 1 then
+			moveType = 'move'
+		end
+		if player == 2 and player2stones < 1 then
+			moveType = 'move'
+		end
 	elseif moveType == 'move'  and movementEvent == 1 then
 		if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
-			sounds['beep']:play()
-			moveType = 'place'
+			if player == 1 and player1stones > 0 then
+				sounds['beep']:play()
+				moveType = 'place'
+			end
+			if player == 2 and player2stones > 0 then
+				sounds['beep']:play()
+				moveType = 'place'
+			end
 		end
 	end
 --]]
@@ -956,10 +956,12 @@ function PlayState:render()
 ---[[RENDERS STONE SELECTION AT MOUSE POSITION
 	if not toggleMouseStone then
 		if moveType == 'place' then
-			if player == 1 then
+			if player == 1 and player1stones > 0 then --ask about player stones to fix 1 frame render bug
 				love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-			elseif player == 2 then
+			elseif player == 2 and player2stones > 0 then
 				love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+			else
+				love.graphics.setColor(0/255, 0/255, 0/255, 0/255) --to fix one frame render bug
 			end
 			if stoneSelect == 1 then
 				love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
@@ -1007,15 +1009,11 @@ function PlayState:render()
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('stackControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stackControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('stoneControl: ' ..tostring(grid[mouseYGrid][mouseXGrid].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
-		love.graphics.print('MOUSESTONE-occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
-		love.graphics.print('MOUSEGRID-occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		--love.graphics.print('MLRow[' .. tostring(moveLockedRow) .. tostring(']'), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)	--love.graphics.print('StoneIHLock: ' .. tostring(stonesInHandLocked), VIRTUAL_WIDTH - 490, 470)
-		--love.graphics.print('MLCol[' .. tostring(moveLockedColumn) .. tostring(']'), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		
-		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		love.graphics.print('LMSstackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-		--love.graphics.print('LMHighlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, 570)
-		--love.graphics.print('lowStacOrd: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, 620)
+		love.graphics.print('MS.occupants: ' .. tostring(mouseStones.occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)	
+		love.graphics.print('GRID.occupants: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 	end
 
 	if debugOption == 2 then
@@ -1023,12 +1021,18 @@ function PlayState:render()
 		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('firstMovRow: ' .. tostring(firstMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('firstMovCol: ' .. tostring(firstMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
-		love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
-		love.graphics.print('downLOCK: ' .. tostring(downDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
-		love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		love.graphics.print('dropMO: ' .. tostring(droppedInMovementOrigin), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		love.graphics.print('secondMovRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+		love.graphics.print('secondMovCol: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+		love.graphics.print('thirdMovRow: ' .. tostring(thirdMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('thirdMovCol: ' .. tostring(thirdMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('fourthMovRow: ' .. tostring(fourthMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
+		love.graphics.print('fourthMovCol: ' .. tostring(fourthMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		--love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+		--love.graphics.print('downLOCK: ' .. tostring(downDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+		--love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		--love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		--love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
+		--love.graphics.print('dropMO: ' .. tostring(droppedInMovementOrigin), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 	end
 
 	if debugOption == 3 then
