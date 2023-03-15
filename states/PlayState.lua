@@ -57,14 +57,14 @@ function resetBoard()
 			grid[i][j] = Occupant()
 			grid[i][j].x = j * 144 - 144
 			grid[i][j].y = i * 144 - 144
-			for k = 1, 10 do --GIVES US MEMORY FOR 10 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
+			for k = 1, MAX_STONE_HEIGHT do --GIVES US MEMORY FOR 14 MEMBER OBJECTS IN EACH OCCUPANT INSTANCE
 				grid[i][j].members[k] = Member(nil, nil, grid[i][j].x, grid[i][j].y)
 				mouseStones.members[k] = Member()
 			end
 		end
 	end
 
---[[10-STACK TESTER
+---[[10-STACK TESTER
 	grid[1][4].members[1].stoneColor = 'WHITE'
 	grid[1][4].members[1].stoneType = 'LS'
 	grid[1][4].occupied = true
@@ -122,42 +122,43 @@ function resetBoard()
 	grid[1][4].members[10].stoneColor = 'BLACK'
 	grid[1][4].members[10].stoneType = 'LS'
 	grid[1][4].stackControl = 'BLACK'
+	grid[1][4].stoneControl = 'LS'
 	grid[1][4].members[10].stackOrder =10
 
 	grid[1][4].occupants = 10
 --]]
 
 ---[[3-STACK TESTER
-	grid[2][3].members[1].stoneColor = 'WHITE'
-	grid[2][3].members[1].stoneType = 'LS'
-	grid[2][3].occupied = true
+	grid[1][5].members[1].stoneColor = 'WHITE'
+	grid[1][5].members[1].stoneType = 'LS'
+	grid[1][5].occupied = true
 	--grid[1][4].stackControl = 'WHITE'
-	grid[2][3].members[1].stackOrder = 1
+	grid[1][5].members[1].stackOrder = 1
 
-	grid[2][3].members[2].stoneColor = 'BLACK'
-	grid[2][3].members[2].stoneType = 'LS'
+	grid[1][5].members[2].stoneColor = 'BLACK'
+	grid[1][5].members[2].stoneType = 'LS'
 	--grid[1][4].stackControl = 'BLACK'
-	grid[2][3].members[2].stackOrder = 2
+	grid[1][5].members[2].stackOrder = 2
 
-	grid[2][3].members[3].stoneColor = 'WHITE'
-	grid[2][3].members[3].stoneType = 'LS'
-	grid[2][3].stackControl = 'WHITE'
-	grid[2][3].members[3].stackOrder = 3
+	grid[1][5].members[3].stoneColor = 'WHITE'
+	grid[1][5].members[3].stoneType = 'LS'
+	grid[1][5].stackControl = 'WHITE'
+	grid[1][5].members[3].stackOrder = 3
 
-	grid[2][3].members[4].stoneColor = 'BLACK'
-	grid[2][3].members[4].stoneType = 'SS'
-	grid[2][3].stackControl = 'BLACK'
-	grid[2][3].members[4].stackOrder = 4
-	grid[2][3].stoneControl = 'SS'
+	grid[1][5].members[4].stoneColor = 'BLACK'
+	grid[1][5].members[4].stoneType = 'SS'
+	grid[1][5].stackControl = 'BLACK'
+	grid[1][5].members[4].stackOrder = 4
+	grid[1][5].stoneControl = 'SS'
 
-	grid[2][3].occupants = 4
+	grid[1][5].occupants = 4
 	
 	--updateStoneControl(grid[1][4])
 --]]
 end
 
 function updateStackControl(Occupant)
-	for i = 10, 1, -1 do
+	for i = MAX_STONE_HEIGHT, 1, -1 do
 		if Occupant.members[i].stoneColor ~= nil then
 			Occupant.stackControl = Occupant.members[i].stoneColor
 			break
@@ -166,7 +167,7 @@ function updateStackControl(Occupant)
 end
 
 function updateStoneControl(Occupant)
-	for i = 10, 1, -1 do
+	for i = MAX_STONE_HEIGHT, 1, -1 do
 		if Occupant.members[i].stoneType ~= nil then
 			Occupant.stoneControl = Occupant.members[i].stoneType
 			break
@@ -192,6 +193,7 @@ end
 function playerSwapGridReset()
 	player = player == 1 and 2 or 1
 	falsifyAllOccupantsLegalMove()
+	grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
 	for i = 1, 5 do
 		for j = 1, 5 do
 			grid[i][j].moveLockedHighlight = false
@@ -540,7 +542,7 @@ function PlayState:update(dt)
 --]]
 
 	if moveType == 'move' then
-		for i = 1, 10 do --MOUSE STONES POSITION UPDATES
+		for i = 1, MAX_STONE_HEIGHT do --MOUSE STONES POSITION UPDATES
 			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
 			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
 		end
@@ -604,7 +606,7 @@ function PlayState:update(dt)
 
 						falsifyAllOccupantsLegalMove() --FALSIFY ALL LEGAL MOVES ONCE MOVEMENTORIGIN LOCKED
 
-						for i = 1, 10 do
+						for i = 1, MAX_STONE_HEIGHT do
 							if mouseStones.members[i].stackOrder ~= nil then
 								lowestMSStackOrder = mouseStones.members[i].stackOrder
 								break
@@ -746,7 +748,7 @@ function PlayState:update(dt)
 					updateStackControl(grid[firstMovementRow][firstMovementColumn])
 					grid[firstMovementRow][firstMovementColumn].occupied = true
 						if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-							grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
+							--grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
 							grid[movementOriginRow][movementOriginColumn].occupied = false
 						end
 					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
@@ -943,7 +945,7 @@ function PlayState:render()
 			--RENDERS MEMBER STONES
 			for i = 1, 5 do
 				for j = 1, 5 do
-					for k = 1, 10 do
+					for k = 1, MAX_STONE_HEIGHT do
 						grid[i][j].members[k]:render()
 					end
 				end
@@ -971,7 +973,7 @@ function PlayState:render()
 				love.graphics.circle('fill', mouseMasterX, mouseMasterY, 50)
 			end
 		elseif moveType == 'move' and movementEvent > 1 then
-			for i = 1, 10 do
+			for i = 1, MAX_STONE_HEIGHT do
 				mouseStones.members[i]:render()
 			end
 		end
