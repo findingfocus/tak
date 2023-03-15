@@ -15,8 +15,9 @@ function resetBoard()
 	player2capstone = 1
 	player2stones = 21
 	stoneSelect = 1
-	movementEvent = 1
+	movementEvent = 0
 	debugOption = 1
+	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
 	hideMouseStone = false
 	movementOriginLocked = false
@@ -200,8 +201,9 @@ function playerSwapGridReset()
 		end
 	end
 	moveType = 'place'
-	movementEvent = 1
+	movementEvent = 0
 	lowestMSStackOrder = 1
+	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
 	movementOriginRow = nil
 	movementOriginColumn = nil
@@ -542,37 +544,94 @@ function PlayState:update(dt)
 --]]
 
 	if moveType == 'move' then
+		if movementEvent == 0 then
+			movementEvent = 1
+		end
+
 		for i = 1, MAX_STONE_HEIGHT do --MOUSE STONES POSITION UPDATES
 			mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
 			mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
 		end
 		
 		if movementEvent == 1 then --LEGAL MOVE HIGHLIGHTS
+			 if mEvent1LegalMovesPopulated == false then
+				for i = 1, 5 do
+					for j = 1, 5 do
+						if player == 1 then --SET LEGAL MOVES UPON STACKCONTROL
+							if grid[i][j].stackControl == 'WHITE' then
+								grid[i][j].legalMove = true
+						end
+						elseif player == 2 then --SET LEGAL MOVES UPON STACKCONTROL
+							if grid[i][j].stackControl == 'BLACK' then
+								grid[i][j].legalMove = true
+							end
+						end
+
+						--CORNERCASES 
+						if i == 1 and j == 1 then
+							if grid[1][2].stoneControl == 'SS' or grid[1][2].stoneControl == 'CS' or grid[1][2].occupants == 14 then
+								if grid[2][1].stoneControl == 'SS' or grid[2][1].stoneControl == 'CS' or grid[2][1].occupants == 14 then
+									grid[i][j].legalMove = false
+								end
+							end
+						end
+						--[[
+						elseif i == 1 and j == 5 then
+							grid[1][4].legalMove = true
+							grid[2][5].legalMove = true
+						elseif i == 5 and j == 1 then
+							grid[4][1].legalMove = true
+							grid[5][2].legalMove = true
+						elseif i == 5 and j == 5 then
+							grid[5][4].legalMove = true
+							grid[4][5].legalMove = true
+						end
+
+						--EDGECASES
+						if i == 1 and movementOriginRow ~= 1 and i ~= 5 then --LEFT EDGE
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+						elseif j == 5 and i ~= 1 and i ~= 5 then --RIGHT EDGE
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+						elseif i == 1 and j ~= 1 and j ~= 5 then --TOP EDGE
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+						elseif i == 5 and j ~= 1 and j ~= 5 then --BOTTOM EDGE
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+						end
+
+
+						--MIDDLECASES
+						if j > 1 and j < 5 and i > 1 and i < 5 then
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+						end
+						--]]
+					end
+				end
+				mEvent1LegalMovesPopulated = true
+			end
+
+			--RENDER LEGALMOVEHIGHLIGHTS UPON MOUSEOVER
 			for i = 1, 5 do
 				for j = 1, 5 do
-					if player == 1 then --SET LEGAL MOVES UPON STACKCONTROL
-						if grid[i][j].stackControl == 'WHITE' then
-							grid[i][j].legalMove = true
-						--RENDER LEGALMOVEHIGHLIGHTS UPON MOUSEOVER
-						if mouseYGrid == i and mouseXGrid == j and grid[mouseYGrid][mouseXGrid].stackControl == 'WHITE' then
-							grid[i][j].legalMoveHighlight = true
-						else
-							grid[i][j].legalMoveHighlight = false
-						end
-					end
-					elseif player == 2 then --SET LEGAL MOVES UPON STACKCONTROL
-						if grid[i][j].stackControl == 'BLACK' then
-							grid[i][j].legalMove = true
-						end
-						--RENDER LEGALMOVEHIGHLIGHTS UPON MOUSEOVER
-						if mouseYGrid == i and mouseXGrid == j and grid[mouseYGrid][mouseXGrid].stackControl == 'BLACK' then
-							grid[i][j].legalMoveHighlight = true
-						else
-							grid[i][j].legalMoveHighlight = false
-						end
+					if mouseYGrid == i and mouseXGrid == j and grid[mouseYGrid][mouseXGrid].legalMove then
+						grid[i][j].legalMoveHighlight = true
+					else
+						grid[i][j].legalMoveHighlight = false
 					end
 				end
 			end
+
+		
 	
 			function love.mousepressed(x, y, button) --LOCK IN MOVEMENT ORIGIN GRID
 				if button == 1 then
@@ -629,8 +688,9 @@ function PlayState:update(dt)
 			end
 
 		elseif movementEvent == 3 then --SELECT FM GRID
-		
-			if movementOriginRow == 1 and movementOriginColumn == 1 then --CORNERCASES 
+
+			 --CORNERCASES 
+			if movementOriginRow == 1 and movementOriginColumn == 1 then
 				grid[1][2].legalMove = true
 				grid[2][1].legalMove = true
 			elseif movementOriginRow == 1 and movementOriginColumn == 5 then
@@ -645,7 +705,7 @@ function PlayState:update(dt)
 			end
 
 			--EDGECASES
-			if movementOriginRow == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
+			if movementOriginColumn == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
 				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
 				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
 				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
