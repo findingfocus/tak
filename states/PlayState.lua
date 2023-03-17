@@ -200,6 +200,7 @@ function playerSwapGridReset()
 			grid[i][j].moveLockedHighlight = false
 		end
 	end
+	stoneSelect = 1
 	moveType = 'place'
 	movementEvent = 0
 	lowestMSStackOrder = 1
@@ -465,6 +466,9 @@ function PlayState:update(dt)
 
 ---[[SWAP MOVETYPES
 	if moveType == 'place' then
+
+		movementEvent = 0
+
 		if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
 			sounds['beep']:play()
 			moveType = 'move'
@@ -537,6 +541,8 @@ function PlayState:update(dt)
 					player = player == 1 and 2 or 1
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
+					falsifyAllOccupantsLegalMove()
+					mEvent1LegalMovesPopulated = false
 				end
 			end
 		end
@@ -554,7 +560,7 @@ function PlayState:update(dt)
 		end
 		
 		if movementEvent == 1 then --LEGAL MOVE HIGHLIGHTS
-			 if mEvent1LegalMovesPopulated == false then
+			if mEvent1LegalMovesPopulated == false then
 				for i = 1, 5 do
 					for j = 1, 5 do
 						if player == 1 then --SET LEGAL MOVES UPON STACKCONTROL
@@ -571,7 +577,31 @@ function PlayState:update(dt)
 						if i == 1 and j == 1 then
 							if grid[1][2].stoneControl == 'SS' or grid[1][2].stoneControl == 'CS' or grid[1][2].occupants == 14 then
 								if grid[2][1].stoneControl == 'SS' or grid[2][1].stoneControl == 'CS' or grid[2][1].occupants == 14 then
-									grid[i][j].legalMove = false
+									grid[1][1].legalMove = false
+								end
+							end
+						end
+
+						if i == 1 and j == 5 then
+							if grid[1][4].stoneControl == 'SS' or grid[1][4].stoneControl == 'CS' or grid[1][4].occupants == 14 then
+								if grid[2][5].stoneControl == 'SS' or grid[2][5].stoneControl == 'CS' or grid[2][5].occupants == 14 then
+									grid[1][5].legalMove = false
+								end
+							end
+						end
+
+						if i == 5 and j == 1 then
+							if grid[4][1].stoneControl == 'SS' or grid[4][1].stoneControl == 'CS' or grid[4][1].occupants == 14 then
+								if grid[5][2].stoneControl == 'SS' or grid[5][2].stoneControl == 'CS' or grid[5][2].occupants == 14 then
+									grid[5][1].legalMove = false
+								end
+							end
+						end
+
+						if i == 5 and j == 5 then
+							if grid[4][5].stoneControl == 'SS' or grid[4][5].stoneControl == 'CS' or grid[4][5].occupants == 14 then
+								if grid[5][4].stoneControl == 'SS' or grid[5][4].stoneControl == 'CS' or grid[5][4].occupants == 14 then
+									grid[5][5].legalMove = false
 								end
 							end
 						end
@@ -1104,6 +1134,7 @@ function PlayState:render()
 		love.graphics.print('.occupied: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('secondMovementRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
+		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 	end
 
 	--STONE COUNT
