@@ -324,6 +324,54 @@ function NextMoveIllegal()
 	end
 end
 
+function LeftEdgeIllegalMove(i, j)
+	if grid[i][j].legalMove then
+		if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
+			if grid[i][j + 1].stoneControl == 'SS' or grid[i][j + 1].stoneControl == 'CS' or grid[i][j + 1].occupants == 14 then
+				if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then
+					grid[i][j].legalMove = false
+				end
+			end
+		end
+	end
+end
+
+function TopEdgeIllegalMove(i, j)
+	if grid[i][j].legalMove then
+		if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
+			if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then
+				if grid[i][j + 1].stoneControl == 'SS' or grid[i][j + 1].stoneControl == 'CS' or grid[i][j + 1].occupants == 14 then
+					grid[i][j].legalMove = false
+				end
+			end
+		end
+	end
+end
+
+function RightEdgeIllegalMove(i, j)
+	if grid[i][j].legalMove then
+		if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
+			if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
+				if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then
+					grid[i][j].legalMove = false
+				end
+			end
+		end
+	end
+end
+
+function BottomEdgeIllegalMove(i, j)
+	if grid[i][j].legalMove then
+		if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
+			if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
+				if grid[i][j + 1].stoneControl == 'SS' or grid[i][j + 1].stoneControl == 'CS' or grid[i][j + 1].occupants == 14 then
+					grid[i][j].legalMove = false
+				end
+			end
+		end
+	end
+end
+
 function PlayState:update(dt)
 ---[[DEBUG OPTIONS
 	if love.keyboard.isDown('2') then
@@ -605,6 +653,48 @@ function PlayState:update(dt)
 								end
 							end
 						end
+
+						--EDGECASES
+						if j == 1 and i ~= 1 and i ~= 5 then --LEFTEDGE
+							if i == 2 then
+								LeftEdgeIllegalMove(i, j)
+							elseif i == 3 then
+								LeftEdgeIllegalMove(i, j)
+							elseif i == 4 then
+								LeftEdgeIllegalMove(i, j)
+							end
+						end
+
+						if i == 1 and j ~= 1 and j ~= 5 then --TOPEDGE
+							if j == 2 then 
+								TopEdgeIllegalMove(i, j)
+							elseif j == 3 then
+								TopEdgeIllegalMove(i, j)
+							elseif j == 4 then
+								TopEdgeIllegalMove(i, j)
+							end
+						end
+
+						if j == 5 and i ~= 1 and i ~= 5 then --RIGHTEDGE
+							if i == 2 then
+								RightEdgeIllegalMove(i, j)
+							elseif i == 3 then
+								RightEdgeIllegalMove(i, j)
+							elseif i == 4 then
+								RightEdgeIllegalMove(i, j)
+							end
+						end
+
+						if i == 5 and j ~= 1 and j ~= 5 then --BOTTOMEDGE
+							if j == 2 then
+								BottomEdgeIllegalMove(i, j)
+							elseif j == 3 then
+								BottomEdgeIllegalMove(i, j)
+							elseif j == 4 then
+								BottomEdgeIllegalMove(i, j)
+							end
+						end
+
 						--[[
 						elseif i == 1 and j == 5 then
 							grid[1][4].legalMove = true
