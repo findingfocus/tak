@@ -17,6 +17,7 @@ function resetBoard()
 	stoneSelect = 1
 	movementEvent = 0
 	debugOption = 1
+	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
 	hideMouseStone = false
@@ -204,6 +205,7 @@ function playerSwapGridReset()
 	moveType = 'place'
 	movementEvent = 0
 	lowestMSStackOrder = 1
+	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
 	movementOriginRow = nil
@@ -369,6 +371,35 @@ function BottomEdgeIllegalMove(i, j)
 				end
 			end
 		end
+	end
+end
+
+function HighestSurroundingOccupants(i, j)
+	--CORNERCASES
+	if i == 1 and j == 1 then --TOP LEFT
+		highestSurroundingOccupants = math.max(grid[1][2].occupants, grid[2][1].occupants)
+	elseif i == 1 and j == 5 then --TOP RIGHT
+		highestSurroundingOccupants = math.max(grid[1][4].occupants, grid[2][5].occupants)
+	elseif i == 5 and j == 1 then --BOTTOM LEFT
+		highestSurroundingOccupants = math.max(grid[4][1].occupants, grid[5][2].occupants)
+	elseif i == 5 and j == 5 then --BOTTOM RIGHT
+		highestSurroundingOccupants = math.max(grid[4][5].occupants, grid[5][4].occupants)
+	end
+
+	--EDGECASES
+	if i == 1 and j ~= 1 and j ~= 5 then --TOP EDGE
+		highestSurroundingOccupants = math.max(grid[i][j - 1].occupants, grid[i + 1][j].occupants, grid[i][j + 1].occupants)
+	elseif j == 5 and i ~= 1 and i ~= 5 then --RIGHT EDGE
+		highestSurroundingOccupants = math.max(grid[i - 1][j].occupants, grid[i][j - 1].occupants, grid[i + 1][j].occupants)
+	elseif i == 5 and j ~= 1 and j ~= 5 then --BOTTOM EDGE
+		highestSurroundingOccupants = math.max(grid[i][j - 1], grid[i - 1][j].occupants, grid[i][j + 1])
+	elseif i == 1 and j ~= 1 and j ~= 5 then --LEFT SIDE
+		highestSurroundingOccupants = math.max(grid[i - 1][j].occupants, grid[i][j + 1].occupants, grid[i + 1][j].occupants)
+	end
+
+	--MIDDLECASES
+	if i > 1 and i < 5 and j > 1 and j < 5 then
+		highestSurroundingOccupants = math.max(grid[i][j - 1].occupants, grid[i - 1][j].occupants, grid[i][j + 1].occupants, grid[i + 1][j].occupants)
 	end
 end
 
@@ -774,10 +805,20 @@ function PlayState:update(dt)
 						movementOriginRow = mouseYGrid
 						movementOriginColumn = mouseXGrid
 
+						HighestSurroundingOccupants(movementOriginRow, movementOriginColumn)
+
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
-							stonesToCopy = 5
+							if highestSurroundingOccupants < 10 then
+								stonesToCopy = 5
+							elseif highestSurroundingOccupants > 9 then
+								stonesToCopy = 14 - highestSurroundingOccupants
+							end
 						else
-							stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
+							if highestSurroundingOccupants <= 10 then
+								stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
+							elseif highestSurroundingOccupants > 10 then
+								stonesToCopy = math.min(14 - highestSurroundingOccupants, grid[mouseYGrid][mouseXGrid].occupants)
+							end
 						end
 
 						for i = 1, stonesToCopy do --COPY OVER <5 STONES
@@ -1210,6 +1251,9 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
+		love.graphics.print('HSurroundingOcc: ' .. tostring(highestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
+
 	end
 
 	if debugOption == 2 then
