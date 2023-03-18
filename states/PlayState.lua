@@ -623,7 +623,7 @@ function PlayState:update(dt)
 
 						--CORNERCASES 
 						if i == 1 and j == 1 then
-							if grid[1][2].stoneControl == 'SS' or grid[1][2].stoneControl == 'CS' or grid[1][2].occupants == 14 then
+							if grid[1][2].stoneControl == 'SS' or grid[1][2].stoneControl == 'CS' or grid[1][2].occupants == 14--[[(math.min(grid[1][1].occupants, 5) + grid[1][2].occupants) > 14]] then
 								if grid[2][1].stoneControl == 'SS' or grid[2][1].stoneControl == 'CS' or grid[2][1].occupants == 14 then
 									grid[1][1].legalMove = false
 								end
@@ -692,6 +692,20 @@ function PlayState:update(dt)
 								BottomEdgeIllegalMove(i, j)
 							elseif j == 4 then
 								BottomEdgeIllegalMove(i, j)
+							end
+						end
+
+						if i ~= 1 and i ~= 5 and j ~= 1 and j ~= 5 then
+							if grid[i][j].legalMove then
+								if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then--(math.min(grid[i][j].occupants, 5) + grid[i - 1][j].occupants > 14) then --TOP
+									if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then --(math.min(grid[i][j].occupants, 5) + grid[i + 1][j].occupants > 14) then --BOTTOM
+										if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then --(math.min(grid[i][j].occupants, 5) + grid[i][j - 1].occupants > 14) then --LEFT
+											if grid[i][j + 1].stoneControl == 'SS' or grid[i][j + 1].stoneControl == 'CS' or grid[i][j + 1].occupants == 14 then --(math.min(grid[i][j].occupants, 5) + grid[i][j + 1].occupants > 14) then --RIGHT
+												grid[i][j].legalMove = false
+											end
+										end
+									end
+								end
 							end
 						end
 
