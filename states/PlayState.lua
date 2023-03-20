@@ -17,6 +17,7 @@ function resetBoard()
 	stoneSelect = 1
 	movementEvent = 0
 	debugOption = 1
+	legalMoveCount = 0
 	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
@@ -205,6 +206,7 @@ function playerSwapGridReset()
 	moveType = 'place'
 	movementEvent = 0
 	lowestMSStackOrder = 1
+	legalMoveCount = 0
 	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
@@ -807,6 +809,13 @@ function PlayState:update(dt)
 
 						HighestSurroundingOccupants(movementOriginRow, movementOriginColumn)
 
+
+						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
+							stonesToCopy = 5
+						else
+							stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
+						end
+						--[[
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
 							if highestSurroundingOccupants < 10 then
 								stonesToCopy = 5
@@ -820,6 +829,8 @@ function PlayState:update(dt)
 								stonesToCopy = math.min(14 - highestSurroundingOccupants, grid[mouseYGrid][mouseXGrid].occupants)
 							end
 						end
+						--]]
+
 
 						for i = 1, stonesToCopy do --COPY OVER <5 STONES
 							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor
@@ -839,6 +850,66 @@ function PlayState:update(dt)
 						updateStackControl(grid[mouseYGrid][mouseXGrid])
 
 						falsifyAllOccupantsLegalMove() --FALSIFY ALL LEGAL MOVES ONCE MOVEMENTORIGIN LOCKED
+						
+						--CORNERCASES 
+						if movementOriginRow == 1 and movementOriginColumn == 1 then
+							grid[1][2].legalMove = true
+							grid[2][1].legalMove = true
+						elseif movementOriginRow == 1 and movementOriginColumn == 5 then
+							grid[1][4].legalMove = true
+							grid[2][5].legalMove = true
+						elseif movementOriginRow == 5 and movementOriginColumn == 1 then
+							grid[4][1].legalMove = true
+							grid[5][2].legalMove = true
+						elseif movementOriginRow == 5 and movementOriginColumn == 5 then
+							grid[5][4].legalMove = true
+							grid[4][5].legalMove = true
+						end
+
+						--EDGECASES
+						if movementOriginColumn == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+						elseif movementOriginColumn == 5 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --RIGHT EDGE
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+						elseif movementOriginRow == 1 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --TOP EDGE
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+						elseif movementOriginRow == 5 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --BOTTOM EDGE
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+						end
+
+
+						--MIDDLECASES
+						if movementOriginColumn > 1 and movementOriginColumn < 5 and movementOriginRow > 1 and movementOriginRow < 5 then
+							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
+							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
+							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
+						end
+
+						for i = 1, 5 do
+							for j = 1, 5 do
+								if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
+									grid[i][j].legalMove = false
+								end
+							end
+						end
+
+						for i = 1, 5 do
+							for j = 1, 5 do
+								if grid[i][j].legalMove then
+									legalMoveCount = legalMoveCount + 1
+							end
+						end
+				end
+
 
 						for i = 1, MAX_STONE_HEIGHT do
 							if mouseStones.members[i].stackOrder ~= nil then
@@ -852,69 +923,44 @@ function PlayState:update(dt)
 			end
 
 		elseif movementEvent == 2 then --DROP STONES IN MO
+
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN MOVEMENT ORIGIN
 				DropStone(grid[movementOriginRow][movementOriginColumn], 1) --Second Argument is grid occupant to drop stones into
 			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
 				PickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
-				updateStackControl(grid[movementOriginRow][movementOriginColumn])
-				movementEvent = 3
+
+				if legalMoveCount == 1 then
+					for i = 1, 5 do
+						for j = 1, 5 do
+							if grid[i][j].legalMove then
+								if mouseStones.occupants + grid[i][j].occupants <= 14 then
+									updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+									updateStackControl(grid[movementOriginRow][movementOriginColumn])
+									movementEvent = 3
+								end
+							end
+						end
+					end
+				else
+					for i = 1 , 5 do
+						for j = 1, 5 do
+							if grid[i][j].legalMove then
+								if mouseStones.occupants + grid[i][j].occupants > 14 then
+									grid[i][j].legalMove = false
+								end
+							end
+						end
+					end
+					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+					updateStackControl(grid[movementOriginRow][movementOriginColumn])
+					movementEvent = 3
+				end
 			end
 
 		elseif movementEvent == 3 then --SELECT FM GRID
-
-			 --CORNERCASES 
-			if movementOriginRow == 1 and movementOriginColumn == 1 then
-				grid[1][2].legalMove = true
-				grid[2][1].legalMove = true
-			elseif movementOriginRow == 1 and movementOriginColumn == 5 then
-				grid[1][4].legalMove = true
-				grid[2][5].legalMove = true
-			elseif movementOriginRow == 5 and movementOriginColumn == 1 then
-				grid[4][1].legalMove = true
-				grid[5][2].legalMove = true
-			elseif movementOriginRow == 5 and movementOriginColumn == 5 then
-				grid[5][4].legalMove = true
-				grid[4][5].legalMove = true
-			end
-
-			--EDGECASES
-			if movementOriginColumn == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
-				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-			elseif movementOriginColumn == 5 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --RIGHT EDGE
-				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-			elseif movementOriginRow == 1 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --TOP EDGE
-				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-			elseif movementOriginRow == 5 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then --BOTTOM EDGE
-				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-			end
-
-
-			--MIDDLECASES
-			if movementOriginColumn > 1 and movementOriginColumn < 5 and movementOriginRow > 1 and movementOriginRow < 5 then
-				grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-				grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-				grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-			end
-
-
-			--FALSIFYING LEGAL MOVES
 			for i = 1, 5 do
 				for j = 1, 5 do
-					if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
-						grid[i][j].legalMove = false
-					end
-
 					if mouseYGrid == i and mouseXGrid == j then --LEGALMOVE HIGHLIGHTS UPON MOUSEOVER
 						if grid[i][j].legalMove then
 							grid[i][j].legalMoveHighlight = true
@@ -1251,8 +1297,7 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		love.graphics.print('HSurroundingOcc: ' .. tostring(highestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
+		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 
 	end
 
@@ -1283,6 +1328,7 @@ function PlayState:render()
 		love.graphics.print('secondMovementRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('LegalMoveCount: ' .. tostring(legalMoveCount), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 	end
 
 	--STONE COUNT
