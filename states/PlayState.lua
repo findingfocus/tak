@@ -18,7 +18,6 @@ function resetBoard()
 	movementEvent = 0
 	debugOption = 1
 	legalMoveCount = 0
-	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
 	hideMouseStone = false
@@ -67,97 +66,37 @@ function resetBoard()
 		end
 	end
 
----[[10-STACK TESTER
-	grid[1][4].members[1].stoneColor = 'WHITE'
-	grid[1][4].members[1].stoneType = 'LS'
-	grid[1][4].occupied = true
-	grid[1][4].stackControl = 'WHITE'
-	grid[1][4].members[1].stackOrder = 1
+	testerPopulate(1, 3, 14)
+	testerPopulate(2, 2, 13)
+	testerPopulate(2, 4, 13)
+	testerPopulate(2, 3, 5)
+	grid[3][3].occupied = true
+	grid[3][3].members[1].stoneType = 'CS'
+	grid[3][3].members[1].stoneColor = 'CS'
+	grid[3][3].occupants = 1
+	grid[3][3].stackControl = 'BLACK'
+	grid[3][3].stoneControl = 'CS'
+end
 
-	grid[1][4].members[2].stoneColor = 'BLACK'
-	grid[1][4].members[2].stoneType = 'LS'
-	grid[1][4].stackControl = 'BLACK'
-	grid[1][4].members[2].stackOrder = 2
+function testerPopulate(row, column, stoneAmount)
+	grid[row][column].occupied = true
+	stoneColor = 1
+	for i = 1, stoneAmount do
+		if stoneColor == 1 then
+			grid[row][column].members[i].stoneColor = 'WHITE'
+		elseif stoneColor == 2 then
+			grid[row][column].members[i].stoneColor = 'BLACK'
+		end
 
-	grid[1][4].members[3].stoneColor = 'WHITE'
-	grid[1][4].members[3].stoneType = 'LS'
-	grid[1][4].stackControl = 'WHITE'
-	grid[1][4].members[3].stackOrder = 3
+		stoneColor = stoneColor == 1 and 2 or 1
 
-	grid[1][4].members[4].stoneColor = 'BLACK'
-	grid[1][4].members[4].stoneType = 'LS'
-	grid[1][4].stackControl = 'BLACK'
-	grid[1][4].members[4].stackOrder = 4
-	grid[1][4].occupants = 4
+		grid[row][column].members[i].stoneType = 'LS'
+		grid[row][column].members[i].stackOrder = i
+	end
 
----[[
-	grid[1][4].members[5].stoneColor = 'WHITE'
-	grid[1][4].members[5].stoneType = 'LS'
-	grid[1][4].stackControl = 'WHITE'
-	grid[1][4].members[5].stackOrder = 5
-	grid[1][4].occupants = 5
-
-	grid[1][4].members[6].stoneColor = 'BLACK'
-	grid[1][4].members[6].stoneType = 'LS'
-	grid[1][4].stackControl = 'BLACK'
-	grid[1][4].members[6].stackOrder = 6
-
-	grid[1][4].members[7].stoneColor = 'WHITE'
-	grid[1][4].members[7].stoneType = 'LS'
-	grid[1][4].stackControl = 'WHITE'
-	grid[1][4].members[7].stackOrder = 7
-
-	grid[1][4].members[8].stoneColor = 'BLACK'
-	grid[1][4].members[8].stoneType = 'LS'
-	grid[1][4].stackControl = 'BLACK'
-	grid[1][4].members[8].stackOrder = 8
-
-	grid[1][4].members[9].stoneColor = 'WHITE'
-	grid[1][4].members[9].stoneType = 'LS'
-	grid[1][4].stackControl = 'WHITE'
-	grid[1][4].stoneControl = 'LS'
-	grid[1][4].members[9].stackOrder = 9
-	--grid[1][4].occupants = 9
-
-
-
-
-	grid[1][4].members[10].stoneColor = 'BLACK'
-	grid[1][4].members[10].stoneType = 'LS'
-	grid[1][4].stackControl = 'BLACK'
-	grid[1][4].stoneControl = 'LS'
-	grid[1][4].members[10].stackOrder =10
-
-	grid[1][4].occupants = 10
---]]
-
----[[3-STACK TESTER
-	grid[1][5].members[1].stoneColor = 'WHITE'
-	grid[1][5].members[1].stoneType = 'LS'
-	grid[1][5].occupied = true
-	--grid[1][4].stackControl = 'WHITE'
-	grid[1][5].members[1].stackOrder = 1
-
-	grid[1][5].members[2].stoneColor = 'BLACK'
-	grid[1][5].members[2].stoneType = 'LS'
-	--grid[1][4].stackControl = 'BLACK'
-	grid[1][5].members[2].stackOrder = 2
-
-	grid[1][5].members[3].stoneColor = 'WHITE'
-	grid[1][5].members[3].stoneType = 'LS'
-	grid[1][5].stackControl = 'WHITE'
-	grid[1][5].members[3].stackOrder = 3
-
-	grid[1][5].members[4].stoneColor = 'BLACK'
-	grid[1][5].members[4].stoneType = 'SS'
-	grid[1][5].stackControl = 'BLACK'
-	grid[1][5].members[4].stackOrder = 4
-	grid[1][5].stoneControl = 'SS'
-
-	grid[1][5].occupants = 4
-	
-	--updateStoneControl(grid[1][4])
---]]
+	grid[row][column].occupants = stoneAmount
+	grid[row][column].stackControl = grid[row][column].members[stoneAmount].stoneColor
+	grid[row][column].stoneControl = grid[row][column].members[stoneAmount].stoneColor
 end
 
 function updateStackControl(Occupant)
@@ -207,7 +146,6 @@ function playerSwapGridReset()
 	movementEvent = 0
 	lowestMSStackOrder = 1
 	legalMoveCount = 0
-	highestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
 	movementOriginRow = nil
@@ -373,35 +311,6 @@ function BottomEdgeIllegalMove(i, j)
 				end
 			end
 		end
-	end
-end
-
-function HighestSurroundingOccupants(i, j)
-	--CORNERCASES
-	if i == 1 and j == 1 then --TOP LEFT
-		highestSurroundingOccupants = math.max(grid[1][2].occupants, grid[2][1].occupants)
-	elseif i == 1 and j == 5 then --TOP RIGHT
-		highestSurroundingOccupants = math.max(grid[1][4].occupants, grid[2][5].occupants)
-	elseif i == 5 and j == 1 then --BOTTOM LEFT
-		highestSurroundingOccupants = math.max(grid[4][1].occupants, grid[5][2].occupants)
-	elseif i == 5 and j == 5 then --BOTTOM RIGHT
-		highestSurroundingOccupants = math.max(grid[4][5].occupants, grid[5][4].occupants)
-	end
-
-	--EDGECASES
-	if i == 1 and j ~= 1 and j ~= 5 then --TOP EDGE
-		highestSurroundingOccupants = math.max(grid[i][j - 1].occupants, grid[i + 1][j].occupants, grid[i][j + 1].occupants)
-	elseif j == 5 and i ~= 1 and i ~= 5 then --RIGHT EDGE
-		highestSurroundingOccupants = math.max(grid[i - 1][j].occupants, grid[i][j - 1].occupants, grid[i + 1][j].occupants)
-	elseif i == 5 and j ~= 1 and j ~= 5 then --BOTTOM EDGE
-		highestSurroundingOccupants = math.max(grid[i][j - 1], grid[i - 1][j].occupants, grid[i][j + 1])
-	elseif i == 1 and j ~= 1 and j ~= 5 then --LEFT SIDE
-		highestSurroundingOccupants = math.max(grid[i - 1][j].occupants, grid[i][j + 1].occupants, grid[i + 1][j].occupants)
-	end
-
-	--MIDDLECASES
-	if i > 1 and i < 5 and j > 1 and j < 5 then
-		highestSurroundingOccupants = math.max(grid[i][j - 1].occupants, grid[i - 1][j].occupants, grid[i][j + 1].occupants, grid[i + 1][j].occupants)
 	end
 end
 
@@ -741,47 +650,6 @@ function PlayState:update(dt)
 								end
 							end
 						end
-
-						--[[
-						elseif i == 1 and j == 5 then
-							grid[1][4].legalMove = true
-							grid[2][5].legalMove = true
-						elseif i == 5 and j == 1 then
-							grid[4][1].legalMove = true
-							grid[5][2].legalMove = true
-						elseif i == 5 and j == 5 then
-							grid[5][4].legalMove = true
-							grid[4][5].legalMove = true
-						end
-
-						--EDGECASES
-						if i == 1 and movementOriginRow ~= 1 and i ~= 5 then --LEFT EDGE
-							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-						elseif j == 5 and i ~= 1 and i ~= 5 then --RIGHT EDGE
-							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-						elseif i == 1 and j ~= 1 and j ~= 5 then --TOP EDGE
-							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-						elseif i == 5 and j ~= 1 and j ~= 5 then --BOTTOM EDGE
-							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-						end
-
-
-						--MIDDLECASES
-						if j > 1 and j < 5 and i > 1 and i < 5 then
-							grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-						end
-						--]]
 					end
 				end
 				mEvent1LegalMovesPopulated = true
@@ -807,30 +675,11 @@ function PlayState:update(dt)
 						movementOriginRow = mouseYGrid
 						movementOriginColumn = mouseXGrid
 
-						HighestSurroundingOccupants(movementOriginRow, movementOriginColumn)
-
-
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
 							stonesToCopy = 5
 						else
 							stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
 						end
-						--[[
-						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
-							if highestSurroundingOccupants < 10 then
-								stonesToCopy = 5
-							elseif highestSurroundingOccupants > 9 then
-								stonesToCopy = 14 - highestSurroundingOccupants
-							end
-						else
-							if highestSurroundingOccupants <= 10 then
-								stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
-							elseif highestSurroundingOccupants > 10 then
-								stonesToCopy = math.min(14 - highestSurroundingOccupants, grid[mouseYGrid][mouseXGrid].occupants)
-							end
-						end
-						--]]
-
 
 						for i = 1, stonesToCopy do --COPY OVER <5 STONES
 							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor
@@ -906,11 +755,10 @@ function PlayState:update(dt)
 							for j = 1, 5 do
 								if grid[i][j].legalMove then
 									legalMoveCount = legalMoveCount + 1
+								end
 							end
 						end
-				end
-
-
+			
 						for i = 1, MAX_STONE_HEIGHT do
 							if mouseStones.members[i].stackOrder ~= nil then
 								lowestMSStackOrder = mouseStones.members[i].stackOrder

@@ -9,7 +9,7 @@ function Member:init(stoneColor, stoneType, x, y)
 	self.stoneType = stoneType
 	self.x = x
 	self.y = y
-	self.stackOrder = nil
+	self.stackOrder = 0
 	self.originalStackOrder = nil
 end
 
