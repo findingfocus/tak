@@ -18,6 +18,7 @@ function resetBoard()
 	movementEvent = 0
 	debugOption = 1
 	legalMoveCount = 0
+	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
 	hideMouseStone = false
@@ -66,16 +67,11 @@ function resetBoard()
 		end
 	end
 
-	testerPopulate(1, 3, 14)
+	testerPopulate(1, 3, 13)
 	testerPopulate(2, 2, 13)
-	testerPopulate(2, 4, 13)
+	testerPopulate(2, 4, 11)
 	testerPopulate(2, 3, 5)
-	grid[3][3].occupied = true
-	grid[3][3].members[1].stoneType = 'CS'
-	grid[3][3].members[1].stoneColor = 'CS'
-	grid[3][3].occupants = 1
-	grid[3][3].stackControl = 'BLACK'
-	grid[3][3].stoneControl = 'CS'
+	obstaclePopulate(3, 3, 'CS', 'BLACK')
 end
 
 function testerPopulate(row, column, stoneAmount)
@@ -97,6 +93,15 @@ function testerPopulate(row, column, stoneAmount)
 	grid[row][column].occupants = stoneAmount
 	grid[row][column].stackControl = grid[row][column].members[stoneAmount].stoneColor
 	grid[row][column].stoneControl = grid[row][column].members[stoneAmount].stoneColor
+end
+
+function obstaclePopulate(row, column, stoneType, stoneColor)
+	grid[row][column].occupied = true
+	grid[row][column].members[1].stoneType = stoneType
+	grid[row][column].stoneControl = stoneType
+	grid[row][column].members[1].stoneColor = stoneColor
+	grid[row][column].stackControl = stoneColora
+	grid[row][column].occupants = 1
 end
 
 function updateStackControl(Occupant)
@@ -125,7 +130,7 @@ function falsifyAllOccupantsLegalMove()
 	end
 end
 
-function ClearContol(Occupant)
+function clearContol(Occupant)
 	Occupant.legalMoveHighlight = false
 	Occupant.occupied = false
 	Occupant.stoneControl = nil
@@ -146,6 +151,7 @@ function playerSwapGridReset()
 	movementEvent = 0
 	lowestMSStackOrder = 1
 	legalMoveCount = 0
+	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
 	movementOriginRow = nil
@@ -173,7 +179,7 @@ function playerSwapGridReset()
 	offGrid = false
 end
 
-function DropStone(Occupant, Option)
+function dropStone(Occupant, Option)
 	sounds['stone']:play()
 	Occupant.occupants = Occupant.occupants + 1
 	mouseStones.occupants = mouseStones.occupants - 1
@@ -202,7 +208,7 @@ function DropStone(Occupant, Option)
 	end
 end
 
-function PickUpStone(Occupant, Option)
+function pickUpStone(Occupant, Option)
 	sounds['stone']:play()
 	occupantIndex = Occupant.occupants
 	Occupant.occupants = Occupant.occupants - 1
@@ -231,7 +237,7 @@ function PickUpStone(Occupant, Option)
 	lowestMSStackOrder = lowestMSStackOrder - 1
 end
 
-function NextMoveOffGrid(currentGridRow, currentGridColumn)
+function nextMoveOffGrid(currentGridRow, currentGridColumn)
 	if upDirection then
 		nextMoveRow = currentGridRow - 1
 		nextMoveColumn = currentGridColumn
@@ -258,7 +264,7 @@ function NextMoveOffGrid(currentGridRow, currentGridColumn)
 	end
 end
 
-function NextMoveIllegal()
+function nextMoveIllegal()
 	if nextMoveRow > 1 and nextMoveRow < 5 and nextMoveColumn > 1 and nextMoveColumn < 5 then
 		if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
 			offGrid = true
@@ -266,7 +272,7 @@ function NextMoveIllegal()
 	end
 end
 
-function LeftEdgeIllegalMove(i, j)
+function leftEdgeIllegalMove(i, j)
 	if grid[i][j].legalMove then
 		if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
 			if grid[i][j + 1].stoneControl == 'SS' or grid[i][j + 1].stoneControl == 'CS' or grid[i][j + 1].occupants == 14 then
@@ -278,7 +284,7 @@ function LeftEdgeIllegalMove(i, j)
 	end
 end
 
-function TopEdgeIllegalMove(i, j)
+function topEdgeIllegalMove(i, j)
 	if grid[i][j].legalMove then
 		if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
 			if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then
@@ -290,7 +296,7 @@ function TopEdgeIllegalMove(i, j)
 	end
 end
 
-function RightEdgeIllegalMove(i, j)
+function rightEdgeIllegalMove(i, j)
 	if grid[i][j].legalMove then
 		if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
 			if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
@@ -302,7 +308,7 @@ function RightEdgeIllegalMove(i, j)
 	end
 end
 
-function BottomEdgeIllegalMove(i, j)
+function bottomEdgeIllegalMove(i, j)
 	if grid[i][j].legalMove then
 		if grid[i][j - 1].stoneControl == 'SS' or grid[i][j - 1].stoneControl == 'CS' or grid[i][j - 1].occupants == 14 then
 			if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then
@@ -312,6 +318,72 @@ function BottomEdgeIllegalMove(i, j)
 			end
 		end
 	end
+end
+
+function lowestSurroundingOccupants(originRow, originColumn)
+	--only count non CS or SS stack controls
+
+	--CC
+	if originRow == 1 and originColumn == 1 then --TL
+		if grid[1][2].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[1][2].occupants	
+			elseif grid[1][2].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[1][2].occupants
+			end 
+		elseif grid[2][1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[2][1].occupants	
+			elseif grid[2][1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[1][2].occupants
+			end 
+		end
+	elseif originRow == 1 and originColumn == 5 then --TR
+		if grid[1][4].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[1][4].occupants
+			elseif grid[1][4].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[1][4].occupants
+			end
+		elseif grid[2][5].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[2][5].occupants
+			elseif grid[2][5].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[2][5].occupants
+			end
+		end
+	elseif	originRow == 5 and originColumn == 1 then --BL
+		if grid[4][1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[4][1].occupants
+			elseif grid[4][1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[4][1].occupants
+			end
+		elseif grid[5][2].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[5][2].occupants
+			elseif grid[5][2].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[5][2].occupants
+			end
+		end
+	elseif originRow == 5 and originColumn == 5 then --BR
+		if grid[4][5].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[4][5].occupants
+			elseif grid[4][5].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[4][5].occupants
+			end
+		elseif grid[5][4].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[5][4].occupants
+			elseif grid[5][4].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[5][4].occupants
+			end
+		end
+	end
+	--EC
+
+	--MC
 end
 
 function PlayState:update(dt)
@@ -599,41 +671,41 @@ function PlayState:update(dt)
 						--EDGECASES
 						if j == 1 and i ~= 1 and i ~= 5 then --LEFTEDGE
 							if i == 2 then
-								LeftEdgeIllegalMove(i, j)
+								leftEdgeIllegalMove(i, j)
 							elseif i == 3 then
-								LeftEdgeIllegalMove(i, j)
+								leftEdgeIllegalMove(i, j)
 							elseif i == 4 then
-								LeftEdgeIllegalMove(i, j)
+								leftEdgeIllegalMove(i, j)
 							end
 						end
 
 						if i == 1 and j ~= 1 and j ~= 5 then --TOPEDGE
 							if j == 2 then 
-								TopEdgeIllegalMove(i, j)
+								topEdgeIllegalMove(i, j)
 							elseif j == 3 then
-								TopEdgeIllegalMove(i, j)
+								topEdgeIllegalMove(i, j)
 							elseif j == 4 then
-								TopEdgeIllegalMove(i, j)
+								topEdgeIllegalMove(i, j)
 							end
 						end
 
 						if j == 5 and i ~= 1 and i ~= 5 then --RIGHTEDGE
 							if i == 2 then
-								RightEdgeIllegalMove(i, j)
+								rightEdgeIllegalMove(i, j)
 							elseif i == 3 then
-								RightEdgeIllegalMove(i, j)
+								rightEdgeIllegalMove(i, j)
 							elseif i == 4 then
-								RightEdgeIllegalMove(i, j)
+								rightEdgeIllegalMove(i, j)
 							end
 						end
 
 						if i == 5 and j ~= 1 and j ~= 5 then --BOTTOMEDGE
 							if j == 2 then
-								BottomEdgeIllegalMove(i, j)
+								bottomEdgeIllegalMove(i, j)
 							elseif j == 3 then
-								BottomEdgeIllegalMove(i, j)
+								bottomEdgeIllegalMove(i, j)
 							elseif j == 4 then
-								BottomEdgeIllegalMove(i, j)
+								bottomEdgeIllegalMove(i, j)
 							end
 						end
 
@@ -773,9 +845,9 @@ function PlayState:update(dt)
 		elseif movementEvent == 2 then --DROP STONES IN MO
 
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN MOVEMENT ORIGIN
-				DropStone(grid[movementOriginRow][movementOriginColumn], 1) --Second Argument is grid occupant to drop stones into
+				dropStone(grid[movementOriginRow][movementOriginColumn], 1) --Second Argument is grid occupant to drop stones into
 			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
-				PickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
+				pickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 
 				if legalMoveCount == 1 then
@@ -841,8 +913,8 @@ function PlayState:update(dt)
 										leftDirection = true
 									end
 									falsifyAllOccupantsLegalMove()
-									NextMoveOffGrid(firstMovementRow, firstMovementColumn)
-									NextMoveIllegal()
+									nextMoveOffGrid(firstMovementRow, firstMovementColumn)
+									nextMoveIllegal()
 									--IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
 									movementEvent = 4
 								end
@@ -854,11 +926,11 @@ function PlayState:update(dt)
 
 		elseif movementEvent == 4 then
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
-				DropStone(grid[firstMovementRow][firstMovementColumn], 2)
+				dropStone(grid[firstMovementRow][firstMovementColumn], 2)
 			end
 
 			if love.keyboard.wasPressed('up') and droppedInFirstMovement > 0 then
-				PickUpStone(grid[firstMovementRow][firstMovementColumn], 2)
+				pickUpStone(grid[firstMovementRow][firstMovementColumn], 2)
 			end
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
@@ -868,7 +940,7 @@ function PlayState:update(dt)
 						updateStackControl(grid[firstMovementRow][firstMovementColumn])
 						grid[firstMovementRow][firstMovementColumn].occupied = true
 						if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-							ClearContol(grid[movementOriginRow][movementOriginColumn])
+							clearContol(grid[movementOriginRow][movementOriginColumn])
 						end
 						playerSwapGridReset()
 					end
@@ -881,7 +953,7 @@ function PlayState:update(dt)
 							grid[movementOriginRow][movementOriginColumn].occupied = false
 						end
 					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-						ClearContol(grid[movementOriginRow][movementOriginColumn])
+						clearContol(grid[movementOriginRow][movementOriginColumn])
 					end
 					playerSwapGridReset()
 				elseif not offGrid and droppedInFirstMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
@@ -904,11 +976,11 @@ function PlayState:update(dt)
 					end
 
 					if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-						ClearContol(grid[movementOriginRow][movementOriginColumn])
+						clearContol(grid[movementOriginRow][movementOriginColumn])
 					end
 
-					NextMoveOffGrid(secondMovementRow, secondMovementColumn)
-					NextMoveIllegal()
+					nextMoveOffGrid(secondMovementRow, secondMovementColumn)
+					nextMoveIllegal()
 					movementEvent = 5
 				end
 			end
@@ -916,11 +988,11 @@ function PlayState:update(dt)
 		elseif movementEvent == 5 then
 			grid[secondMovementRow][secondMovementColumn].moveLockedHighlight = true
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
-				DropStone(grid[secondMovementRow][secondMovementColumn], 3)
+				dropStone(grid[secondMovementRow][secondMovementColumn], 3)
 			end
 
 			if love.keyboard.wasPressed('up') and droppedInSecondMovement > 0 then
-				PickUpStone(grid[secondMovementRow][secondMovementColumn], 3)
+				pickUpStone(grid[secondMovementRow][secondMovementColumn], 3)
 			end
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
@@ -957,8 +1029,8 @@ function PlayState:update(dt)
 						thirdMovementColumn = secondMovementColumn + 1
 					end
 
-					NextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-					NextMoveIllegal()
+					nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+					nextMoveIllegal()
 					movementEvent = 6
 				end
 			end
@@ -967,11 +1039,11 @@ function PlayState:update(dt)
 			grid[thirdMovementRow][thirdMovementColumn].moveLockedHighlight = true
 
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
-				DropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
+				dropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
 			end
 
 			if love.keyboard.wasPressed('up') and droppedInThirdMovement > 0 then
-				PickUpStone(grid[thirdMovementRow][thirdMovementColumn], 4)
+				pickUpStone(grid[thirdMovementRow][thirdMovementColumn], 4)
 			end
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
@@ -1008,8 +1080,8 @@ function PlayState:update(dt)
 						fourthMovementColumn = thirdMovementColumn + 1
 					end
 
-					NextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
-					NextMoveIllegal()
+					nextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
+					nextMoveIllegal()
 					movementEvent = 7
 				end
 			end
@@ -1017,7 +1089,7 @@ function PlayState:update(dt)
 		elseif movementEvent == 7 then
 			grid[fourthMovementRow][fourthMovementColumn].moveLockedHighlight = true
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
-				DropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
+				dropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
 			end
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
