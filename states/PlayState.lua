@@ -381,8 +381,90 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			end
 		end
 	end
-	--EC
 
+	--EC
+	if originRow == 1 and originColumn ~= 1 and originColumn ~= 5 then --TOP EDGE CASE --left, down, right
+		if grid[originRow][originColumn - 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			end
+		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			end
+		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			end
+		end
+	elseif originRow == 5 and originColumn ~= 1 and originColumn ~= 5 then --BOTTOM EDGE CASE --left, up, right
+		if grid[originRow][originColumn - 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			end
+		elseif grid[originRow - 1][originColumn].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			end
+		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			end
+		end
+	elseif originColumn == 1 and originRow ~= 1 and originRow ~= 5 then --LEFT EDGE CASE --up, right, down
+		if grid[originRow - 1][originColumn].stoneControl == 'LS' then 
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			end
+		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			end
+		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			end
+		end
+	elseif originColumn == 5 and originRow ~= 1 and originRow ~= 5 then --RIGHT EDGE CASE --up, left, down
+		if grid[originRow - 1][originColumn].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			end
+		elseif grid[originRow][originColumn - 1].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			end
+		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			end
+		end
+	end
+	
 	--MC
 end
 
