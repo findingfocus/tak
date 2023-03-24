@@ -17,7 +17,6 @@ function resetBoard()
 	stoneSelect = 1
 	movementEvent = 0
 	debugOption = 1
-	legalMoveCount = 0
 	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	toggleMouseStone = false
@@ -92,7 +91,7 @@ function testerPopulate(row, column, stoneAmount)
 
 	grid[row][column].occupants = stoneAmount
 	grid[row][column].stackControl = grid[row][column].members[stoneAmount].stoneColor
-	grid[row][column].stoneControl = grid[row][column].members[stoneAmount].stoneColor
+	grid[row][column].stoneControl = grid[row][column].members[stoneAmount].stoneType
 end
 
 function obstaclePopulate(row, column, stoneType, stoneColor)
@@ -150,7 +149,6 @@ function playerSwapGridReset()
 	moveType = 'place'
 	movementEvent = 0
 	lowestMSStackOrder = 1
-	legalMoveCount = 0
 	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	movementOriginLocked = false
@@ -320,10 +318,7 @@ function bottomEdgeIllegalMove(i, j)
 	end
 end
 
-function lowestSurroundingOccupants(originRow, originColumn)
-	--only count non CS or SS stack controls
-
-	--CC
+function lowestSurroundingOccupant(originRow, originColumn)
 	if originRow == 1 and originColumn == 1 then --TL
 		if grid[1][2].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
@@ -331,7 +326,9 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[1][2].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[1][2].occupants
 			end 
-		elseif grid[2][1].stoneControl == 'LS' then
+		end
+
+		if grid[2][1].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[2][1].occupants	
 			elseif grid[2][1].occupants < lowestSurroundingOccupants then
@@ -345,7 +342,9 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[1][4].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[1][4].occupants
 			end
-		elseif grid[2][5].stoneControl == 'LS' then
+		end
+
+		if grid[2][5].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[2][5].occupants
 			elseif grid[2][5].occupants < lowestSurroundingOccupants then
@@ -359,7 +358,9 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[4][1].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[4][1].occupants
 			end
-		elseif grid[5][2].stoneControl == 'LS' then
+		end
+		
+		if grid[5][2].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[5][2].occupants
 			elseif grid[5][2].occupants < lowestSurroundingOccupants then
@@ -373,7 +374,9 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[4][5].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[4][5].occupants
 			end
-		elseif grid[5][4].stoneControl == 'LS' then
+		end
+
+		if grid[5][4].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[5][4].occupants
 			elseif grid[5][4].occupants < lowestSurroundingOccupants then
@@ -390,13 +393,17 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
 			end
-		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+		end
+
+		if grid[originRow + 1][originColumn].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
 			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
 			end
-		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+		end
+
+		if grid[originRow][originColumn + 1].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
 			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
@@ -410,13 +417,17 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
 			end
-		elseif grid[originRow - 1][originColumn].stoneControl == 'LS' then
+		end
+
+		if grid[originRow - 1][originColumn].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
 			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
 			end
-		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+		end
+
+		if grid[originRow][originColumn + 1].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
 			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
@@ -430,13 +441,17 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
 			end
-		elseif grid[originRow][originColumn + 1].stoneControl == 'LS' then
+		end
+
+		if grid[originRow][originColumn + 1].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
 			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
 			end
-		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+		end
+
+		if grid[originRow + 1][originColumn].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
 			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
@@ -450,13 +465,17 @@ function lowestSurroundingOccupants(originRow, originColumn)
 			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
 			end
-		elseif grid[originRow][originColumn - 1].stoneControl == 'LS' then
+		end
+
+		if grid[originRow][originColumn - 1].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
 			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
 				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
 			end
-		elseif grid[originRow + 1][originColumn].stoneControl == 'LS' then
+		end
+
+		if grid[originRow + 1][originColumn].stoneControl == 'LS' then
 			if lowestSurroundingOccupants == nil then
 				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
 			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
@@ -466,6 +485,39 @@ function lowestSurroundingOccupants(originRow, originColumn)
 	end
 	
 	--MC
+	if originRow ~= 1 and originRow ~=5 and originColumn ~= 1 and originColumn ~= 5 then
+		if grid[originRow - 1][originColumn].stoneControl == 'LS' then --ABOVE
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			elseif grid[originRow - 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow - 1][originColumn].occupants
+			end
+		end
+
+		if grid[originRow][originColumn + 1].stoneControl == 'LS' then --TO THE RIGHT
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			elseif grid[originRow][originColumn + 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn + 1].occupants
+			end
+		end
+
+		if grid[originRow + 1][originColumn].stoneControl == 'LS' then --BELOW
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			elseif grid[originRow + 1][originColumn].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow + 1][originColumn].occupants
+			end
+		end
+
+		if grid[originRow][originColumn - 1].stoneControl == 'LS' then --TO THE LEFT
+			if lowestSurroundingOccupants == nil then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			elseif grid[originRow][originColumn - 1].occupants < lowestSurroundingOccupants then
+				lowestSurroundingOccupants = grid[originRow][originColumn - 1].occupants
+			end
+		end
+	end
 end
 
 function PlayState:update(dt)
@@ -828,6 +880,7 @@ function PlayState:update(dt)
 						--grid[mouseYGrid][mouseXGrid].legalMove = false
 						movementOriginRow = mouseYGrid
 						movementOriginColumn = mouseXGrid
+						lowestSurroundingOccupant(movementOriginRow, movementOriginColumn)
 
 						if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
 							stonesToCopy = 5
@@ -904,14 +957,6 @@ function PlayState:update(dt)
 								end
 							end
 						end
-
-						for i = 1, 5 do
-							for j = 1, 5 do
-								if grid[i][j].legalMove then
-									legalMoveCount = legalMoveCount + 1
-								end
-							end
-						end
 			
 						for i = 1, MAX_STONE_HEIGHT do
 							if mouseStones.members[i].stackOrder ~= nil then
@@ -931,20 +976,7 @@ function PlayState:update(dt)
 			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
 				pickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
-
-				if legalMoveCount == 1 then
-					for i = 1, 5 do
-						for j = 1, 5 do
-							if grid[i][j].legalMove then
-								if mouseStones.occupants + grid[i][j].occupants <= 14 then
-									updateStoneControl(grid[movementOriginRow][movementOriginColumn])
-									updateStackControl(grid[movementOriginRow][movementOriginColumn])
-									movementEvent = 3
-								end
-							end
-						end
-					end
-				else
+				if mouseStones.occupants + lowestSurroundingOccupants <= 14 then
 					for i = 1 , 5 do
 						for j = 1, 5 do
 							if grid[i][j].legalMove then
@@ -1299,7 +1331,8 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9) --lowestSurroundingOccupants
+		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants
 
 	end
 
@@ -1330,7 +1363,6 @@ function PlayState:render()
 		love.graphics.print('secondMovementRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		love.graphics.print('LegalMoveCount: ' .. tostring(legalMoveCount), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 	end
 
 	--STONE COUNT
