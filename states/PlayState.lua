@@ -65,12 +65,14 @@ function resetBoard()
 			end
 		end
 	end
-
-	testerPopulate(1, 3, 13)
-	testerPopulate(2, 2, 13)
-	testerPopulate(2, 4, 11)
-	testerPopulate(2, 3, 5)
-	obstaclePopulate(3, 3, 'CS', 'BLACK')
+--[[
+	obstaclePopulate(1, 3, 'SS', 'WHITE')
+	testerPopulate(2, 3, 13)
+	testerPopulate(3, 3, 5)
+	testerPopulate(3, 4, 13)
+	testerPopulate(3, 5, 14)
+	testerPopulate(4, 3, 13)
+--]]
 end
 
 function testerPopulate(row, column, stoneAmount)
@@ -99,7 +101,8 @@ function obstaclePopulate(row, column, stoneType, stoneColor)
 	grid[row][column].members[1].stoneType = stoneType
 	grid[row][column].stoneControl = stoneType
 	grid[row][column].members[1].stoneColor = stoneColor
-	grid[row][column].stackControl = stoneColora
+	grid[row][column].stackControl = stoneColor
+	grid[row][column].members[1].stackOrder = 1
 	grid[row][column].occupants = 1
 end
 
@@ -454,6 +457,61 @@ function lowestSurroundingOccupant(originRow, originColumn)
 			end
 		end
 	end
+end
+
+function emptyGridSurrounding(originRow, originColumn)
+	--CC
+	if originRow == 1 and originColumn == 1 then
+		if grid[originRow][originColumn + 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then
+			return true
+		end
+	elseif originRow == 1 and originColumn == 5 then
+		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then
+			return true
+		end
+	elseif originRow == 5 and originColumn == 1 then
+		if grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 then
+			return true
+		end
+	elseif originRow == 5 and originColumn == 5 then
+		if grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn - 1].occupants == 0 then
+			return true
+		end
+	end
+
+	--EC
+	if originRow == 1 and originColumn ~= 1 and originColumn ~= 5 then --TOP EDGE --left, down, right
+		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 then
+			return true
+		end
+	end
+
+	if originRow == 5 and originColumn ~= 1 and originColumn ~= 5 then --BOTTOM EDGE --left, up, right
+		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 then
+			return true
+		end
+	end
+
+	if originColumn == 1 and originRow ~= 1 and originRow ~= 5 then --LEFT EDGE --up, right, down
+		if grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 or grid[originRow + 1][originColumn].occupants then
+			return true
+		end
+	end
+
+	if originColumn == 5 and originRow ~= 1 and originRow ~= 5 then --RIGHT EDGE --up, left, down
+		if grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn - 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then 
+			return true
+		end
+	end
+
+	--MC
+	if originRow > 1 and originRow < 5 and originColumn > 1 and originColumn < 5 then
+		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then
+			return true
+		end
+	end
+
+	return false
 end
 
 function PlayState:update(dt)
@@ -906,13 +964,30 @@ function PlayState:update(dt)
 			end
 
 		elseif movementEvent == 2 then --DROP STONES IN MO
-
+			if mouseStones.occupants == 1 then
+				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+				updateStackControl(grid[movementOriginRow][movementOriginColumn])
+				movementEvent = 3
+			end
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN MOVEMENT ORIGIN
 				dropStone(grid[movementOriginRow][movementOriginColumn], 1) --Second Argument is grid occupant to drop stones into
 			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
 				pickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if mouseStones.occupants + lowestSurroundingOccupants <= 14 then
+					for i = 1 , 5 do
+						for j = 1, 5 do
+							if grid[i][j].legalMove then
+								if mouseStones.occupants + grid[i][j].occupants > 14 then
+									grid[i][j].legalMove = false
+								end
+							end
+						end
+					end
+					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+					updateStackControl(grid[movementOriginRow][movementOriginColumn])
+					movementEvent = 3
+				elseif emptyGridSurrounding(movementOriginRow, movementOriginColumn) then
 					for i = 1 , 5 do
 						for j = 1, 5 do
 							if grid[i][j].legalMove then
@@ -933,10 +1008,10 @@ function PlayState:update(dt)
 				for j = 1, 5 do
 					if mouseYGrid == i and mouseXGrid == j then --LEGALMOVE HIGHLIGHTS UPON MOUSEOVER
 						if grid[i][j].legalMove then
-							grid[i][j].legalMoveHighlight = true
+							grid[i][j].moveLockedHighlight = true
 						end
 					else
-						grid[i][j].legalMoveHighlight = false
+						grid[i][j].moveLockedHighlight = false
 					end
 				end
 			end
@@ -1232,6 +1307,7 @@ function PlayState:render()
 --]]
 
 ---[[RENDERS PLAYER'S TURN
+	love.graphics.setFont(smallFont)
 	if player == 1 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 		love.graphics.print('It is White\'s move', 45, VIRTUAL_HEIGHT - 38)
@@ -1248,15 +1324,40 @@ function PlayState:render()
 --]]
 
 	--DEBUG INF0
-	love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
+	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(smallFont)
 	--love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
 	if moveType == 'place' then
-		love.graphics.print('moveType: place', VIRTUAL_WIDTH - 380, 180)
+		love.graphics.print('moveType: place', 480, VIRTUAL_HEIGHT - 38)
 	elseif moveType == 'move' then
-		love.graphics.print('moveType: move', VIRTUAL_WIDTH - 380, 180)
+		love.graphics.print('moveType: move', 480, VIRTUAL_HEIGHT - 38)
 	end
 
+
+	--INSTRUCTIONS
+	love.graphics.setFont(smallerFont)
+	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+	if movementEvent == 0 then
+		love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
+		love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET)
+	elseif movementEvent == 1 then
+		love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
+		love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+		--love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 4)
+	elseif movementEvent == 2 then
+		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+		love.graphics.print('stones that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+		love.graphics.print('Press enter to lock in your hand', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+	elseif movementEvent == 3 then
+		love.graphics.print('Click to select a green grid that you want to move to', INSTRUCTIONX, INSTRUCTIONY)
+		love.graphics.print('that you want to move to', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+	elseif movementEvent >= 4 then
+		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+		love.graphics.print('stones that you want to place', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+		love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
+	end
+--[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -1300,8 +1401,9 @@ function PlayState:render()
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 	end
-
+--]]
 	--STONE COUNT
+	love.graphics.setFont(smallFont)
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
 	love.graphics.print('player2 stones: ' .. tostring(player2stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 50)
 end

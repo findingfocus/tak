@@ -13,6 +13,7 @@ function love.load()
 
 	titleFont = love.graphics.newFont('fonts/spqr.ttf', 140)
 	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
+	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
 	love.graphics.setFont(titleFont)
 
 	sounds = {
@@ -96,7 +97,8 @@ function love.update(dt)
 	--sounds[tostring(randomSongIndex)]:setLooping(true)
 	if not musicPlayed then
 		--sounds['8']:play()
-		musicPlayed = true
+		--sounds['8']:setVolume(.2)
+		--musicPlayed = true
 	end
 end
 
