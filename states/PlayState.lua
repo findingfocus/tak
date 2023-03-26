@@ -65,11 +65,12 @@ function resetBoard()
 			end
 		end
 	end
---[[
+---[[
 	obstaclePopulate(1, 3, 'SS', 'WHITE')
-	testerPopulate(2, 3, 13)
+	testerPopulate(2, 1, 13)
 	testerPopulate(3, 3, 5)
 	testerPopulate(3, 4, 13)
+	--testerPopulate(3, 2, 2)
 	testerPopulate(3, 5, 14)
 	testerPopulate(4, 3, 13)
 --]]
@@ -837,7 +838,7 @@ function PlayState:update(dt)
 							end
 						end
 
-						if i ~= 1 and i ~= 5 and j ~= 1 and j ~= 5 then
+						if i ~= 1 and i ~= 5 and j ~= 1 and j ~= 5 then --IF GRID IS COMPLETELY SURROUNDED BY ILLEGAL MOVES, THEN WE ARE AN ILLEGAL MOVE
 							if grid[i][j].legalMove then
 								if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then--(math.min(grid[i][j].occupants, 5) + grid[i - 1][j].occupants > 14) then --TOP
 									if grid[i + 1][j].stoneControl == 'SS' or grid[i + 1][j].stoneControl == 'CS' or grid[i + 1][j].occupants == 14 then --(math.min(grid[i][j].occupants, 5) + grid[i + 1][j].occupants > 14) then --BOTTOM
@@ -847,6 +848,14 @@ function PlayState:update(dt)
 											end
 										end
 									end
+								end
+							end
+						end
+
+						for i = 1, 5 do --ENABLES CS TO BE LEGAL MOVE EVEN IF SURROUNDED BY SS
+							for j = 1, 5 do
+								if grid[i][j].stoneControl == 'CS' then
+									grid[i][j].legalMove = true
 								end
 							end
 						end
@@ -896,6 +905,7 @@ function PlayState:update(dt)
 							grid[mouseYGrid][mouseXGrid].occupants = grid[mouseYGrid][mouseXGrid].occupants - 1
 						end
 
+						updateStoneControl(mouseStones)
 						updateStoneControl(grid[mouseYGrid][mouseXGrid])
 						updateStackControl(grid[mouseYGrid][mouseXGrid])
 
@@ -946,18 +956,18 @@ function PlayState:update(dt)
 
 						for i = 1, 5 do
 							for j = 1, 5 do
-								if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --FLUSHES LEGAL MOVES IF SPACE INCLUDES CS OR SS
+								if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --MAKES MOVEMENT ON A CAPSTONE OR SS IMPOSSIBLE
 									grid[i][j].legalMove = false
 								end
 							end
 						end
-			
-						for i = 1, MAX_STONE_HEIGHT do
-							if mouseStones.members[i].stackOrder ~= nil then
+
+						for i = MAX_STONE_HEIGHT, -1 do --FIX THIS FOR PICKING UP MORE THAN 5
 								lowestMSStackOrder = mouseStones.members[i].stackOrder
 								break
 							end
 						end
+
 						movementEvent = 2
 					end
 				end
@@ -965,9 +975,9 @@ function PlayState:update(dt)
 
 		elseif movementEvent == 2 then --DROP STONES IN MO
 			if mouseStones.occupants == 1 then
-				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
-				updateStackControl(grid[movementOriginRow][movementOriginColumn])
-				movementEvent = 3
+				--updateStoneControl(grid[movementOriginRow][movementOriginColumn])
+				--updateStackControl(grid[movementOriginRow][movementOriginColumn])
+				--movementEvent = 3
 			end
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 1 then --DROP STONE IN MOVEMENT ORIGIN
 				dropStone(grid[movementOriginRow][movementOriginColumn], 1) --Second Argument is grid occupant to drop stones into
@@ -1004,6 +1014,49 @@ function PlayState:update(dt)
 			end
 
 		elseif movementEvent == 3 then --SELECT FM GRID
+			---[[
+						--STANDING STONE CRUSH
+						if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
+							--CC
+							if movementOriginRow == 1 and movementOriginColumn == 1 then
+								if grid[1][2].stoneControl == 'SS' then
+									grid[1][2].legalMove = true
+								end
+
+								if grid[2][1].stoneControl == 'SS' then
+									grid[2][1].legalMove = true
+								end
+							elseif movementOriginRow == 1 and movementOriginColumn == 5 then 
+								if grid[1][4].stoneControl == 'SS' then
+									grid[1][4].legalMove = true
+								end
+
+								if grid[2][5].stoneControl == 'SS' then
+									grid[2][5].legalMove = true
+								end
+							elseif movementOriginRow == 5 and movementOriginColumn == 1 then
+								if grid[4][1].stoneControl == 'SS' then
+									grid[4][1].legalMove = true
+								end
+
+								if grid[5][2].stoneControl == 'SS' then
+									grid[5][2].legalMove = true
+								end
+							elseif movementOriginRow == 5 and movementOriginColumn == 5 then
+								if grid[4][5].stoneControl == 'SS' then
+									grid[4][5].legalMove = true
+								end
+
+								if grid[5][4].stoneControl == 'SS' then
+									grid[5][4].legalMove = true
+								end
+							end
+						end
+						--EC
+
+						--MIDDLECASE
+			--]]
+
 			for i = 1, 5 do
 				for j = 1, 5 do
 					if mouseYGrid == i and mouseXGrid == j then --LEGALMOVE HIGHLIGHTS UPON MOUSEOVER
@@ -1333,7 +1386,7 @@ function PlayState:render()
 		love.graphics.print('moveType: move', 480, VIRTUAL_HEIGHT - 38)
 	end
 
-
+--[[
 	--INSTRUCTIONS
 	love.graphics.setFont(smallerFont)
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -1357,7 +1410,9 @@ function PlayState:render()
 		love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
 		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
 	end
---[[
+--]]
+
+---[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -1369,7 +1424,8 @@ function PlayState:render()
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9) --lowestSurroundingOccupants
-		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants
+		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
+		--love.graphics.print('1-1stoneControl: ' .. tostring(grid[1][1].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
 	end
 
@@ -1389,7 +1445,7 @@ function PlayState:render()
 		--love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		--love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		--love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		--love.graphics.print('dropMO: ' .. tostring(droppedInMovementOrigin), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+		love.graphics.print('LMSSO: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
 	end
 
 	if debugOption == 3 then
