@@ -270,7 +270,7 @@ end
 
 function nextMoveIllegal()
 	if nextMoveRow > 1 and nextMoveRow < 5 and nextMoveColumn > 1 and nextMoveColumn < 5 then
-		if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
+	    if grid[nextMoveRow][nextMoveColumn].stoneControl == 'CS' or grid[nextMoveRow][nextMoveColumn].stoneControl == 'SS' then
 			offGrid = true
 		end
 	end
@@ -515,6 +515,124 @@ function emptyGridSurrounding(originRow, originColumn)
 	end
 
 	return false
+end
+
+function CSCrush(originRow, originColumn)
+	if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
+		--CC
+		if originRow == 1 and originColumn == 1 then
+			if grid[1][2].stoneControl == 'SS' then
+				grid[1][2].legalMove = true
+			end
+
+			if grid[2][1].stoneControl == 'SS' then
+				grid[2][1].legalMove = true
+			end
+		elseif originRow == 1 and originColumn == 5 then 
+			if grid[1][4].stoneControl == 'SS' then
+				grid[1][4].legalMove = true
+			end
+
+			if grid[2][5].stoneControl == 'SS' then
+				grid[2][5].legalMove = true
+			end
+		elseif originRow == 5 and originColumn == 1 then
+			if grid[4][1].stoneControl == 'SS' then
+				grid[4][1].legalMove = true
+			end
+
+			if grid[5][2].stoneControl == 'SS' then
+				grid[5][2].legalMove = true
+			end
+		elseif originRow == 5 and originColumn == 5 then
+			if grid[4][5].stoneControl == 'SS' then
+				grid[4][5].legalMove = true
+			end
+
+			if grid[5][4].stoneControl == 'SS' then
+				grid[5][4].legalMove = true
+			end
+		end
+		--EC
+		--TOPEDGE -L,D,R
+		if originRow == 1 and originColumn ~= 1 and originColumn ~= 5 then
+			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
+				grid[originRow][originColumn - 1].legalMove = true
+			end
+
+			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
+				grid[originRow + 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
+				grid[originRow][originColumn + 1].legalMove = true
+			end
+		end
+
+		--RIGHT EDGE -U,L,D
+		if originColumn == 5 and originRow ~= 1 and originRow ~= 5 then
+			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
+				grid[originRow - 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
+				grid[originRow][originColumn - 1].legalMove = true
+			end
+
+			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
+				grid[originRow + 1][originColumn].legalMove = true
+			end
+		end
+
+		--BOTTOMEDGE -L,U,R
+		if originRow == 5 and originColumn ~= 1 and originColumn ~= 5 then
+			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
+				grid[originRow][originColumn - 1].legalMove = true
+			end
+
+			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
+				grid[originRow - 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
+				grid[originRow][originColumn + 1].legalMove = true
+			end
+		end
+
+		--LEFTEDGE -U,R,D
+		if originColumn == 1 and originRow ~= 1 and originRow ~= 5 then
+			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
+				grid[originRow - 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
+				grid[originRow][originColumn + 1].legalMove = true
+			end
+
+			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
+				grid[originRow + 1][originColumn].legalMove = true
+			end
+		end
+
+		--MIDDLECASE
+		if originRow ~= 1 and originRow ~= 5 and originColumn ~= 1 and originColumn ~= 5 then
+			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
+				grid[originRow - 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
+				grid[originRow][originColumn + 1].legalMove = true
+			end
+
+			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
+				grid[originRow + 1][originColumn].legalMove = true
+			end
+
+			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
+				grid[originRow][originColumn - 1].legalMove = true
+			end
+		end
+	end
 end
 
 function PlayState:update(dt)
@@ -856,8 +974,14 @@ function PlayState:update(dt)
 
 						for i = 1, 5 do --ENABLES CS TO BE LEGAL MOVE EVEN IF SURROUNDED BY SS
 							for j = 1, 5 do
-								if grid[i][j].stoneControl == 'CS' then
-									grid[i][j].legalMove = true
+								if player == 1 and grid[i][j].stackControl == 'WHITE' then
+									if grid[i][j].stoneControl == 'CS' then
+										grid[i][j].legalMove = true
+									end
+								elseif player == 2 and grid[i][j].stackControl == 'BLACK' then
+									if grid[i][j].stoneControl == 'CS' then
+										grid[i][j].legalMove = true
+									end
 								end
 							end
 						end
@@ -901,7 +1025,7 @@ function PlayState:update(dt)
 							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType
 							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder
 							mouseStones.members[grid[mouseYGrid][mouseXGrid].occupants].originalStackOrder = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder
-
+							mouseStones.stoneControl = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType
 							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = nil
 							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = nil
 							grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = nil
@@ -978,7 +1102,7 @@ function PlayState:update(dt)
 				end
 			end
 
-		elseif movementEvent == 2 then --DROP STONES IN MO
+		elseif movementEvent == 2 then --LOCKS STONES IN HAND FOR FIRST MOVEMENT
 			if mouseStones.occupants == 1 and skipMovementEvent2 then
 				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 				updateStackControl(grid[movementOriginRow][movementOriginColumn])
@@ -1003,6 +1127,7 @@ function PlayState:update(dt)
 					end
 					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 					updateStackControl(grid[movementOriginRow][movementOriginColumn])
+					CSCrush(movementOriginRow, movementOriginColumn)
 					movementEvent = 3
 				elseif mouseStones.occupants + lowestSurroundingOccupants <= 14 then
 					for i = 1 , 5 do
@@ -1016,130 +1141,13 @@ function PlayState:update(dt)
 					end
 					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 					updateStackControl(grid[movementOriginRow][movementOriginColumn])
+					CSCrush(movementOriginRow, movementOriginColumn)
 					movementEvent = 3
 				end
 			end
 
 		elseif movementEvent == 3 then --SELECT FM GRID
-			---[[
-						--STANDING STONE CRUSH
-						if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-							--CC
-							if movementOriginRow == 1 and movementOriginColumn == 1 then
-								if grid[1][2].stoneControl == 'SS' then
-									grid[1][2].legalMove = true
-								end
-
-								if grid[2][1].stoneControl == 'SS' then
-									grid[2][1].legalMove = true
-								end
-							elseif movementOriginRow == 1 and movementOriginColumn == 5 then 
-								if grid[1][4].stoneControl == 'SS' then
-									grid[1][4].legalMove = true
-								end
-
-								if grid[2][5].stoneControl == 'SS' then
-									grid[2][5].legalMove = true
-								end
-							elseif movementOriginRow == 5 and movementOriginColumn == 1 then
-								if grid[4][1].stoneControl == 'SS' then
-									grid[4][1].legalMove = true
-								end
-
-								if grid[5][2].stoneControl == 'SS' then
-									grid[5][2].legalMove = true
-								end
-							elseif movementOriginRow == 5 and movementOriginColumn == 5 then
-								if grid[4][5].stoneControl == 'SS' then
-									grid[4][5].legalMove = true
-								end
-
-								if grid[5][4].stoneControl == 'SS' then
-									grid[5][4].legalMove = true
-								end
-							end
-						end
-						--EC
-						--TOPEDGE -L,D,R
-						if movementOriginRow == 1 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then
-							if grid[movementOriginRow][movementOriginColumn - 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							end
-
-							if grid[movementOriginRow + 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn + 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							end
-						end
-
-						--RIGHT EDGE -U,L,D
-						if movementOriginColumn == 5 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then
-							if grid[movementOriginRow - 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn - 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							end
-
-							if grid[movementOriginRow + 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							end
-						end
-
-						--BOTTOMEDGE -L,U,R
-						if movementOriginRow == 5 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then
-							if grid[movementOriginRow][movementOriginColumn - 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							end
-
-							if grid[movementOriginRow - 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn + 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							end
-						end
-
-						--LEFTEDGE -U,R,D
-						if movementOriginColumn == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then
-							if grid[movementOriginRow - 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn + 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							end
-
-							if grid[movementOriginRow + 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							end
-						end
-
-						--MIDDLECASE
-						if movementOriginRow ~= 1 and movementOriginRow ~= 5 and movementOriginColumn ~= 1 and movementOriginColumn ~= 5 then
-							if grid[movementOriginRow - 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn + 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
-							end
-
-							if grid[movementOriginRow + 1][movementOriginColumn].stoneControl == 'SS' then
-								grid[movementOriginRow + 1][movementOriginColumn].legalMove = true
-							end
-
-							if grid[movementOriginRow][movementOriginColumn - 1].stoneControl == 'SS' then
-								grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
-							end
-						end
-			--]]
-
+			
 			for i = 1, 5 do
 				for j = 1, 5 do
 					if mouseYGrid == i and mouseXGrid == j then --LEGALMOVE HIGHLIGHTS UPON MOUSEOVER
@@ -1189,7 +1197,7 @@ function PlayState:update(dt)
 				end
 			end
 
-		elseif movementEvent == 4 then
+		elseif movementEvent == 4 then --LOCKS IN STONES IN HAND FOR OUR SECOND MOVEMENT
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
 				dropStone(grid[firstMovementRow][firstMovementColumn], 2)
 			end
@@ -1200,6 +1208,37 @@ function PlayState:update(dt)
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if offGrid then
+					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
+						offGrid = false
+						updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+						updateStackControl(grid[firstMovementRow][firstMovementColumn])
+						grid[firstMovementRow][firstMovementColumn].occupied = true
+
+						if upDirection then
+							secondMovementRow = firstMovementRow - 1
+							secondMovementColumn = firstMovementColumn 			
+						elseif downDirection then
+							secondMovementRow = firstMovementRow + 1
+							secondMovementColumn = firstMovementColumn
+						elseif leftDirection then
+							secondMovementRow = firstMovementRow
+							secondMovementColumn = firstMovementColumn - 1
+						elseif rightDirection then
+							secondMovementRow = firstMovementRow
+							secondMovementColumn = firstMovementColumn + 1
+						end
+
+						if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+							clearContol(grid[movementOriginRow][movementOriginColumn])
+						end
+
+						nextMoveOffGrid(secondMovementRow, secondMovementColumn)
+						nextMoveIllegal()
+						--CSCrush(firstMovementRow, firstMovementColumn)
+
+						movementEvent = 5
+					end
+
 					if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
 						updateStoneControl(grid[firstMovementRow][firstMovementColumn])
 						updateStackControl(grid[firstMovementRow][firstMovementColumn])
@@ -1246,6 +1285,8 @@ function PlayState:update(dt)
 
 					nextMoveOffGrid(secondMovementRow, secondMovementColumn)
 					nextMoveIllegal()
+					--CSCrush(firstMovementRow, firstMovementColumn)
+
 					movementEvent = 5
 				end
 			end
@@ -1512,7 +1553,7 @@ function PlayState:render()
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9) --lowestSurroundingOccupants
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
-		--love.graphics.print('1-1stoneControl: ' .. tostring(grid[1][1].stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
 	end
 
