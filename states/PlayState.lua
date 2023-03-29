@@ -67,9 +67,10 @@ function resetBoard()
 		end
 	end
 ---[[
-	obstaclePopulate(1, 3, 'SS', 'WHITE')
-	testerPopulate(2, 1, 14)
-	testerPopulate(3, 3, 5)
+	obstaclePopulate(5, 2, 'SS', 'WHITE')
+	obstaclePopulate(1, 3, 'CS', 'WHITE')
+	--testerPopulate(2, 1, 14)
+	testerPopulate(1, 2, 4)
 	testerPopulate(3, 4, 13)
 	--testerPopulate(3, 2, 2)
 	testerPopulate(3, 5, 14)
@@ -1239,7 +1240,7 @@ function PlayState:update(dt)
 						movementEvent = 5
 					end
 
-					if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
+				elseif mouseStones.occupants == 0 then --OFFGRID ENDING TURN
 						updateStoneControl(grid[firstMovementRow][firstMovementColumn])
 						updateStackControl(grid[firstMovementRow][firstMovementColumn])
 						grid[firstMovementRow][firstMovementColumn].occupied = true
@@ -1247,7 +1248,6 @@ function PlayState:update(dt)
 							clearContol(grid[movementOriginRow][movementOriginColumn])
 						end
 						playerSwapGridReset()
-					end
 				elseif not offGrid and mouseStones.occupants == 0 then --ENTER PRESSED AFTER DROPPING ALL STONES 
 					updateStoneControl(grid[firstMovementRow][firstMovementColumn])
 					updateStackControl(grid[firstMovementRow][firstMovementColumn])
@@ -1309,6 +1309,31 @@ function PlayState:update(dt)
 						grid[firstMovementRow][firstMovementColumn].occupied = true
 		
 						playerSwapGridReset()
+					elseif mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
+						offGrid = false
+						updateStoneControl(grid[secondMovementRow][secondMovementColumn])
+						updateStackControl(grid[secondMovementRow][secondMovementColumn])
+						grid[secondMovementRow][secondMovementColumn].occupied = true
+
+						if upDirection then
+							thirdMovementRow = secondMovementRow - 1
+							thirdMovementColumn = secondMovementColumn 			
+						elseif downDirection then
+							thirdMovementRow = secondMovementRow + 1
+							thirdMovementColumn = secondMovementColumn
+						elseif leftDirection then
+							thirdMovementRow = secondMovementRow
+							thirdMovementColumn = secondMovementColumn - 1
+						elseif rightDirection then
+							thirdMovementRow = secondMovementRow
+							thirdMovementColumn = secondMovementColumn + 1
+						end
+
+						nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+						nextMoveIllegal()
+						--CSCrush(firstMovementRow, firstMovementColumn)
+
+						movementEvent = 6
 					end
 				elseif not offGrid and mouseStones.occupants == 0 then --ENTER PRESSED AFTER DROPPING ALL STONES 
 					updateStoneControl(grid[secondMovementRow][secondMovementColumn])
@@ -1354,6 +1379,14 @@ function PlayState:update(dt)
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if offGrid then
+					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
+						offGrid = false
+						updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+						grid[thirdMovementRow][thirdMovementColumn].occupied = true
+						playerSwapGridReset()
+					end
+				elseif offGrid then
 					if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
 						updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
 						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
