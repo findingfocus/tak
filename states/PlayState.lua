@@ -41,6 +41,7 @@ function resetBoard()
 	offGrid = false
 	skipMovementEvent2 = true
 	occupantIndex = nil
+	capstoneCrush = false
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
@@ -67,10 +68,11 @@ function resetBoard()
 		end
 	end
 ---[[
-	--obstaclePopulate(5, 2, 'SS', 'WHITE')
-	--obstaclePopulate(1, 3, 'CS', 'WHITE')
-	testerPopulate(4, 4, 12)
-	testerPopulate(4, 2, 5)
+	obstaclePopulate(2, 4, 'SS', 'BLACK')
+	obstaclePopulate(1, 1, 'CS', 'WHITE')
+	testerPopulate(2, 1, 4)
+	--testerPopulate(4, 2, 12)
+	--testerPopulate(4, 4, 5)
 	--testerPopulate(3, 4, 13)
 	--testerPopulate(3, 2, 2)
 	--testerPopulate(3, 5, 14)
@@ -181,6 +183,7 @@ function playerSwapGridReset()
 	nextMoveRow = nil
 	nextMoveColumn = nil
 	offGrid = false
+	capstoneCrush = false
 	skipMovementEvent2 = true
 end
 
@@ -1114,6 +1117,7 @@ function PlayState:update(dt)
 			if mouseStones.occupants == 1 and skipMovementEvent2 then
 				updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 				updateStackControl(grid[movementOriginRow][movementOriginColumn])
+				CSCrush(movementOriginRow, movementOriginColumn)
 				movementEvent = 3
 			else
 				skipMovementEvent2 = false
@@ -1123,6 +1127,7 @@ function PlayState:update(dt)
 			elseif love.keyboard.wasPressed('up') and droppedInMovementOrigin > 0 then
 				pickUpStone(grid[movementOriginRow][movementOriginColumn], 1)
 			elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
+				CSCrush(movementOriginRow, movementOriginColumn)
 				if emptyGridSurrounding(movementOriginRow, movementOriginColumn) then
 					for i = 1 , 5 do
 						for j = 1, 5 do
@@ -1135,7 +1140,6 @@ function PlayState:update(dt)
 					end
 					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 					updateStackControl(grid[movementOriginRow][movementOriginColumn])
-					CSCrush(movementOriginRow, movementOriginColumn)
 					movementEvent = 3
 				elseif mouseStones.occupants + lowestSurroundingOccupants <= 14 then
 					for i = 1 , 5 do
@@ -1149,7 +1153,6 @@ function PlayState:update(dt)
 					end
 					updateStoneControl(grid[movementOriginRow][movementOriginColumn])
 					updateStackControl(grid[movementOriginRow][movementOriginColumn])
-					CSCrush(movementOriginRow, movementOriginColumn)
 					movementEvent = 3
 				end
 			end
@@ -1210,11 +1213,19 @@ function PlayState:update(dt)
 
 		elseif movementEvent == 4 then --LOCKS IN STONES IN HAND FOR OUR SECOND MOVEMENT
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[firstMovementRow][firstMovementColumn].stoneControl == 'SS' then
+					capstoneCrush = true
+					grid[firstMovementRow][firstMovementColumn].members[grid[firstMovementRow][firstMovementColumn].occupants].stoneType = 'LS'
+					updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+					sounds['crush']:setVolume(.6)
+					sounds['crush']:play()
+				end
 				dropStone(grid[firstMovementRow][firstMovementColumn], 2)
+				updateStoneControl(grid[firstMovementRow][firstMovementColumn])
 				nextMoveIllegal()
 			end
 
-			if love.keyboard.wasPressed('up') and droppedInFirstMovement > 0 then
+			if love.keyboard.wasPressed('up') and droppedInFirstMovement > 0 and not capstoneCrush then
 				pickUpStone(grid[firstMovementRow][firstMovementColumn], 2)
 				nextMoveIllegal()
 			end
@@ -1297,11 +1308,19 @@ function PlayState:update(dt)
 		elseif movementEvent == 5 then
 			grid[secondMovementRow][secondMovementColumn].moveLockedHighlight = true
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[secondMovementRow][secondMovementColumn].stoneControl == 'SS' then
+					capstoneCrush = true
+					grid[secondMovementRow][secondMovementColumn].members[grid[secondMovementRow][secondMovementColumn].occupants].stoneType = 'LS'
+					updateStoneControl(grid[secondMovementRow][secondMovementColumn])
+					sounds['crush']:setVolume(.6)
+					sounds['crush']:play()
+				end
 				dropStone(grid[secondMovementRow][secondMovementColumn], 3)
+				updateStoneControl(grid[secondMovementRow][secondMovementColumn])
 				nextMoveIllegal()
 			end
 
-			if love.keyboard.wasPressed('up') and droppedInSecondMovement > 0 then
+			if love.keyboard.wasPressed('up') and droppedInSecondMovement > 0 and not capstoneCrush then
 				pickUpStone(grid[secondMovementRow][secondMovementColumn], 3)
 				nextMoveIllegal()
 			end
@@ -1367,11 +1386,19 @@ function PlayState:update(dt)
 			grid[thirdMovementRow][thirdMovementColumn].moveLockedHighlight = true
 
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[thirdMovementRow][thirdMovementColumn].stoneControl == 'SS' then
+					capstoneCrush = true
+					grid[thirdMovementRow][thirdMovementColumn].members[grid[thirdMovementRow][thirdMovementColumn].occupants].stoneType = 'LS'
+					updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+					sounds['crush']:setVolume(.6)
+					sounds['crush']:play()
+				end
 				dropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
+				updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
 				nextMoveIllegal()
 			end
 
-			if love.keyboard.wasPressed('up') and droppedInThirdMovement > 0 then
+			if love.keyboard.wasPressed('up') and droppedInThirdMovement > 0 and not capstoneCrush then
 				pickUpStone(grid[thirdMovementRow][thirdMovementColumn], 4)
 				nextMoveIllegal()
 			end
@@ -1389,7 +1416,24 @@ function PlayState:update(dt)
 						updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
 						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
 						grid[thirdMovementRow][thirdMovementColumn].occupied = true
-						playerSwapGridReset()
+
+						if upDirection then
+							fourthMovementRow = thirdMovementRow - 1
+							fourthMovementColumn = thirdMovementColumn 			
+						elseif downDirection then
+							fourthMovementRow = thirdMovementRow + 1
+							fourthMovementColumn = thirdMovementColumn
+						elseif leftDirection then
+							fourthMovementRow = thirdMovementRow
+							fourthMovementColumn = thirdMovementColumn - 1
+						elseif rightDirection then
+							fourthMovementRow = thirdMovementRow
+							fourthMovementColumn = thirdMovementColumn + 1
+						end
+
+						nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+						--nextMoveIllegal()
+						movementEvent = 7
 					end
 				elseif not offGrid and droppedInThirdMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
 					updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
@@ -1419,7 +1463,15 @@ function PlayState:update(dt)
 		elseif movementEvent == 7 then
 			grid[fourthMovementRow][fourthMovementColumn].moveLockedHighlight = true
 			if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
+				if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[fourthMovementRow][fourthMovementColumn].stoneControl == 'SS' then
+					capstoneCrush = true
+					grid[fourthMovementRow][fourthMovementColumn].members[grid[fourthMovementRow][fourthMovementColumn].occupants].stoneType = 'LS'
+					updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
+					sounds['crush']:setVolume(.6)
+					sounds['crush']:play()
+				end
 				dropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
+				updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
 			end
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
