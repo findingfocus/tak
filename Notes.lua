@@ -1,4 +1,26 @@
 
+WIN STATE
+
+
+--Run in movetype place after placing
+--Run in playerswap function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Move
 	-Lock in movementOrigin
 	-Drop stones

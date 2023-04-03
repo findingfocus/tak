@@ -19,6 +19,8 @@ function resetBoard()
 	debugOption = 1
 	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
+	currentlyOccupied = true
+	allGridsOccupied = false
 	toggleMouseStone = false
 	hideMouseStone = false
 	movementOriginLocked = false
@@ -67,7 +69,7 @@ function resetBoard()
 			end
 		end
 	end
----[[
+--[[
 	obstaclePopulate(2, 4, 'SS', 'BLACK')
 	obstaclePopulate(1, 1, 'CS', 'WHITE')
 	testerPopulate(2, 1, 4)
@@ -144,6 +146,23 @@ function clearContol(Occupant)
 	Occupant.stackControl = nil
 end
 
+function everyGridOccupied()
+	currentlyOccupied = true
+	for i = 1, 5 do
+		for j = 1, 5 do
+			if not grid[i][j].occupied then
+				currentlyOccupied = false
+			end
+		end
+	end
+
+	if not currentlyOccupied then
+		allGridsOccupied = false
+	else
+		allGridsOccupied = true
+	end
+end
+
 function playerSwapGridReset()
 	player = player == 1 and 2 or 1
 	falsifyAllOccupantsLegalMove()
@@ -153,6 +172,7 @@ function playerSwapGridReset()
 			grid[i][j].moveLockedHighlight = false
 		end
 	end
+	everyGridOccupied()
 	stoneSelect = 1
 	moveType = 'place'
 	movementEvent = 0
@@ -791,7 +811,9 @@ function PlayState:update(dt)
 
 		movementEvent = 0
 
-		if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
+		if allGridsOccupied then
+			moveType = 'move'
+		elseif love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
 			sounds['beep']:play()
 			moveType = 'move'
 		end
@@ -803,13 +825,15 @@ function PlayState:update(dt)
 		end
 	elseif moveType == 'move'  and movementEvent == 1 then
 		if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
-			if player == 1 and player1stones > 0 then
-				sounds['beep']:play()
-				moveType = 'place'
-			end
-			if player == 2 and player2stones > 0 then
-				sounds['beep']:play()
-				moveType = 'place'
+			if not allGridsOccupied then
+				if player == 1 and player1stones > 0 then
+					sounds['beep']:play()
+					moveType = 'place'
+				end
+				if player == 2 and player2stones > 0 then
+					sounds['beep']:play()
+					moveType = 'place'
+				end
 			end
 		end
 	end
@@ -861,6 +885,7 @@ function PlayState:update(dt)
 					end
 					--SWAPS PLAYER AFTER SELECTION
 					player = player == 1 and 2 or 1
+					everyGridOccupied()
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					falsifyAllOccupantsLegalMove()
@@ -1659,7 +1684,8 @@ function PlayState:render()
 		love.graphics.print('.occupied: ' .. tostring(grid[mouseYGrid][mouseXGrid].occupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('secondMovementRow: ' .. tostring(secondMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6) 
+		love.graphics.print('allGridsOccupied: ' .. tostring(allGridsOccupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 	end
 --]]
 	--STONE COUNT
