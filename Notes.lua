@@ -1,11 +1,29 @@
 
-WIN STATE
+WIN CONDITION
+
+determineHorizontalWin()
+	1. CHECK FOR STACK CONTROL IN EACH COLUMN
+	2. CHECK FOR LATERAL CONNECT WITH MIDDLE STACK CONTROLS
+		EACH LEFT ORTHOGONAL MATCH WITH A STACK CONTROL
+		EACH RIGHT ORTHOGONAL MATCH WITH A STACK CONTROL
+		VERTICAL CONNECT BETWEEN LEFT AND RIGHT MATCH
+			3. CHECK FIRST CONNECT WITH ML MATCHES
+			4. CHECK LAST CONNECT WITH MR MATCHES
 
 
---Run in movetype place after placing
---Run in playerswap function
 
 
+for i = 1, 5 do
+	for j = 1, 5 do
+
+if controlInEachColumn then
+
+
+
+
+
+
+determineVerticalWin()
 
 
 

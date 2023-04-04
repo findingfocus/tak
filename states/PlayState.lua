@@ -55,6 +55,13 @@ function resetBoard()
 	mouseStones.members = {}
 	mouseStones.occupants = 0
 
+	column1SC = false
+	column2SC = false
+	column3SC = false
+	column4SC = false
+	column5SC = false
+	horizontalColumnSCCheck = false
+
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
 		grid[i] = {}
@@ -666,6 +673,43 @@ function CSCrush(originRow, originColumn)
 	end
 end
 
+function determineHorizontalWin()
+	column1SC = false
+	column2SC = false
+	column3SC = false
+	column4SC = false
+	column5SC = false
+	horizontalColumnSCCheck = false
+	--WHITE WIN
+	for i = 1, 5 do
+		for j = 1, 5 do
+			if grid[j][i].stackControl == 'WHITE' then
+				if grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS' then
+					if i == 1 then
+						column1SC = true
+					elseif i == 2 then
+						column2SC = true
+					elseif i == 3 then
+						column3SC = true
+					elseif i == 4 then
+						column4SC = true
+					elseif i == 5 then
+						column5SC = true
+					end
+				end
+			end
+		end
+	end
+
+	--BLACK WIN
+
+
+
+	if column1SC and column2SC and column3SC and column4SC and column5SC then
+		horizontalColumnSCCheck = true
+	end
+end
+
 function PlayState:update(dt)
 ---[[DEBUG OPTIONS
 	if love.keyboard.isDown('2') then
@@ -884,6 +928,7 @@ function PlayState:update(dt)
 						end
 					end
 					--SWAPS PLAYER AFTER SELECTION
+					determineHorizontalWin()
 					player = player == 1 and 2 or 1
 					everyGridOccupied()
 					stoneSelect = 1
@@ -1267,6 +1312,7 @@ function PlayState:update(dt)
 							clearContol(grid[movementOriginRow][movementOriginColumn])
 						end
 					end
+					determineHorizontalWin()
 					playerSwapGridReset()
 				elseif offGrid then --CS CRUSH
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -1356,6 +1402,7 @@ function PlayState:update(dt)
 					updateStackControl(grid[secondMovementRow][secondMovementColumn])
 					grid[firstMovementRow][firstMovementColumn].occupied = true
 	
+					determineHorizontalWin()
 					playerSwapGridReset()
 				elseif offGrid then
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -1434,6 +1481,7 @@ function PlayState:update(dt)
 						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
 						grid[thirdMovementRow][thirdMovementColumn].occupied = true
 		
+						determineHorizontalWin()
 						playerSwapGridReset()
 				elseif offGrid then
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -1501,6 +1549,7 @@ function PlayState:update(dt)
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if mouseStones.occupants == 0 then
+					determineHorizontalWin()
 					playerSwapGridReset()
 				end
 			end
@@ -1686,6 +1735,7 @@ function PlayState:render()
 		love.graphics.print('secondMovementColumn: ' .. tostring(secondMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('mEvent1LMPopulated: ' .. tostring(mEvent1LegalMovesPopulated), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6) 
 		love.graphics.print('allGridsOccupied: ' .. tostring(allGridsOccupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('hColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 	end
 --]]
 	--STONE COUNT
