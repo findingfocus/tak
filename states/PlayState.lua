@@ -683,7 +683,7 @@ function determineHorizontalWin()
 	--WHITE WIN
 	for i = 1, 5 do
 		for j = 1, 5 do
-            if (grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS') and grid[j][i].stackControl == 'BLACK' then
+            if (grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS') and grid[j][i].stackControl == 'WHITE' then
                 if i == 1 then
                     column1SC = true
                 elseif i == 2 then
