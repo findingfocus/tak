@@ -683,28 +683,23 @@ function determineHorizontalWin()
 	--WHITE WIN
 	for i = 1, 5 do
 		for j = 1, 5 do
-			if grid[j][i].stackControl == 'WHITE' then
-				if grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS' then
-					if i == 1 then
-						column1SC = true
-					elseif i == 2 then
-						column2SC = true
-					elseif i == 3 then
-						column3SC = true
-					elseif i == 4 then
-						column4SC = true
-					elseif i == 5 then
-						column5SC = true
-					end
-				end
-			end
+            if (grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS') and grid[j][i].stackControl == 'BLACK' then
+                if i == 1 then
+                    column1SC = true
+                elseif i == 2 then
+                    column2SC = true
+                elseif i == 3 then
+                    column3SC = true
+                elseif i == 4 then
+                    column4SC = true
+                elseif i == 5 then
+                    column5SC = true
+                end
+            end
 		end
 	end
 
 	--BLACK WIN
-
-
-
 	if column1SC and column2SC and column3SC and column4SC and column5SC then
 		horizontalColumnSCCheck = true
 	end
@@ -716,7 +711,9 @@ function PlayState:update(dt)
 		debugOption = 2
 	elseif love.keyboard.isDown('3') then
 		debugOption = 3
-	else
+	elseif love.keyboard.isDown('4') then
+        debugOption = 4
+    else
 		debugOption = 1
 	end
 --]]
@@ -1737,6 +1734,14 @@ function PlayState:render()
 		love.graphics.print('allGridsOccupied: ' .. tostring(allGridsOccupied), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('hColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 	end
+
+    if debugOption == 4 then
+		love.graphics.print('column1SC: ' .. tostring(column1SC), VIRTUAL_WIDTH - 490, DEBUGY)
+		love.graphics.print('column2SC: ' .. tostring(column2SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+		love.graphics.print('column3SC: ' .. tostring(column3SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
+		love.graphics.print('column4SC: ' .. tostring(column4SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
+		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+    end
 --]]
 	--STONE COUNT
 	love.graphics.setFont(smallFont)
