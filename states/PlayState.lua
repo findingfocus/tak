@@ -925,11 +925,11 @@ function PlayState:update(dt)
 						end
 					end
 					--SWAPS PLAYER AFTER SELECTION
-					determineHorizontalWin()
 					player = player == 1 and 2 or 1
 					everyGridOccupied()
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
+					determineHorizontalWin()
 					falsifyAllOccupantsLegalMove()
 					mEvent1LegalMovesPopulated = false
 				end
@@ -1741,6 +1741,7 @@ function PlayState:render()
 		love.graphics.print('column3SC: ' .. tostring(column3SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('column4SC: ' .. tostring(column4SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
+		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
     end
 --]]
 	--STONE COUNT
