@@ -673,6 +673,25 @@ function CSCrush(originRow, originColumn)
 	end
 end
 
+function OrthoganalMatchFlush()
+    for i = 1, 5 do
+        for j = 1, 5 do
+            grid[i][j].leftOMatchMS = false
+        end
+    end
+end
+
+function leftOrthoganalMSMatch()
+   --DETERMINE LEFT ORTHOGANAL MATCH WITH MIDDLE STONE
+    for i = 1, 5 do
+        if grid[i][3].stackControl == 'WHITE' then
+            if grid[i][2].stackControl == 'WHITE' then
+                grid[i][3].leftOMatchMS = true
+            end
+        end
+    end
+end
+
 function determineHorizontalWin()
 	column1SC = false
 	column2SC = false
@@ -681,7 +700,7 @@ function determineHorizontalWin()
 	column5SC = false
 	horizontalColumnSCCheck = false
 	--WHITE WIN
-	for i = 1, 5 do
+	for i = 1, 5 do --DETERMINE STONE CONTROL IN EVERY COLUMN
 		for j = 1, 5 do
             if (grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS') and grid[j][i].stackControl == 'WHITE' then
                 if i == 1 then
@@ -698,11 +717,12 @@ function determineHorizontalWin()
             end
 		end
 	end
-
-	--BLACK WIN
 	if column1SC and column2SC and column3SC and column4SC and column5SC then
 		horizontalColumnSCCheck = true
 	end
+    
+    leftOrthoganalMSMatch()
+
 end
 
 function PlayState:update(dt)
@@ -929,6 +949,7 @@ function PlayState:update(dt)
 					everyGridOccupied()
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
+                    OrthoganalMatchFlush()
 					determineHorizontalWin()
 					falsifyAllOccupantsLegalMove()
 					mEvent1LegalMovesPopulated = false
@@ -1687,7 +1708,6 @@ function PlayState:render()
 	end
 --]]
 
----[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -1698,7 +1718,8 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-		love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9) --lowestSurroundingOccupants
+	    	--love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+        love.graphics.print('leftOMatchMS: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftOMatchMS), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
@@ -1743,7 +1764,7 @@ function PlayState:render()
 		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
     end
---]]
+
 	--STONE COUNT
 	love.graphics.setFont(smallFont)
 	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
