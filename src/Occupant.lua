@@ -17,6 +17,7 @@ function Occupant:init()
 	self.stoneControl = nil
 	self.bottomStoneIndex = 1
     self.leftOMSMatch = false
+    self.rightOMSMatch = false
 end
 
 function Occupant:update(dt)

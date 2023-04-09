@@ -38,7 +38,7 @@ function resetBoard()
 	upDirection = false
 	leftDirection = false
 	rightDirection = false
-	nextMoveRow = nil
+    nextMoveRow = nil
 	nextMoveColumn = nil
 	offGrid = false
 	skipMovementEvent2 = true
@@ -55,6 +55,7 @@ function resetBoard()
 	mouseStones.members = {}
 	mouseStones.occupants = 0
     leftOMSMatchID = {0, 0, 0, 0, 0}
+    rightOMSMatchID = {0, 0, 0, 0, 0}
 
 	column1SC = false
 	column2SC = false
@@ -673,22 +674,26 @@ function CSCrush(originRow, originColumn)
 	end
 end
 
-function OrthoganalMatchFlush()
+function orthoganalMatchFlush()
     leftOMSMatchID  = {0, 0, 0, 0, 0}
+    rightOMSMatchID  = {0, 0, 0, 0, 0}
     for i = 1, 5 do
-        for j = 1, 5 do
-            grid[i][j].leftOMSMatch = false
-        end
+        grid[i][3].leftOMSMatch = false
+        grid[i][3].rightOMSMatch = false
     end
 end
 
-function leftOrthoganalMSMatch()
+function orthoganalMSMatch()
    --DETERMINE LEFT ORTHOGANAL MATCH WITH MIDDLE STONE
     for i = 1, 5 do
         if grid[i][3].stackControl == 'WHITE' then
             if grid[i][2].stackControl == 'WHITE' then
                 grid[i][3].leftOMSMatch = true
                 leftOMSMatchID[i] = 1
+            end
+            if grid[i][4].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGANAL MS MATCH
+                grid[i][3].rightOMSMatch = true
+                rightOMSMatchID[i] = 1
             end
         end
     end
@@ -723,9 +728,8 @@ function determineHorizontalWin()
 		horizontalColumnSCCheck = true
 	end
      
-    OrthoganalMatchFlush()
-    leftOrthoganalMSMatch()
-
+    orthoganalMatchFlush()
+    orthoganalMSMatch()
 end
 
 function PlayState:update(dt)
@@ -863,8 +867,8 @@ function PlayState:update(dt)
 		mouseXGrid = nil
 	end
 
-	for i = 1, 5 do
-		for j = 1, 5 do --UPDATES OCCUPANTS LEGALMOVE HIGHLIGHT BASED ON LEGAL MOVE STATUS
+	for i = 1, 5 do --UPDATES OCCUPANTS LEGALMOVE HIGHLIGHT BASED ON LEGAL MOVE STATUS
+		for j = 1, 5 do 
 			grid[i][j]:update(dt)
 		end
 	end
@@ -1102,9 +1106,7 @@ function PlayState:update(dt)
 					end
 				end
 			end
-
-		
-	
+    
 			function love.mousepressed(x, y, button) --LOCK IN MOVEMENT ORIGIN GRID
 				if button == 1 then
 					if grid[mouseYGrid][mouseXGrid].legalMove then
@@ -1765,8 +1767,8 @@ function PlayState:render()
 		love.graphics.print('column4SC: ' .. tostring(column4SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		love.graphics.print('leftOMSMatchID: ' .. tostring(leftOMSMatchID[1]) .. tostring(leftOMSMatchID[2]) .. tostring(leftOMSMatchID[3]) .. tostring(leftOMSMatchID[4]) .. tostring(leftOMSMatchID[5]) , VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)     
-		love.graphics.print('leftOMSMatch: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftOMSMatch), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('rightOMSMatchID: ' .. tostring(rightOMSMatchID[1]) .. tostring(rightOMSMatchID[2]) .. tostring(rightOMSMatchID[3]) .. tostring(rightOMSMatchID[4]) .. tostring(rightOMSMatchID[5]) , VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)     
+		love.graphics.print('rightOMSMatch: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightOMSMatch), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
     end
 
 	--STONE COUNT
