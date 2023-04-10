@@ -674,7 +674,7 @@ function CSCrush(originRow, originColumn)
 	end
 end
 
-function orthoganalMatchFlush()
+function orthogonalMatchFlush()
     leftOMSMatchID  = {0, 0, 0, 0, 0}
     rightOMSMatchID  = {0, 0, 0, 0, 0}
     for i = 1, 5 do
@@ -683,15 +683,15 @@ function orthoganalMatchFlush()
     end
 end
 
-function orthoganalMSMatch()
-   --DETERMINE LEFT ORTHOGANAL MATCH WITH MIDDLE STONE
+function orthogonalMSMatch()
+   --DETERMINE LEFT ORTHOGONAL MATCH WITH MIDDLE STONE
     for i = 1, 5 do
         if grid[i][3].stackControl == 'WHITE' then
             if grid[i][2].stackControl == 'WHITE' then
                 grid[i][3].leftOMSMatch = true
                 leftOMSMatchID[i] = 1
             end
-            if grid[i][4].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGANAL MS MATCH
+            if grid[i][4].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGONAL MS MATCH
                 grid[i][3].rightOMSMatch = true
                 rightOMSMatchID[i] = 1
             end
@@ -728,8 +728,41 @@ function determineHorizontalWin()
 		horizontalColumnSCCheck = true
 	end
      
-    orthoganalMatchFlush()
-    orthoganalMSMatch()
+    orthogonalMatchFlush()
+    orthogonalMSMatch()
+end
+
+function lateralConnect()
+    for i = 1, 5 do
+        if leftOMSMatchID[i] == 1 then --CHECK ALL LEFT MATCHES FOR A RIGHT MATCH OR TOP MATCH
+            if i == 1 then
+                if rightOMSMatchID[i] == 1 then
+                    --ADD ARRAY OF TRUE AND FALSE BOOLS FOR TRACKING
+                end
+            end
+
+            if i == 2 then
+
+            end
+
+            if i == 3 then
+
+            end
+
+            if i == 4 then
+
+            end
+
+            if i == 5 then
+
+            end 
+            --CHECK FOR A RIGHT MATCH
+            --CHECK FOR TOP MATCH
+            --CHECK FOR A BOTTOM
+
+        end
+    end
+    --leftOMSMatchID
 end
 
 function PlayState:update(dt)
