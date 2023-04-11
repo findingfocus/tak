@@ -680,6 +680,7 @@ function orthogonalMatchFlush()
     for i = 1, 5 do
         grid[i][3].leftOMSMatch = false
         grid[i][3].rightOMSMatch = false
+        --ALSO FLUSH COLUMNS 2 AND 4
     end
 end
 
@@ -730,39 +731,22 @@ function determineHorizontalWin()
      
     orthogonalMatchFlush()
     orthogonalMSMatch()
+    if horizontalColumnSCCheck then
+        middleLateralConnect()
+    end
 end
 
-function lateralConnect()
+function middleLateralConnect() --RUN THIS ON ALL MIDDLE STONES WITH A LEFT ORTHOGONAL MATCH
     for i = 1, 5 do
-        if leftOMSMatchID[i] == 1 then --CHECK ALL LEFT MATCHES FOR A RIGHT MATCH OR TOP MATCH
-            if i == 1 then
-                if rightOMSMatchID[i] == 1 then
-                    --ADD ARRAY OF TRUE AND FALSE BOOLS FOR TRACKING
+        if i == 1 then
+            if grid[i][3].leftOMSMatch == true then
+                if grid[i][3].rightOMSMatch == true then
+                    return true
                 end
+            return false
             end
-
-            if i == 2 then
-
-            end
-
-            if i == 3 then
-
-            end
-
-            if i == 4 then
-
-            end
-
-            if i == 5 then
-
-            end 
-            --CHECK FOR A RIGHT MATCH
-            --CHECK FOR TOP MATCH
-            --CHECK FOR A BOTTOM
-
         end
     end
-    --leftOMSMatchID
 end
 
 function PlayState:update(dt)
@@ -1802,6 +1786,7 @@ function PlayState:render()
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('rightOMSMatchID: ' .. tostring(rightOMSMatchID[1]) .. tostring(rightOMSMatchID[2]) .. tostring(rightOMSMatchID[3]) .. tostring(rightOMSMatchID[4]) .. tostring(rightOMSMatchID[5]) , VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)     
 		love.graphics.print('rightOMSMatch: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightOMSMatch), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		--love.graphics.print('middleLateralConnect: ' .. tostring(middleLateralConnect()), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
     end
 
 	--STONE COUNT
