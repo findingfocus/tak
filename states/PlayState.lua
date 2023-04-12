@@ -686,19 +686,41 @@ function orthogonalMatchFlush()
         grid[i][4].rightMatchWhite = false
         grid[i][4].topMatchWhite = false
         grid[i][4].bottomMatchWhite = false
-        --ALSO FLUSH COLUMNS 2 AND 4
     end
 end
 
-function orthogonalMSMatch()
+function orthogonalMatch(column)
    --DETERMINE LEFT ORTHOGONAL MATCH WITH MIDDLE STONE
     for i = 1, 5 do
-        if grid[i][3].stackControl == 'WHITE' then
-            if grid[i][2].stackControl == 'WHITE' then
-                grid[i][3].leftMatchWhite = true
+        if grid[i][column].stackControl == 'WHITE' then
+            if grid[i][column - 1].stackControl == 'WHITE' then
+                grid[i][column].leftMatchWhite = true
             end
-            if grid[i][4].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGONAL MS MATCH
-                grid[i][3].rightMatchWhite = true
+            if grid[i][column + 1].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGONAL MS MATCH
+                grid[i][column].rightMatchWhite = true
+            end
+        end
+        if i == 1 then --BOTTOM CHECK
+            if grid[i][column].stackControl == 'WHITE' then
+                if grid[i + 1][column].stackControl == 'WHITE' then
+                    grid[i][column].bottomMatchWhite = true
+                end
+            end
+        elseif i > 1 and i < 5 then
+            if grid[i][column].stackControl == 'WHITE' then
+                if grid[i + 1][column].stackControl == 'WHITE' then
+                    grid[i][column].bottomMatchWhite = true
+                end
+                if grid[i - 1][column].stackControl == 'WHITE' then
+                    grid[i][column].topMatchWhite = true
+                end
+            end
+            --ABOVE AND BELOW
+        elseif i == 5 then --ABOVE CHECK
+            if grid[i][column].stackControl == 'WHITE' then
+                if grid[i - 1][column].stackControl == 'WHITE' then
+                    grid[i][column].topMatchWhite = true
+                end
             end
         end
     end
@@ -734,7 +756,7 @@ function determineHorizontalWin()
 	end
      
     orthogonalMatchFlush()
-    orthogonalMSMatch()
+    orthogonalMatch(3)
     if horizontalColumnSCCheck then
         middleLateralConnect()
     end
@@ -1790,6 +1812,8 @@ function PlayState:render()
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('rightMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('topMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].topMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
+		love.graphics.print('bottomMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].bottomMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		--love.graphics.print('middleLateralConnect: ' .. tostring(middleLateralConnect()), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
     end
 
