@@ -54,8 +54,6 @@ function resetBoard()
 	mouseStones = Occupant()
 	mouseStones.members = {}
 	mouseStones.occupants = 0
-    leftOMSMatchID = {0, 0, 0, 0, 0}
-    rightOMSMatchID = {0, 0, 0, 0, 0}
 
 	column1SC = false
 	column2SC = false
@@ -675,11 +673,19 @@ function CSCrush(originRow, originColumn)
 end
 
 function orthogonalMatchFlush()
-    leftOMSMatchID  = {0, 0, 0, 0, 0}
-    rightOMSMatchID  = {0, 0, 0, 0, 0}
     for i = 1, 5 do
-        grid[i][3].leftOMSMatch = false
-        grid[i][3].rightOMSMatch = false
+        grid[i][3].leftMatchWhite = false
+        grid[i][3].rightMatchWhite = false
+        grid[i][3].topMatchWhite = false
+        grid[i][3].bottomMatchWhite = false
+        grid[i][2].leftMatchWhite = false
+        grid[i][2].rightMatchWhite = false
+        grid[i][2].topMatchWhite = false
+        grid[i][2].bottomMatchWhite = false
+        grid[i][4].leftMatchWhite = false
+        grid[i][4].rightMatchWhite = false
+        grid[i][4].topMatchWhite = false
+        grid[i][4].bottomMatchWhite = false
         --ALSO FLUSH COLUMNS 2 AND 4
     end
 end
@@ -689,12 +695,10 @@ function orthogonalMSMatch()
     for i = 1, 5 do
         if grid[i][3].stackControl == 'WHITE' then
             if grid[i][2].stackControl == 'WHITE' then
-                grid[i][3].leftOMSMatch = true
-                leftOMSMatchID[i] = 1
+                grid[i][3].leftMatchWhite = true
             end
             if grid[i][4].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGONAL MS MATCH
-                grid[i][3].rightOMSMatch = true
-                rightOMSMatchID[i] = 1
+                grid[i][3].rightMatchWhite = true
             end
         end
     end
@@ -739,8 +743,8 @@ end
 function middleLateralConnect() --RUN THIS ON ALL MIDDLE STONES WITH A LEFT ORTHOGONAL MATCH
     for i = 1, 5 do
         if i == 1 then
-            if grid[i][3].leftOMSMatch == true then
-                if grid[i][3].rightOMSMatch == true then
+            if grid[i][3].leftMatchWhite == true then
+                if grid[i][3].rightMatchWhite == true then
                     return true
                 end
             return false
@@ -1740,7 +1744,7 @@ function PlayState:render()
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 	    	--love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-        love.graphics.print('leftOMSMatch: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftOMSMatch), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
+        love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
@@ -1784,8 +1788,8 @@ function PlayState:render()
 		love.graphics.print('column4SC: ' .. tostring(column4SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
 		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		love.graphics.print('rightOMSMatchID: ' .. tostring(rightOMSMatchID[1]) .. tostring(rightOMSMatchID[2]) .. tostring(rightOMSMatchID[3]) .. tostring(rightOMSMatchID[4]) .. tostring(rightOMSMatchID[5]) , VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)     
-		love.graphics.print('rightOMSMatch: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightOMSMatch), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
+		love.graphics.print('rightMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
+		love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		--love.graphics.print('middleLateralConnect: ' .. tostring(middleLateralConnect()), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
     end
 

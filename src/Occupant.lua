@@ -16,8 +16,10 @@ function Occupant:init()
 	self.stackControl = nil
 	self.stoneControl = nil
 	self.bottomStoneIndex = 1
-    self.leftOMSMatch = false
-    self.rightOMSMatch = false
+    self.leftMatchWhite = false
+    self.rightMatchWhite = false
+    self.topMatchWhite = false
+    self.rightMatchWhite = false
 end
 
 function Occupant:update(dt)
