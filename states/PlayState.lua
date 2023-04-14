@@ -690,7 +690,6 @@ function orthogonalMatchFlush()
 end
 
 function orthogonalMatch(column)
-   --DETERMINE LEFT ORTHOGONAL MATCH WITH MIDDLE STONE
     for i = 1, 5 do
         if grid[i][column].stackControl == 'WHITE' then
             if grid[i][column - 1].stackControl == 'WHITE' then
@@ -706,7 +705,7 @@ function orthogonalMatch(column)
                     grid[i][column].bottomMatchWhite = true
                 end
             end
-        elseif i > 1 and i < 5 then
+        elseif i > 1 and i < 5 then --ALL SIDES CHECK
             if grid[i][column].stackControl == 'WHITE' then
                 if grid[i + 1][column].stackControl == 'WHITE' then
                     grid[i][column].bottomMatchWhite = true
@@ -715,7 +714,6 @@ function orthogonalMatch(column)
                     grid[i][column].topMatchWhite = true
                 end
             end
-            --ABOVE AND BELOW
         elseif i == 5 then --ABOVE CHECK
             if grid[i][column].stackControl == 'WHITE' then
                 if grid[i - 1][column].stackControl == 'WHITE' then
@@ -755,9 +753,9 @@ function determineHorizontalWin()
 		horizontalColumnSCCheck = true
 	end
      
-    orthogonalMatchFlush()
-    orthogonalMatch(3)
     if horizontalColumnSCCheck then
+        orthogonalMatchFlush()
+        orthogonalMatch(3)
         middleLateralConnect()
     end
 end
@@ -765,12 +763,12 @@ end
 function middleLateralConnect() --RUN THIS ON ALL MIDDLE STONES WITH A LEFT ORTHOGONAL MATCH
     for i = 1, 5 do
         if i == 1 then
-            if grid[i][3].leftMatchWhite == true then
-                if grid[i][3].rightMatchWhite == true then
-                    return true
-                end
-            return false
-            end
+            if grid[1][3].leftMatchWhite then
+                if grid[1][3].rightMatchWhite then
+                --ASSIGN MIDDLEMATCH1 VARIABLE
+                elseif grid[1][3].bottomMatchWhite then
+                end  
+            end 
         end
     end
 end
