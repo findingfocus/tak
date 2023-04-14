@@ -173,6 +173,7 @@ end
 function playerSwapGridReset()
 	player = player == 1 and 2 or 1
 	falsifyAllOccupantsLegalMove()
+    potentialRoad()
 	grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -724,6 +725,22 @@ function orthogonalMatch(column)
     end
 end
 
+function potentialRoad()
+    roadColumn = '1'
+    for i = 1, 5 do
+        for j = 1, 5 do
+            grid[i][j].potentialRoad = false
+        end
+    end
+    if roadColumn == '1' then
+        for i = 1, 5 do
+            if grid[i][1].stoneControl ~= 'SS' and grid[i][1].stackControl == 'WHITE' then
+                grid[i][1].potentialRoad = true
+            end
+        end 
+    end
+end
+
 function determineHorizontalWin()
 	column1SC = false
 	column2SC = false
@@ -998,7 +1015,8 @@ function PlayState:update(dt)
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					updateStackControl(grid[mouseYGrid][mouseXGrid])
-					determineHorizontalWin()
+					--determineHorizontalWin()
+                    potentialRoad()
 					falsifyAllOccupantsLegalMove()
 					mEvent1LegalMovesPopulated = false
 				end
@@ -1672,6 +1690,14 @@ function PlayState:render()
 			end
 
 		end
+        
+        for i = 1, 5 do
+            for j = 1, 5 do
+                if grid[i][j].potentialRoad then
+                    grid[i][j]:render()
+                end
+            end
+        end
 	end
 --]]
 
@@ -1766,7 +1792,8 @@ function PlayState:render()
 	    	--love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
-		love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		--love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('potentialRoad: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoad), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
 	end
 

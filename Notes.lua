@@ -11,6 +11,10 @@ determineHorizontalWin()
 			4. CHECK LAST CONNECT WITH MR MATCHES
 
 
+--NEW HORIZONTAL WIN DETECTION
+
+1. First Column
+    Every Stone in our control except standing stone = .potentialRoad
 
 
 for i = 1, 5 do
