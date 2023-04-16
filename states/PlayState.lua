@@ -173,7 +173,8 @@ end
 function playerSwapGridReset()
 	player = player == 1 and 2 or 1
 	falsifyAllOccupantsLegalMove()
-    potentialRoad()
+    roadStart()
+    potentialRoadH()
 	grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = false
 	for i = 1, 5 do
 		for j = 1, 5 do
@@ -675,22 +676,30 @@ end
 
 function orthogonalMatchFlush()
     for i = 1, 5 do
-        grid[i][3].leftMatchWhite = false
-        grid[i][3].rightMatchWhite = false
-        grid[i][3].topMatchWhite = false
-        grid[i][3].bottomMatchWhite = false
+        grid[i][1].leftMatchWhite = false
+        grid[i][1].rightMatchWhite = false
+        grid[i][1].topMatchWhite = false
+        grid[i][1].bottomMatchWhite = false
         grid[i][2].leftMatchWhite = false
         grid[i][2].rightMatchWhite = false
         grid[i][2].topMatchWhite = false
         grid[i][2].bottomMatchWhite = false
+        grid[i][3].leftMatchWhite = false
+        grid[i][3].rightMatchWhite = false
+        grid[i][3].topMatchWhite = false
+        grid[i][3].bottomMatchWhite = false
         grid[i][4].leftMatchWhite = false
         grid[i][4].rightMatchWhite = false
         grid[i][4].topMatchWhite = false
         grid[i][4].bottomMatchWhite = false
+        grid[i][5].leftMatchWhite = false
+        grid[i][5].rightMatchWhite = false
+        grid[i][5].topMatchWhite = false
+        grid[i][5].bottomMatchWhite = false
     end
 end
 
-function orthogonalMatch(column)
+function orthogonalMatch(column) --REDO THIS PLEASE
     for i = 1, 5 do
         if grid[i][column].stackControl == 'WHITE' then
             if grid[i][column - 1].stackControl == 'WHITE' then
@@ -725,20 +734,22 @@ function orthogonalMatch(column)
     end
 end
 
-function potentialRoad()
-    roadColumn = '1'
+function roadStart()
     for i = 1, 5 do
         for j = 1, 5 do
             grid[i][j].potentialRoad = false
         end
     end
-    if roadColumn == '1' then
-        for i = 1, 5 do
-            if grid[i][1].stoneControl ~= 'SS' and grid[i][1].stackControl == 'WHITE' then
-                grid[i][1].potentialRoad = true
-            end
-        end 
-    end
+    for i = 1, 5 do --FIRST COLUMN
+        if grid[i][1].stoneControl ~= 'SS' and grid[i][1].stackControl == 'WHITE' then
+            grid[i][1].potentialRoad = true
+        end
+    end 
+end
+
+function potentialRoadH(column)
+    --MODIFY ALL ROWS .POTENTIALROAD IF LEFT CONNECTED WITH ORTHOGONAL
+    --STARTING AT TOP, ANY CONNECT TO ALREADY POTENTIAL ROAD GETS POTENTIALROAD TRUE
 end
 
 function determineHorizontalWin()
@@ -774,6 +785,10 @@ function determineHorizontalWin()
         orthogonalMatchFlush()
         orthogonalMatch(3)
         middleLateralConnect()
+        potentialRoadH(2)
+        potentialRoadH(3)
+        potentialRoadH(4)
+        potentialRoadH(5)
     end
 end
 
@@ -1016,7 +1031,8 @@ function PlayState:update(dt)
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					updateStackControl(grid[mouseYGrid][mouseXGrid])
 					--determineHorizontalWin()
-                    potentialRoad()
+                    roadStart()
+                    potentialRoadH()
 					falsifyAllOccupantsLegalMove()
 					mEvent1LegalMovesPopulated = false
 				end
