@@ -19,7 +19,7 @@ function Occupant:init()
     self.leftMatchWhite = false
     self.rightMatchWhite = false
     self.topMatchWhite = false
-    self.rightMatchWhite = false
+    self.bottomMatchWhite = false
     self.potentialRoad = false 
 end
 

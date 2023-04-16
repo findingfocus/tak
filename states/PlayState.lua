@@ -699,35 +699,124 @@ function orthogonalMatchFlush()
     end
 end
 
-function orthogonalMatch(column) --REDO THIS PLEASE
+function orthogonalMatch()
     for i = 1, 5 do
-        if grid[i][column].stackControl == 'WHITE' then
-            if grid[i][column - 1].stackControl == 'WHITE' then
-                grid[i][column].leftMatchWhite = true
-            end
-            if grid[i][column + 1].stackControl == 'WHITE' then --DETERMINE RIGHT ORTHOGONAL MS MATCH
-                grid[i][column].rightMatchWhite = true
-            end
-        end
-        if i == 1 then --BOTTOM CHECK
-            if grid[i][column].stackControl == 'WHITE' then
-                if grid[i + 1][column].stackControl == 'WHITE' then
-                    grid[i][column].bottomMatchWhite = true
+        for j = 1, 5 do
+            --CORNERCASES
+            if i == 1 and j == 1 then
+                if grid[1][1].stackControl == 'WHITE' and grid[1][1].stoneControl ~= 'SS' then
+                    if grid[1][2].stackControl == 'WHITE' and grid[1][2].stoneControl ~= 'SS' then
+                        grid[1][1].rightMatchWhite = true
+                    end
+                    if grid[2][1].stackControl == 'WHITE' and grid[2][1].stoneControl ~= 'SS' then
+                        grid[1][1].bottomMatchWhite = true
+                    end
                 end
             end
-        elseif i > 1 and i < 5 then --ALL SIDES CHECK
-            if grid[i][column].stackControl == 'WHITE' then
-                if grid[i + 1][column].stackControl == 'WHITE' then
-                    grid[i][column].bottomMatchWhite = true
-                end
-                if grid[i - 1][column].stackControl == 'WHITE' then
-                    grid[i][column].topMatchWhite = true
+
+            if i == 1 and j == 5 then
+                if grid[1][5].stackControl == 'WHITE' and grid[1][5].stoneControl ~= 'SS' then
+                    if grid[1][4].stackControl == 'WHITE' and grid[1][4].stoneControl ~= 'SS' then
+                        grid[1][5].leftMatchWhite = true
+                    end
+                    if grid[2][5].stackControl == 'WHITE' and grid[2][5].stoneControl ~= 'SS' then
+                        grid[1][5].bottomMatchWhite = true
+                    end
+                end 
+            end
+            
+            if i == 5 and j == 1 then
+                if grid[5][1].stackControl == 'WHITE' and grid[5][1].stoneControl ~= 'SS' then
+                    if grid[5][2].stackControl == 'WHITE' and grid[5][2].stoneControl ~= 'SS' then
+                        grid[5][1].rightMatchWhite = true
+                    end
+                    if grid[4][1].stackControl == 'WHITE' and grid[4][1].stoneControl ~= 'SS' then
+                        grid[5][1].topMatchWhite = true
+                    end
+                end 
+            end
+                
+            if i == 5 and j == 5 then
+                if grid[5][5].stackControl == 'WHITE' and grid[5][5].stoneControl ~= 'SS' then
+                    if grid[5][4].stackControl == 'WHITE' and grid[5][4].stoneControl ~= 'SS' then
+                        grid[5][5].leftMatchWhite = true
+                    end
+                    if grid[4][5].stackControl == 'WHITE' and grid[4][5].stoneControl ~= 'SS' then
+                        grid[5][5].topMatchWhite = true
+                    end
+                end 
+            end
+            --EDGECASES
+            if i == 1 and j ~= 1 and j ~= 5 then --TOPEDGE, L,B,R
+                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i][j - 1].stackControl == 'WHITE' and grid[i][j - 1].stoneControl ~= 'SS' then
+                        grid[i][j].leftMatchWhite = true
+                    end
+                    if grid[i + 1][j].stackControl == 'WHITE' and grid[i + 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].bottomMatchWhite = true
+                    end
+                    if grid[i][j + 1].stackControl == 'WHITE' and grid[i][j + 1].stoneControl ~= 'SS' then
+                        grid[i][j].rightMatchWhite = true
+                    end 
                 end
             end
-        elseif i == 5 then --ABOVE CHECK
-            if grid[i][column].stackControl == 'WHITE' then
-                if grid[i - 1][column].stackControl == 'WHITE' then
-                    grid[i][column].topMatchWhite = true
+
+            if j == 5 and i ~= 1 and i ~= 5 then --RIGHTEDGE, T,L,B
+                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i - 1][j].stackControl == 'WHITE' and grid[i - 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].topMatchWhite = true
+                    end
+                    if grid[i][j - 1].stackControl == 'WHITE' and grid[i][j - 1].stoneControl ~= 'SS' then
+                        grid[i][j].leftMatchWhite = true
+                    end
+                    if grid[i + 1][j].stackControl == 'WHITE' and grid[i + 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].bottomMatchWhite = true
+                    end
+                end
+            end
+
+            if i == 5 and j ~= 1 and j ~= 5 then --BOTTOMEDGE L,T,R
+                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i][j - 1].stackControl == 'WHITE' and grid[i][j - 1].stoneControl ~= 'SS' then
+                        grid[i][j].leftMatchWhite = true
+                    end
+                    if grid[i - 1][j].stackControl == 'WHITE' and grid[i - 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].topMatchWhite = true
+                    end
+                    if grid[i][j + 1].stackControl == 'WHITE' and grid[i][j + 1].stoneControl ~= 'SS' then
+                        grid[i][j].rightMatchWhite = true
+                    end
+                end
+            end
+
+            if j == 1 and i ~= 1 and i ~= 5 then --LEFTEDGE T,R,B
+                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i - 1][j].stackControl == 'WHITE' and grid[i - 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].topMatchWhite = true
+                    end
+                    if grid[i][j + 1].stackControl == 'WHITE' and grid[i][j + 1].stoneControl ~= 'SS' then
+                        grid[i][j].rightMatchWhite = true
+                    end
+                    if grid[i + 1][j].stackControl == 'WHITE' and grid[i + 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].bottomMatchWhite = true
+                    end
+                end
+            end
+            --MIDDLECASES
+            if i > 1 and i < 5 and j > 1 and j < 5 then
+                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i - 1][j].stackControl == 'WHITE' and grid[i - 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].topMatchWhite = true
+                    end
+                    if grid[i][j + 1].stackControl == 'WHITE' and grid[i][j + 1].stoneControl ~= 'SS' then
+                        grid[i][j].rightMatchWhite = true
+                    end
+                    if grid[i + 1][j].stackControl == 'WHITE' and grid[i + 1][j].stoneControl ~= 'SS' then
+                        grid[i][j].bottomMatchWhite = true
+                    end
+                    if grid[i][j - 1].stackControl == 'WHITE' and grid[i][j - 1].stoneControl ~= 'SS' then
+                        grid[i][j].leftMatchWhite = true
+                    end
                 end
             end
         end
@@ -781,15 +870,15 @@ function determineHorizontalWin()
 		horizontalColumnSCCheck = true
 	end
      
-    if horizontalColumnSCCheck then
+    --if horizontalColumnSCCheck then
         orthogonalMatchFlush()
-        orthogonalMatch(3)
+        orthogonalMatch()
         middleLateralConnect()
         potentialRoadH(2)
         potentialRoadH(3)
         potentialRoadH(4)
         potentialRoadH(5)
-    end
+    --end
 end
 
 function middleLateralConnect() --RUN THIS ON ALL MIDDLE STONES WITH A LEFT ORTHOGONAL MATCH
@@ -1030,7 +1119,7 @@ function PlayState:update(dt)
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					updateStackControl(grid[mouseYGrid][mouseXGrid])
-					--determineHorizontalWin()
+					determineHorizontalWin()
                     roadStart()
                     potentialRoadH()
 					falsifyAllOccupantsLegalMove()
