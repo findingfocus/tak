@@ -48,6 +48,7 @@ function resetBoard()
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
 	droppedInThirdMovement = 0
+    functionCount = 0
 	stonesToCopy = 0
 	lowestMSStackOrder = 1
 	moveType = 'place'
@@ -890,14 +891,14 @@ function orthogonalMatch()
                         grid[i][j].bottomMatchWhite = true
                     end
                 end
-                if grid[i][j].stackControl == 'WHITE' and grid[i][j].stoneControl ~= 'SS' then
-                    if grid[i - 1][j].stackControl == 'WHITE' and grid[i - 1][j].stoneControl ~= 'SS' then
+                if grid[i][j].stackControl == 'BLACK' and grid[i][j].stoneControl ~= 'SS' then
+                    if grid[i - 1][j].stackControl == 'BLACK' and grid[i - 1][j].stoneControl ~= 'SS' then
                         grid[i][j].topMatchBlack = true
                     end
-                    if grid[i][j + 1].stackControl == 'WHITE' and grid[i][j + 1].stoneControl ~= 'SS' then
+                    if grid[i][j + 1].stackControl == 'BLACK' and grid[i][j + 1].stoneControl ~= 'SS' then
                         grid[i][j].rightMatchBlack = true
                     end
-                    if grid[i + 1][j].stackControl == 'WHITE' and grid[i + 1][j].stoneControl ~= 'SS' then
+                    if grid[i + 1][j].stackControl == 'BLACK' and grid[i + 1][j].stoneControl ~= 'SS' then
                         grid[i][j].bottomMatchBlack = true
                     end
                 end
@@ -1395,8 +1396,9 @@ function PlayState:update(dt)
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					updateStackControl(grid[mouseYGrid][mouseXGrid])
-					determineHorizontalWin()
+                    --determineHorizontalWin()
                     orthogonalMatchFlush()
+                    orthogonalMatch()
                     roadStart()
                     potentialRoadH(2)
                     potentialRoadH(3)
@@ -1779,7 +1781,9 @@ function PlayState:update(dt)
 							clearContol(grid[movementOriginRow][movementOriginColumn])
 						end
 					end
-					determineHorizontalWin()
+					--determineHorizontalWin()
+                    orthogonalMatchFlush()
+                    orthogonalMatch()
 					playerSwapGridReset()
 				elseif offGrid then --CS CRUSH
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -1868,7 +1872,9 @@ function PlayState:update(dt)
 					updateStoneControl(grid[secondMovementRow][secondMovementColumn])
 					updateStackControl(grid[secondMovementRow][secondMovementColumn])
 					grid[firstMovementRow][firstMovementColumn].occupied = true
-					determineHorizontalWin()
+					--determineHorizontalWin()
+                    orthogonalMatchFlush()
+                    orthogonalMatch()
 					playerSwapGridReset()
 				elseif offGrid then
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -1947,7 +1953,9 @@ function PlayState:update(dt)
 						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
 						grid[thirdMovementRow][thirdMovementColumn].occupied = true
 		
-						determineHorizontalWin()
+						--determineHorizontalWin()
+                        orthogonalMatchFlush()
+                        orthogonalMatch()
 						playerSwapGridReset()
 				elseif offGrid then
 					if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
@@ -2015,7 +2023,10 @@ function PlayState:update(dt)
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if mouseStones.occupants == 0 then
-					determineHorizontalWin()
+					--determineHorizontalWin()
+                    orthogonalMatchFlush()
+                    orthogonalMatchFlush()
+                    orthogonalMatch()
 					playerSwapGridReset()
 				end
 			end
@@ -2078,7 +2089,7 @@ function PlayState:render()
         
         for i = 1, 5 do
             for j = 1, 5 do
-                if grid[i][j].potentialRoadWhite then
+                if grid[i][j].potentialRoadWhite or grid[i][j].potentialRoadBlack then
                     grid[i][j]:render()
                 end
             end
@@ -2178,7 +2189,7 @@ function PlayState:render()
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		--love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
-		love.graphics.print('potentialRoadWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('potentialRoadBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
 	end
 
@@ -2224,7 +2235,7 @@ function PlayState:render()
 		love.graphics.print('leftMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('topMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].topMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('bottomMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].bottomMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-		--love.graphics.print('middleLateralConnect: ' .. tostring(middleLateralConnect()), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
+		love.graphics.print('orthMatchCount: ' .. tostring(functionCount), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
     end
 
 	--STONE COUNT
