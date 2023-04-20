@@ -44,6 +44,8 @@ function resetBoard()
 	skipMovementEvent2 = true
 	occupantIndex = nil
 	capstoneCrush = false
+    whiteWins = false
+    blackWins = false   
 	droppedInMovementOrigin = 0
 	droppedInFirstMovement = 0
 	droppedInSecondMovement = 0
@@ -55,13 +57,6 @@ function resetBoard()
 	mouseStones = Occupant()
 	mouseStones.members = {}
 	mouseStones.occupants = 0
-
-	column1SC = false
-	column2SC = false
-	column3SC = false
-	column4SC = false
-	column5SC = false
-	horizontalColumnSCCheck = false
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -1136,39 +1131,15 @@ function potentialRoadH(column)
     --STARTING AT TOP, ANY CONNECT TO ALREADY POTENTIAL ROAD GETS POTENTIALROAD TRUE
 end
 
-function determineHorizontalWin()
-	column1SC = false
-	column2SC = false
-	column3SC = false
-	column4SC = false
-	column5SC = false
-	horizontalColumnSCCheck = false
-	--WHITE WIN
-	for i = 1, 5 do --DETERMINE STONE CONTROL IN EVERY COLUMN
-		for j = 1, 5 do
-            if (grid[j][i].stoneControl == 'LS' or grid[j][i].stoneControl == 'CS') and grid[j][i].stackControl == 'WHITE' then
-                if i == 1 then
-                    column1SC = true
-                elseif i == 2 then
-                    column2SC = true
-                elseif i == 3 then
-                    column3SC = true
-                elseif i == 4 then
-                    column4SC = true
-                elseif i == 5 then
-                    column5SC = true
-                end
-            end
-		end
-	end
-	if column1SC and column2SC and column3SC and column4SC and column5SC then
-		horizontalColumnSCCheck = true
-	end
-     
-        orthogonalMatchFlush()
-        orthogonalMatch()
-
-    --Cycle through all rows of column five, if potentialRoadWhite horizontal than theres a win
+function horizontalWinDetect()
+    for i = 1, 5 do
+        if grid[i][5].potentialRoadWhite then
+            whiteWins = true
+        end
+        if grid[i][5].potentialRoadBlack then
+            blackWins = true
+        end
+    end
 end
 
 function PlayState:update(dt)
@@ -1396,7 +1367,6 @@ function PlayState:update(dt)
 					stoneSelect = 1
 					updateStoneControl(grid[mouseYGrid][mouseXGrid])
 					updateStackControl(grid[mouseYGrid][mouseXGrid])
-                    --determineHorizontalWin()
                     orthogonalMatchFlush()
                     orthogonalMatch()
                     roadStart()
@@ -1781,7 +1751,6 @@ function PlayState:update(dt)
 							clearContol(grid[movementOriginRow][movementOriginColumn])
 						end
 					end
-					--determineHorizontalWin()
                     orthogonalMatchFlush()
                     orthogonalMatch()
 					playerSwapGridReset()
@@ -1872,7 +1841,6 @@ function PlayState:update(dt)
 					updateStoneControl(grid[secondMovementRow][secondMovementColumn])
 					updateStackControl(grid[secondMovementRow][secondMovementColumn])
 					grid[firstMovementRow][firstMovementColumn].occupied = true
-					--determineHorizontalWin()
                     orthogonalMatchFlush()
                     orthogonalMatch()
 					playerSwapGridReset()
@@ -1952,8 +1920,6 @@ function PlayState:update(dt)
 						updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
 						updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
 						grid[thirdMovementRow][thirdMovementColumn].occupied = true
-		
-						--determineHorizontalWin()
                         orthogonalMatchFlush()
                         orthogonalMatch()
 						playerSwapGridReset()
@@ -2023,7 +1989,6 @@ function PlayState:update(dt)
 
 			if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
 				if mouseStones.occupants == 0 then
-					--determineHorizontalWin()
                     orthogonalMatchFlush()
                     orthogonalMatchFlush()
                     orthogonalMatch()
@@ -2034,7 +1999,6 @@ function PlayState:update(dt)
 
 	end
 	--]]
-
 
 ---[[MOVEMENT ORIGIN HIGHLIGHT
 	if movementOriginRow ~= nil and movementOriginColumn ~= nil then

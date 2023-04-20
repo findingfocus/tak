@@ -31,7 +31,7 @@ function TitleScreenState:update(dt)
 		else
 			--sounds['titleMusic']:stop()
 			sounds['select']:play()
-			gStateMachine:change('tripState')
+			gStateMachine:change('helpState')
 		end
 	end
 end
