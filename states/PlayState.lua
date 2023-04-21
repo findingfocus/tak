@@ -31,7 +31,7 @@ function resetBoard()
 	secondMovementRow = nil
 	secondMovementColumn = nil
 	thirdMovementRow = nil
-	thirdMovementColumn = nil
+	truethirdMovementColumn = nil
 	fourthMovementRow = nil
 	fourthMovementColumn = nil
 	downDirection = false
@@ -936,189 +936,199 @@ end
 function roadStart()
     for i = 1, 5 do
         for j = 1, 5 do
-            grid[i][j].potentialRoadWhite = false
-            grid[i][j].potentialRoadBlack = false
+            grid[i][j].potentialRoadWhiteH = false
+            grid[i][j].potentialRoadBlackH = false
+            grid[i][j].potentialRoadBlackV = false
+            grid[i][j].potentialRoadBlackV = false
         end
     end
     for i = 1, 5 do --FIRST COLUMN
         if grid[i][1].stoneControl ~= 'SS' and grid[i][1].stackControl == 'WHITE' then
-            grid[i][1].potentialRoadWhite = true
+            grid[i][1].potentialRoadWhiteH = true
         end
         if grid[i][1].stoneControl ~= 'SS' and grid[i][1].stackControl == 'BLACK' then
-            grid[i][1].potentialRoadBlack = true
+            grid[i][1].potentialRoadBlackH = true
         end
     end 
+    for i = 1, 5 do --FIRST ROW
+        if grid[1][i].stoneControl ~= 'SS' and grid[1][i].stackControl == 'WHITE' then
+            grid[1][i].potentialRoadWhiteV = true
+        end
+        if grid[1][i].stoneControl ~= 'SS' and grid[1][i].stackControl == 'BLACK' then
+            grid[1][i].potentialRoadBlackV = true
+        end
+    end
 end
 
 function potentialRoadH(column)
     for i = 1, 5 do --POPULATE DIRECT RIGHT MATCHES TO POTENTIALROAD
         if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
-            if grid[i][column - 1].potentialRoadWhite then
-                grid[i][column].potentialRoadWhite = true
+            if grid[i][column - 1].potentialRoadWhiteH then
+                grid[i][column].potentialRoadWhiteH = true
             end
         end
 
         if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
-            if grid[i][column - 1].potentialRoadBlack then
-                grid[i][column].potentialRoadBlack = true
+            if grid[i][column - 1].potentialRoadBlackH then
+                grid[i][column].potentialRoadBlackH = true
             end
         end
 
        for i = 1, 5 do
            if i == 1 then --TOP ROW
-               if grid[i][column].potentialRoadWhite then
+               if grid[i][column].potentialRoadWhiteH then
                     if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
-                        grid[i + 1][column].potentialRoadWhite = true
+                        grid[i + 1][column].potentialRoadWhiteH = true
                         if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
-                            grid[i + 2][column].potentialRoadWhite = true
+                            grid[i + 2][column].potentialRoadWhiteH = true
                             if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
-                                grid[i + 3][column].potentialRoadWhite = true
+                                grid[i + 3][column].potentialRoadWhiteH = true
                                 if grid[i + 4][column].stackControl == 'WHITE' and grid[i + 4][column].stoneControl ~= 'SS' then
-                                    grid[i + 4][column].potentialRoadWhite = true
+                                    grid[i + 4][column].potentialRoadWhiteH = true
                                 end
                             end
                         end
                     end
                end
-               if grid[i][column].potentialRoadBlack then
+               if grid[i][column].potentialRoadBlackH then
                     if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then
-                        grid[i + 1][column].potentialRoadBlack = true
+                        grid[i + 1][column].potentialRoadBlackH = true
                         if grid[i + 2][column].stackControl == 'BLACK' and grid[i + 2][column].stoneControl ~= 'SS' then
-                            grid[i + 2][column].potentialRoadBlack = true
+                            grid[i + 2][column].potentialRoadBlackH = true
                             if grid[i + 3][column].stackControl == 'BLACK' and grid[i + 3][column].stoneControl ~= 'SS' then
-                                grid[i + 3][column].potentialRoadBlack = true
+                                grid[i + 3][column].potentialRoadBlackH = true
                                 if grid[i + 4][column].stackControl == 'BLACK' and grid[i + 4][column].stoneControl ~= 'SS' then
-                                    grid[i + 4][column].potentialRoadBlack = true
+                                    grid[i + 4][column].potentialRoadBlackH = true
                                 end
                             end
                         end
                     end
                end
            elseif i == 2 then
-               if grid[i][column].potentialRoadWhite then
+               if grid[i][column].potentialRoadWhiteH then
                    if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
-                            grid[i - 1][column].potentialRoadWhite = true 
+                            grid[i - 1][column].potentialRoadWhiteH = true 
                         end
                         --CHECK THE REST BELOW
                         if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
-                           grid[i + 1][column].potentialRoadWhite = true 
+                           grid[i + 1][column].potentialRoadWhiteH = true 
                            if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
-                               grid[i + 2][column].potentialRoadWhite = true 
+                               grid[i + 2][column].potentialRoadWhiteH = true 
                                if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
-                                   grid[i + 3][column].potentialRoadWhite = true 
+                                   grid[i + 3][column].potentialRoadWhiteH = true 
                                end
                            end
                         end
                    end
                 end
-               if grid[i][column].potentialRoadBlack then
+               if grid[i][column].potentialRoadBlackH then
                    if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
-                            grid[i - 1][column].potentialRoadBlack = true 
+                            grid[i - 1][column].potentialRoadBlackH = true 
                         end
                         --CHECK THE REST BELOW
                         if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
-                           grid[i + 1][column].potentialRoadBlack = true 
+                           grid[i + 1][column].potentialRoadBlackH = true 
                            if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
-                               grid[i + 2][column].potentialRoadBlack = true 
+                               grid[i + 2][column].potentialRoadBlackH = true 
                                if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
-                                   grid[i + 3][column].potentialRoadBlack = true 
+                                   grid[i + 3][column].potentialRoadBlackH = true 
                                end
                            end
                         end
                    end
                 end
            elseif i == 3 then
-               if grid[i][column].potentialRoadWhite then
+               if grid[i][column].potentialRoadWhiteH then
                    if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
-                           grid[i - 1][column].potentialRoadWhite = true 
+                           grid[i - 1][column].potentialRoadWhiteH = true 
                            if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' then
-                               grid[i - 2][column].potentialRoadWhite = true 
+                               grid[i - 2][column].potentialRoadWhiteH = true 
                            end
                         end
                         if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
-                           grid[i + 1][column].potentialRoadWhite = true 
+                           grid[i + 1][column].potentialRoadWhiteH = true 
                            if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
-                               grid[i + 2][column].potentialRoadWhite = true 
+                               grid[i + 2][column].potentialRoadWhiteH = true 
                            end
                         end
                    end
                 end
-               if grid[i][column].potentialRoadBlack then
+               if grid[i][column].potentialRoadBlackH then
                    if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
-                           grid[i - 1][column].potentialRoadBlack = true 
+                           grid[i - 1][column].potentialRoadBlackH = true 
                            if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' then
-                               grid[i - 2][column].potentialRoadBlack = true 
+                               grid[i - 2][column].potentialRoadBlackH = true 
                            end
                         end
                         if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
-                           grid[i + 1][column].potentialRoadBlack = true 
+                           grid[i + 1][column].potentialRoadBlackH = true 
                            if grid[i + 2][column].stackControl == 'BLACK' and grid[i + 2][column].stoneControl ~= 'SS' then
-                               grid[i + 2][column].potentialRoadBlack = true 
+                               grid[i + 2][column].potentialRoadBlackH = true 
                            end
                         end
                    end
                 end
             elseif i == 4 then
-                if grid[i][column].potentialRoadWhite then
+                if grid[i][column].potentialRoadWhiteH then
                     if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
-                            grid[i + 1][column].potentialRoadWhite = true 
+                            grid[i + 1][column].potentialRoadWhiteH = true 
                         end
                         if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then
-                            grid[i - 1][column].potentialRoadWhite = true 
+                            grid[i - 1][column].potentialRoadWhiteH = true 
                             if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' then
-                                grid[i - 2][column].potentialRoadWhite = true 
+                                grid[i - 2][column].potentialRoadWhiteH = true 
                                 if grid[i - 3][column].stackControl == 'WHITE' and grid[i - 3][column].stoneControl ~= 'SS' then
-                                    grid[i - 3][column].potentialRoadWhite = true 
+                                    grid[i - 3][column].potentialRoadWhiteH = true 
                                 end
                             end
                         end
                     end
                 end
-                if grid[i][column].potentialRoadBlack then
+                if grid[i][column].potentialRoadBlackH then
                     if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
                         if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
-                            grid[i + 1][column].potentialRoadBlack = true 
+                            grid[i + 1][column].potentialRoadBlackH = true 
                         end
                         if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then
-                            grid[i - 1][column].potentialRoadBlack = true 
+                            grid[i - 1][column].potentialRoadBlackH = true 
                             if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' then
-                                grid[i - 2][column].potentialRoadBlack = true 
+                                grid[i - 2][column].potentialRoadBlackH = true 
                                 if grid[i - 3][column].stackControl == 'BLACK' and grid[i - 3][column].stoneControl ~= 'SS' then
-                                    grid[i - 3][column].potentialRoadBlack = true 
+                                    grid[i - 3][column].potentialRoadBlackH = true 
                                 end
                             end
                         end
                     end
                 end
             elseif i == 5 then
-                if grid[i][column].potentialRoadWhite then
+                if grid[i][column].potentialRoadWhiteH then
                     if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then
-                        grid[i - 1][column].potentialRoadWhite = true
-                        if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadWhite then
-                            grid[i - 2][column].potentialRoadWhite = true
-                            if grid[i - 3][column].stackControl == 'WHITE' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadWhite then
-                                grid[i - 3][column].potentialRoadWhite = true
-                                if grid[i - 4][column].stackControl == 'WHITE' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadWhite then
-                                    grid[i - 4][column].potentialRoadWhite = true
+                        grid[i - 1][column].potentialRoadWhiteH = true
+                        if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadWhiteH then
+                            grid[i - 2][column].potentialRoadWhiteH = true
+                            if grid[i - 3][column].stackControl == 'WHITE' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadWhiteH then
+                                grid[i - 3][column].potentialRoadWhiteH = true
+                                if grid[i - 4][column].stackControl == 'WHITE' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadWhiteH then
+                                    grid[i - 4][column].potentialRoadWhiteH = true
                                 end
                             end
                         end
                     end
                 end
-                if grid[i][column].potentialRoadBlack then
+                if grid[i][column].potentialRoadBlackH then
                     if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then
-                        grid[i - 1][column].potentialRoadBlack = true
-                        if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadBlack then
-                            grid[i - 2][column].potentialRoadBlack = true
-                            if grid[i - 3][column].stackControl == 'BLACK' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadBlack then
-                                grid[i - 3][column].potentialRoadBlack = true
-                                if grid[i - 4][column].stackControl == 'BLACK' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadBlack then
-                                    grid[i - 4][column].potentialRoadBlack = true
+                        grid[i - 1][column].potentialRoadBlackH = true
+                        if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadBlackH then
+                            grid[i - 2][column].potentialRoadBlackH = true
+                            if grid[i - 3][column].stackControl == 'BLACK' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadBlackH then
+                                grid[i - 3][column].potentialRoadBlackH = true
+                                if grid[i - 4][column].stackControl == 'BLACK' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadBlackH then
+                                    grid[i - 4][column].potentialRoadBlackH = true
                                 end
                             end
                         end
@@ -1127,16 +1137,191 @@ function potentialRoadH(column)
             end
         end
     end
-    --MODIFY ALL ROWS .POTENTIALROAD IF LEFT CONNECTED WITH ORTHOGONAL
-    --STARTING AT TOP, ANY CONNECT TO ALREADY POTENTIAL ROAD GETS POTENTIALROAD TRUE
 end
 
+function potentialRoadV(row)
+    for i = 1, 5 do --POPULATE DIRECT BOTTOM MATCHES TO POTENTIALROAD
+        if grid[row][i].stackControl == 'WHITE' and grid[row][i].stoneControl ~= 'SS' then
+            if grid[row - 1][i].potentialRoadWhiteV then
+                grid[row][i].potentialRoadWhiteV = true
+            end
+        end
+        if grid[row][i].stackControl == 'BLACK' and grid[row][i].stoneControl ~= 'SS' then
+            if grid[row - 1][i].potentialRoadBlackH then
+                grid[row][i].potentialRoadBlackV = true
+            end
+        end
+--THIS IS WHERE WE LEFT OFF
+       for i = 1, 5 do
+           if i == 1 then --TOP ROW
+               if grid[i][column].potentialRoadWhiteH then
+                    if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
+                        grid[i + 1][column].potentialRoadWhiteH = true
+                        if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
+                            grid[i + 2][column].potentialRoadWhiteH = true
+                            if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
+                                grid[i + 3][column].potentialRoadWhiteH = true
+                                if grid[i + 4][column].stackControl == 'WHITE' and grid[i + 4][column].stoneControl ~= 'SS' then
+                                    grid[i + 4][column].potentialRoadWhiteH = true
+                                end
+                            end
+                        end
+                    end
+               end
+               if grid[i][column].potentialRoadBlackH then
+                    if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then
+                        grid[i + 1][column].potentialRoadBlackH = true
+                        if grid[i + 2][column].stackControl == 'BLACK' and grid[i + 2][column].stoneControl ~= 'SS' then
+                            grid[i + 2][column].potentialRoadBlackH = true
+                            if grid[i + 3][column].stackControl == 'BLACK' and grid[i + 3][column].stoneControl ~= 'SS' then
+                                grid[i + 3][column].potentialRoadBlackH = true
+                                if grid[i + 4][column].stackControl == 'BLACK' and grid[i + 4][column].stoneControl ~= 'SS' then
+                                    grid[i + 4][column].potentialRoadBlackH = true
+                                end
+                            end
+                        end
+                    end
+               end
+           elseif i == 2 then
+               if grid[i][column].potentialRoadWhiteH then
+                   if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
+                            grid[i - 1][column].potentialRoadWhiteH = true 
+                        end
+                        --CHECK THE REST BELOW
+                        if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
+                           grid[i + 1][column].potentialRoadWhiteH = true 
+                           if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
+                               grid[i + 2][column].potentialRoadWhiteH = true 
+                               if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
+                                   grid[i + 3][column].potentialRoadWhiteH = true 
+                               end
+                           end
+                        end
+                   end
+                end
+               if grid[i][column].potentialRoadBlackH then
+                   if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
+                            grid[i - 1][column].potentialRoadBlackH = true 
+                        end
+                        --CHECK THE REST BELOW
+                        if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
+                           grid[i + 1][column].potentialRoadBlackH = true 
+                           if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
+                               grid[i + 2][column].potentialRoadBlackH = true 
+                               if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
+                                   grid[i + 3][column].potentialRoadBlackH = true 
+                               end
+                           end
+                        end
+                   end
+                end
+           elseif i == 3 then
+               if grid[i][column].potentialRoadWhiteH then
+                   if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
+                           grid[i - 1][column].potentialRoadWhiteH = true 
+                           if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' then
+                               grid[i - 2][column].potentialRoadWhiteH = true 
+                           end
+                        end
+                        if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
+                           grid[i + 1][column].potentialRoadWhiteH = true 
+                           if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
+                               grid[i + 2][column].potentialRoadWhiteH = true 
+                           end
+                        end
+                   end
+                end
+               if grid[i][column].potentialRoadBlackH then
+                   if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
+                           grid[i - 1][column].potentialRoadBlackH = true 
+                           if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' then
+                               grid[i - 2][column].potentialRoadBlackH = true 
+                           end
+                        end
+                        if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK TWO ABOVE
+                           grid[i + 1][column].potentialRoadBlackH = true 
+                           if grid[i + 2][column].stackControl == 'BLACK' and grid[i + 2][column].stoneControl ~= 'SS' then
+                               grid[i + 2][column].potentialRoadBlackH = true 
+                           end
+                        end
+                   end
+                end
+            elseif i == 4 then
+                if grid[i][column].potentialRoadWhiteH then
+                    if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
+                            grid[i + 1][column].potentialRoadWhiteH = true 
+                        end
+                        if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then
+                            grid[i - 1][column].potentialRoadWhiteH = true 
+                            if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' then
+                                grid[i - 2][column].potentialRoadWhiteH = true 
+                                if grid[i - 3][column].stackControl == 'WHITE' and grid[i - 3][column].stoneControl ~= 'SS' then
+                                    grid[i - 3][column].potentialRoadWhiteH = true 
+                                end
+                            end
+                        end
+                    end
+                end
+                if grid[i][column].potentialRoadBlackH then
+                    if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
+                            grid[i + 1][column].potentialRoadBlackH = true 
+                        end
+                        if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then
+                            grid[i - 1][column].potentialRoadBlackH = true 
+                            if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' then
+                                grid[i - 2][column].potentialRoadBlackH = true 
+                                if grid[i - 3][column].stackControl == 'BLACK' and grid[i - 3][column].stoneControl ~= 'SS' then
+                                    grid[i - 3][column].potentialRoadBlackH = true 
+                                end
+                            end
+                        end
+                    end
+                end
+            elseif i == 5 then
+                if grid[i][column].potentialRoadWhiteH then
+                    if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then
+                        grid[i - 1][column].potentialRoadWhiteH = true
+                        if grid[i - 2][column].stackControl == 'WHITE' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadWhiteH then
+                            grid[i - 2][column].potentialRoadWhiteH = true
+                            if grid[i - 3][column].stackControl == 'WHITE' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadWhiteH then
+                                grid[i - 3][column].potentialRoadWhiteH = true
+                                if grid[i - 4][column].stackControl == 'WHITE' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadWhiteH then
+                                    grid[i - 4][column].potentialRoadWhiteH = true
+                                end
+                            end
+                        end
+                    end
+                end
+                if grid[i][column].potentialRoadBlackH then
+                    if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then
+                        grid[i - 1][column].potentialRoadBlackH = true
+                        if grid[i - 2][column].stackControl == 'BLACK' and grid[i - 2][column].stoneControl ~= 'SS' and grid[i - 1][column].potentialRoadBlackH then
+                            grid[i - 2][column].potentialRoadBlackH = true
+                            if grid[i - 3][column].stackControl == 'BLACK' and grid[i - 3][column].stoneControl ~= 'SS' and grid[i - 2][column].potentialRoadBlackH then
+                                grid[i - 3][column].potentialRoadBlackH = true
+                                if grid[i - 4][column].stackControl == 'BLACK' and grid[i - 4][column].stoneControl ~= 'SS' and grid[i - 3][column].potentialRoadBlackH then
+                                    grid[i - 4][column].potentialRoadBlackH = true
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
 function horizontalWinDetect()
     for i = 1, 5 do
-        if grid[i][5].potentialRoadWhite then
+        if grid[i][5].potentialRoadWhiteH then
             whiteWins = true
         end
-        if grid[i][5].potentialRoadBlack then
+        if grid[i][5].potentialRoadBlackH then
             blackWins = true
         end
     end
@@ -2053,7 +2238,7 @@ function PlayState:render()
         
         for i = 1, 5 do
             for j = 1, 5 do
-                if grid[i][j].potentialRoadWhite or grid[i][j].potentialRoadBlack then
+                if grid[i][j].potentialRoadWhiteH or grid[i][j].potentialRoadBlackH then
                     grid[i][j]:render()
                 end
             end
@@ -2153,7 +2338,7 @@ function PlayState:render()
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		--love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
-		love.graphics.print('potentialRoadBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 
 	end
 
