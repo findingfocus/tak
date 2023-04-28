@@ -2286,7 +2286,7 @@ function PlayState:render()
                     --grid[i][j]:render()
                 end
                 if grid[i][j].potentialRoadWhiteV or grid[i][j].potentialRoadBlackV then
-                    --grid[i][j]:render()
+                    grid[i][j]:render()
                 end
             end
         end
@@ -2441,6 +2441,8 @@ function PlayState:render()
     if debugOption == 5 then
 		love.graphics.print('whitePoints: ' .. tostring(whitePoints), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('blackPoints: ' .. tostring(blackPoints), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
+		love.graphics.print('width: ' .. tostring(WIDTH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
+		love.graphics.print('height: ' .. tostring(HEIGHT), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
     end
 --]]
 	--STONE COUNT

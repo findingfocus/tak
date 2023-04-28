@@ -34,11 +34,16 @@ function love.load()
 		--['11'] = love.audio.newSource('music/11.mp3', 'static')
 	}
 --]]
+--
+--
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
 		fullscreen = false,
 		resizable = false
 	})
+
+    WIDTH = love.graphics.getWidth()
+    HEIGHT = love.graphics.getHeight()
 
 	gStateMachine = StateMachine {
 		['titleState'] = function() return TitleScreenState() end,
@@ -95,11 +100,11 @@ function love.update(dt)
 
 	love.keyboard.keysPressed = {} 
 
-	--sounds[tostring(randomSongIndex)]:setLooping(true)
+	-- sounds[tostring(randomSongIndex)]:setLooping(true)
 	if not musicPlayed then
 		--sounds['8']:play()
-		--sounds['8']:setVolume(.2)
-		--musicPlayed = true
+		sounds['8']:setVolume(.2)
+		musicPlayed = true
 	end
 end
 

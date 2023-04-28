@@ -24,14 +24,14 @@ function Occupant:init()
     self.rightMatchBlack = false
     self.topMatchBlack = false
     self.bottomMatchBlack = false
-    self.potentialRoadWhiteH = false 
-    self.potentialRoadBlackH = false 
-    self.potentialRoadWhiteV = false 
-    self.potentialRoadBlackV = false 
+    self.potentialRoadWhiteH = false
+    self.potentialRoadBlackH = false
+    self.potentialRoadWhiteV = false
+    self.potentialRoadBlackV = false
 end
 
 function Occupant:update(dt)
-	
+
 end
 
 function Occupant:render()
@@ -66,7 +66,7 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --LEFT
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
-    
+
     if self.potentialRoadWhiteH then
 		love.graphics.setColor(0/255, 0/255, 255/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP

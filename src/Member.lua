@@ -14,7 +14,7 @@ function Member:init(stoneColor, stoneType, x, y)
 end
 
 function Member:update(dt)
-	
+
 end
 
 function Member:render()
@@ -31,7 +31,7 @@ function Member:render()
 			love.graphics.setColor(65/255, 65/255, 65/255, 255/255)
 		end
 		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2), STONE_WIDTH - ((self.stackOrder - 1) * SHRINK), STONE_WIDTH - ((self.stackOrder - 1) * SHRINK)) --RENDERS BORDER
-		
+
 		if self.stoneColor == 'WHITE' then --RESETS ACTUAL COLOR
 			love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 		elseif self.stoneColor == 'BLACK' then
@@ -40,7 +40,7 @@ function Member:render()
 
 		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2) + 1, self.y + Y_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2) + 1, STONE_WIDTH - ((self.stackOrder - 1) * SHRINK) - 2, STONE_WIDTH - ((self.stackOrder - 1) * SHRINK) - 2) --RENDERS STONE
 
-	elseif self.stoneType == 'SS' then 
+	elseif self.stoneType == 'SS' then
 		if self.stoneColor == 'WHITE' then --SETS SHADOW COLOR
 			love.graphics.setColor(210/255, 210/255, 210/255, 255/255)
 		elseif self.stoneColor == 'BLACK' then
@@ -56,7 +56,7 @@ function Member:render()
 		end
 
 		love.graphics.rectangle('fill', self.x + X_OFFSET + OUTLINE + (((self.stackOrder - 1) * SHRINK) / 2) + 1, self.y + Y_OFFSET + OUTLINE + 58 - (SS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 2.5) / 2 + 1, STONE_WIDTH - ((self.stackOrder - 1) * SHRINK) - 2, SS_HEIGHT - ((self.stackOrder - 1) * SHRINK) / 2.5 + 4 - 2)
-	
+
 	elseif self.stoneType == 'CS' then
 		if self.stoneColor == 'WHITE' then --SETS SHADOW COLOR
 			love.graphics.setColor(210/255, 210/255, 210/255, 255/255)
