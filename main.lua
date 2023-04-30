@@ -14,6 +14,9 @@ function love.load()
 	titleFont = love.graphics.newFont('fonts/spqr.ttf', 140)
 	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
 	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
+
+    cursor = love.graphics.newImage('/src/pics/cursor.png')
+
 	love.graphics.setFont(titleFont)
 
 	sounds = {
@@ -38,12 +41,11 @@ function love.load()
 --
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
-		fullscreen = true,
+		fullscreen = false,
 		resizable = false
 	})
 
-    WIDTH = love.graphics.getWidth()
-    HEIGHT = love.graphics.getHeight()
+    love.window.setFullscreen(true, "desktop")
 
 	gStateMachine = StateMachine {
 		['titleState'] = function() return TitleScreenState() end,

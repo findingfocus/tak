@@ -2280,7 +2280,7 @@ function PlayState:render()
 
 		end
 
-        for i = 1, 5 do
+        for i = 1, 5 do --POTENTIAL ROAD RENDER TOGGLE
             for j = 1, 5 do
                 if grid[i][j].potentialRoadWhiteH or grid[i][j].potentialRoadBlackH then
                     --grid[i][j]:render()
@@ -2293,6 +2293,7 @@ function PlayState:render()
 	end
 --]]
 
+    --love.graphics.draw(cursor, mouseMasterX - 60, mouseMasterY - 60)
 ---[[RENDERS STONE SELECTION AT MOUSE POSITION
 	if not toggleMouseStone then
         if not whiteWins and not blackWins then
@@ -2318,6 +2319,9 @@ function PlayState:render()
             end
         end
 	end
+
+    love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+    love.graphics.draw(cursor, mouseX + X_OFFSET, mouseY + Y_OFFSET)
 --]]
 
 ---[[RENDERS PLAYER'S TURN
