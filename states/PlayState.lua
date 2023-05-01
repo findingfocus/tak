@@ -2283,7 +2283,7 @@ function PlayState:render()
         for i = 1, 5 do --POTENTIAL ROAD RENDER TOGGLE
             for j = 1, 5 do
                 if grid[i][j].potentialRoadWhiteH or grid[i][j].potentialRoadBlackH then
-                    --grid[i][j]:render()
+                    grid[i][j]:render()
                 end
                 if grid[i][j].potentialRoadWhiteV or grid[i][j].potentialRoadBlackV then
                     grid[i][j]:render()
@@ -2320,8 +2320,10 @@ function PlayState:render()
         end
 	end
 
-    love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-    love.graphics.draw(cursor, mouseX + X_OFFSET, mouseY + Y_OFFSET)
+    if moveType == 'move' then
+        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+        love.graphics.draw(cursor, mouseX + X_OFFSET, mouseY + Y_OFFSET)
+    end
 --]]
 
 ---[[RENDERS PLAYER'S TURN

@@ -45,7 +45,7 @@ function love.load()
 		resizable = false
 	})
 
-    love.window.setFullscreen(true, "desktop")
+    --love.window.setFullscreen(true, "desktop")
 
 	gStateMachine = StateMachine {
 		['titleState'] = function() return TitleScreenState() end,
