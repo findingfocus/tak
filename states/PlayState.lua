@@ -1374,6 +1374,57 @@ function PlayState:update(dt)
     else
         debugOption = 1
 	end
+
+    if love.keyboard.wasPressed('v') then  --POTENTIAL ROAD TOGGLES
+        for i = 1, 5 do
+            for j = 1, 5 do
+                    if grid[i][j].roadWhiteHToggle then
+                        grid[i][j].roadWhiteHToggle = false
+                    else
+                        grid[i][j].roadWhiteHToggle = true
+                    end
+            end
+        end
+    end
+
+    if love.keyboard.wasPressed('b') then
+        for i = 1, 5 do
+            for j = 1, 5 do
+                if grid[i][j].roadBlackHToggle then
+                    grid[i][j].roadBlackHToggle = false
+                else
+                    grid[i][j].roadBlackHToggle = true
+                end
+            end
+        end
+    end
+
+    if love.keyboard.wasPressed('n') then
+        for i = 1, 5 do
+            for j = 1, 5 do
+                    if grid[i][j].roadWhiteVToggle then
+                        grid[i][j].roadWhiteVToggle = false
+                    else
+                        grid[i][j].roadWhiteVToggle = true
+                    end
+            end
+        end
+    end
+
+    if love.keyboard.wasPressed('m') then
+        for i = 1, 5 do
+            for j = 1, 5 do
+                if grid[i][j].roadBlackVToggle then
+                    grid[i][j].roadBlackVToggle = false
+                else
+                    grid[i][j].roadBlackVToggle = true
+                end
+            end
+        end
+    end
+
+    --]]
+
 --]]
 ---[[MOUSE POSITION VARIABLES
     mouseMasterX, mouseMasterY = love.mouse.getPosition()
@@ -2449,6 +2500,7 @@ function PlayState:render()
 		love.graphics.print('blackPoints: ' .. tostring(blackPoints), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('width: ' .. tostring(WIDTH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('height: ' .. tostring(HEIGHT), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
+		love.graphics.print('roadWhitHToggle: ' .. tostring(grid[mouseYGrid][mouseXGrid].roadWhiteHToggle), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
     end
 --]]
 	--STONE COUNT
