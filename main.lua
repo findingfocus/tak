@@ -16,6 +16,7 @@ function love.load()
 	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
 
     cursor = love.graphics.newImage('/src/pics/cursor.png')
+    boardOption1 = love.graphics.newImage('/src/pics/board.png')
 
 	love.graphics.setFont(titleFont)
 
@@ -24,6 +25,7 @@ function love.load()
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
 		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
 		['crush'] = love.audio.newSource('music/crush.mp3', 'static'),
+        ['chatter'] = love.audio.newSource('music/623565__iainmccurdy__kitchen-bar.mp3', 'static'),
 		--['1'] = love.audio.newSource('music/1.mp3', 'static'),
 		--['2'] = love.audio.newSource('music/2.mp3', 'static'),
 		--['3'] = love.audio.newSource('music/3.mp3', 'static'),
@@ -59,6 +61,7 @@ function love.load()
 	yTextOffset = 750
 	lineOffset = 100
 	musicPlayed = false
+    chatterPlayed = false
 end
 
 function love.resize(w, h)
@@ -103,9 +106,17 @@ function love.update(dt)
 	love.keyboard.keysPressed = {} 
 
 	-- sounds[tostring(randomSongIndex)]:setLooping(true)
+    if not chatterPlayed then
+        sounds['8']:setLooping(true)
+        sounds['chatter']:setVolume(.5)
+        sounds['chatter']:play()
+        chatterPlayed = true
+    end
+
 	if not musicPlayed then
-		--sounds['8']:play()
-		sounds['8']:setVolume(.2)
+        sounds['8']:setLooping(true)
+		sounds['8']:setVolume(.4)
+		sounds['8']:play()
 		musicPlayed = true
 	end
 end
@@ -115,7 +126,7 @@ function love.draw()
 
 	gStateMachine:render()
 
-	--displayFPS()
+	displayFPS()
 
 	if helpState == 1 then
 		love.graphics.setFont(smallFont)

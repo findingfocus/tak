@@ -2302,7 +2302,8 @@ end
 
 function PlayState:render()
 
-	love.graphics.clear(80/255, 80/255, 80/255, 255/255)
+	--love.graphics.clear(80/255, 80/255, 80/255, 255/255)
+	--love.graphics.clear(255/255, 255/255, 255/255, 255/255)
 	board:render()
 
 ---[[RENDERS PLACED STONES
@@ -2339,7 +2340,7 @@ function PlayState:render()
                 if grid[i][j].potentialRoadWhiteV or grid[i][j].potentialRoadBlackV then
                     grid[i][j]:render()
                 end
-            end
+           end
         end
 	end
 --]]
@@ -2404,7 +2405,7 @@ function PlayState:render()
 		love.graphics.print('moveType: move', 480, VIRTUAL_HEIGHT - 38)
 	end
 
---[[
+---[[
 	--INSTRUCTIONS
 	love.graphics.setFont(smallerFont)
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -2429,7 +2430,7 @@ function PlayState:render()
 		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
 	end
 --]]
----[[
+--[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
