@@ -80,12 +80,12 @@ function resetBoard()
 	obstaclePopulate(2, 4, 'SS', 'BLACK')
 	obstaclePopulate(1, 1, 'CS', 'WHITE')
 	testerPopulate(2, 1, 4)
-	--testerPopulate(4, 2, 12)
+	testerPopulate(4, 2, 12)
 	testerPopulate(4, 4, 8)
 	testerPopulate(3, 4, 13)
-	--testerPopulate(3, 2, 2)
-	--testerPopulate(3, 5, 14)
-	--testerPopulate(4, 3, 12)
+	testerPopulate(3, 2, 2)
+	testerPopulate(3, 5, 14)
+	testerPopulate(4, 3, 12)
 --]]
 end
 
@@ -1032,16 +1032,16 @@ function potentialRoadH(column)
                    end
                 end
                if grid[i][column].potentialRoadBlackH then
-                   if grid[i][column].stackControl == 'WHITE' and grid[i][column].stoneControl ~= 'SS' then
-                        if grid[i - 1][column].stackControl == 'WHITE' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
+                   if grid[i][column].stackControl == 'BLACK' and grid[i][column].stoneControl ~= 'SS' then
+                        if grid[i - 1][column].stackControl == 'BLACK' and grid[i - 1][column].stoneControl ~= 'SS' then --CHECK ONE ABOVE
                             grid[i - 1][column].potentialRoadBlackH = true
                         end
                         --CHECK THE REST BELOW
-                        if grid[i + 1][column].stackControl == 'WHITE' and grid[i + 1][column].stoneControl ~= 'SS' then
+                        if grid[i + 1][column].stackControl == 'BLACK' and grid[i + 1][column].stoneControl ~= 'SS' then
                            grid[i + 1][column].potentialRoadBlackH = true
-                           if grid[i + 2][column].stackControl == 'WHITE' and grid[i + 2][column].stoneControl ~= 'SS' then
+                           if grid[i + 2][column].stackControl == 'BLACK' and grid[i + 2][column].stoneControl ~= 'SS' then
                                grid[i + 2][column].potentialRoadBlackH = true
-                               if grid[i + 3][column].stackControl == 'WHITE' and grid[i + 3][column].stoneControl ~= 'SS' then
+                               if grid[i + 3][column].stackControl == 'BLACK' and grid[i + 3][column].stoneControl ~= 'SS' then
                                    grid[i + 3][column].potentialRoadBlackH = true
                                end
                            end
@@ -1270,7 +1270,7 @@ function potentialRoadV(row)
                 if grid[row][i + 1].stackControl == 'WHITE' and grid[row][i + 1].stoneControl ~= 'SS' then
                     grid[row][i + 1].potentialRoadWhiteV = true
                 end
-            end 
+            end
 
 
             if grid[row][i].potentialRoadBlackV then --CHECKS LEFT OF COLUMN 4
@@ -1358,6 +1358,11 @@ function winDetect()
 
     if whiteWins or blackWins then
         scoreUpdate()
+       for i = 1, 5 do
+           for j = 1, 5 do
+               grid[i][j].selectionHighlight = false
+           end
+       end
     end
 end
 
@@ -2405,7 +2410,7 @@ function PlayState:render()
 		love.graphics.print('moveType: move', 480, VIRTUAL_HEIGHT - 38)
 	end
 
----[[
+--[[
 	--INSTRUCTIONS
 	love.graphics.setFont(smallerFont)
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -2430,7 +2435,7 @@ function PlayState:render()
 		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
 	end
 --]]
---[[
+---[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
