@@ -59,8 +59,16 @@ function resetBoard()
     whiteWins = false
     blackWins = false
     toggleMouseStone = false
+    hudToggle = true
     whitePoints = 0
     blackPoints = 0
+    game1 = false
+    game2 = false
+    game3 = false
+    game1WhitePoints = 0
+    game1BlackPoints = 0
+    game1WhiteWins = false
+    game1BlackWins = true
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -1358,6 +1366,8 @@ function winDetect()
 
     if whiteWins or blackWins then
         scoreUpdate()
+        game1WhitePoints = whitePoints
+        game1BlackPoints = blackPoints
        for i = 1, 5 do
            for j = 1, 5 do
                grid[i][j].selectionHighlight = false
@@ -1367,6 +1377,11 @@ function winDetect()
 end
 
 function PlayState:update(dt)
+
+    if love.keyboard.wasPressed('t') then
+        hudToggle = hudToggle == false and true or false
+    end
+
 ---[[DEBUG OPTIONS
 	if love.keyboard.isDown('2') then
 		debugOption = 2
@@ -1427,6 +1442,7 @@ function PlayState:update(dt)
             end
         end
     end
+
 
     --]]
 
@@ -2383,45 +2399,51 @@ function PlayState:render()
     end
 --]]
 
----[[RENDERS PLAYER'S TURN
-	love.graphics.setFont(benneFont)
-	if player == 1 then
-		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is White\'s move', 45, 8)
-	elseif player == 2 then
-		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is Black\'s move', 45, 8)
-	end
---]]
-
 ---[[TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(titleFont)
 	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
 --]]
 
-	--DEBUG INF0
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	love.graphics.setFont(benneFont)
-	--love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
-	if moveType == 'place' then
-		love.graphics.print('move type: PLACE', 515, 8)
-	elseif moveType == 'move' then
-		love.graphics.print('move type: MOVE', 515, 8)
-	end
+	--HUD
+    if hudToggle then
+        love.graphics.setFont(benneFont)
+        if player == 1 then
+            love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+            love.graphics.print('It is White\'s move', 45, 8)
+        elseif player == 2 then
+            love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+            love.graphics.print('It is Black\'s move', 45, 8)
+        end
 
+        if moveType == 'place' then
+            love.graphics.print('move type: PLACE', 515, 8)
+        elseif moveType == 'move' then
+            love.graphics.print('move type: MOVE', 515, 8)
+        end
+
+        --STONE COUNT
+        love.graphics.print('White Stones: ' .. tostring(player1stones), 45, VIRTUAL_HEIGHT - 30)
+        love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
+    end
+
+
+
+    --WINNING GAMES
     love.graphics.setFont(benneFont)
     love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
     love.graphics.print('WHITE' .. '         ' .. 'BLACK', VIRTUAL_WIDTH - 340, 220)
     love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 270)
-    --love.graphics.setFont(numberBenneFont)
     love.graphics.print('1', VIRTUAL_WIDTH - 500 + 105, 270)
+    --WHITE WINS
+    if game1WhiteWins then
+        love.graphics.print('WINS', VIRTUAL_WIDTH - 330, 270)
+    elseif game1BlackWins then
+        love.graphics.print('WINS', VIRTUAL_WIDTH - 155, 270)
+    end
 
-	--STONE COUNT
-	love.graphics.setFont(benneFont)
-	love.graphics.print('White Stones: ' .. tostring(player1stones), 45, VIRTUAL_HEIGHT - 30)
-	love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
-
+    love.graphics.print(game1WhitePoints, VIRTUAL_WIDTH - 300, 310)
+    love.graphics.print(game1BlackPoints, VIRTUAL_WIDTH - 120, 310)
 --[[
 	--INSTRUCTIONS
 	love.graphics.setFont(smallerFont)
