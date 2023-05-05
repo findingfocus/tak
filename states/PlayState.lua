@@ -2384,13 +2384,13 @@ function PlayState:render()
 --]]
 
 ---[[RENDERS PLAYER'S TURN
-	love.graphics.setFont(smallFont)
+	love.graphics.setFont(benneFont)
 	if player == 1 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is White\'s move', 45, VIRTUAL_HEIGHT - 38)
+		love.graphics.print('It is White\'s move', 45, 8)
 	elseif player == 2 then
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-		love.graphics.print('It is Black\'s move', 45, VIRTUAL_HEIGHT - 38)
+		love.graphics.print('It is Black\'s move', 45, 8)
 	end
 --]]
 
@@ -2402,13 +2402,25 @@ function PlayState:render()
 
 	--DEBUG INF0
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	love.graphics.setFont(smallFont)
+	love.graphics.setFont(benneFont)
 	--love.graphics.print('stoneSelect: ' .. tostring(stoneSelect), VIRTUAL_WIDTH - 400, 180)
 	if moveType == 'place' then
-		love.graphics.print('moveType: place', 480, VIRTUAL_HEIGHT - 38)
+		love.graphics.print('move type: PLACE', 515, 8)
 	elseif moveType == 'move' then
-		love.graphics.print('moveType: move', 480, VIRTUAL_HEIGHT - 38)
+		love.graphics.print('move type: MOVE', 515, 8)
 	end
+
+    love.graphics.setFont(benneFont)
+    love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+    love.graphics.print('WHITE' .. '         ' .. 'BLACK', VIRTUAL_WIDTH - 340, 220)
+    love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 270)
+    --love.graphics.setFont(numberBenneFont)
+    love.graphics.print('1', VIRTUAL_WIDTH - 500 + 105, 270)
+
+	--STONE COUNT
+	love.graphics.setFont(benneFont)
+	love.graphics.print('White Stones: ' .. tostring(player1stones), 45, VIRTUAL_HEIGHT - 30)
+	love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
 
 --[[
 	--INSTRUCTIONS
@@ -2435,7 +2447,7 @@ function PlayState:render()
 		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
 	end
 --]]
----[[
+--[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2509,10 +2521,6 @@ function PlayState:render()
 		love.graphics.print('roadWhitHToggle: ' .. tostring(grid[mouseYGrid][mouseXGrid].roadWhiteHToggle), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
     end
 --]]
-	--STONE COUNT
-	love.graphics.setFont(smallFont)
-	love.graphics.print('player1 stones: ' .. tostring(player1stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 100)
-	love.graphics.print('player2 stones: ' .. tostring(player2stones), VIRTUAL_WIDTH - 400, VIRTUAL_HEIGHT - 50)
 
     --WIN
     if whiteWins then

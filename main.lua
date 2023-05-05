@@ -1,5 +1,4 @@
 require 'dependencies'
-
 function love.load()
 	math.randomseed(os.time())
 
@@ -14,6 +13,8 @@ function love.load()
 	titleFont = love.graphics.newFont('fonts/spqr.ttf', 140)
 	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
 	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
+    benneFont = love.graphics.newFont('fonts/Benne.otf', 32)
+    numberBenneFont = love.graphics.newFont('fonts/Benne.otf', 70)
 
     cursor = love.graphics.newImage('/src/pics/cursor.png')
     boardOption1 = love.graphics.newImage('/src/pics/board.png')
@@ -103,20 +104,20 @@ end
 function love.update(dt)
 	gStateMachine:update(dt)
 
-	love.keyboard.keysPressed = {} 
+	love.keyboard.keysPressed = {}
 
 	-- sounds[tostring(randomSongIndex)]:setLooping(true)
     if not chatterPlayed then
         sounds['8']:setLooping(true)
-        sounds['chatter']:setVolume(.5)
-        sounds['chatter']:play()
+        sounds['chatter']:setVolume(.2)
+     --   sounds['chatter']:play()
         chatterPlayed = true
     end
 
 	if not musicPlayed then
         sounds['8']:setLooping(true)
-		sounds['8']:setVolume(.4)
-		sounds['8']:play()
+		sounds['8']:setVolume(.2)
+	--	sounds['8']:play()
 		musicPlayed = true
 	end
 end
@@ -126,7 +127,7 @@ function love.draw()
 
 	gStateMachine:render()
 
-	displayFPS()
+	--displayFPS()
 
 	if helpState == 1 then
 		love.graphics.setFont(smallFont)
