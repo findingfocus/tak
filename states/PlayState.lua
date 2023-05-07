@@ -2,6 +2,15 @@ PlayState = Class{__includes = BaseState}
 
 function PlayState:init()
 	resetBoard()
+    whitePoints = 0
+    blackPoints = 0
+    game1Finished = false
+    game2 = false
+    game3 = false
+    game1WhitePoints = 0
+    game1BlackPoints = 0
+    game1WhiteWins = false
+    game1BlackWins = false
 end
 
 function resetBoard()
@@ -60,15 +69,6 @@ function resetBoard()
     blackWins = false
     toggleMouseStone = false
     hudToggle = true
-    whitePoints = 0
-    blackPoints = 0
-    game1 = false
-    game2 = false
-    game3 = false
-    game1WhitePoints = 0
-    game1BlackPoints = 0
-    game1WhiteWins = false
-    game1BlackWins = true
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -1368,11 +1368,20 @@ function winDetect()
         scoreUpdate()
         game1WhitePoints = whitePoints
         game1BlackPoints = blackPoints
-       for i = 1, 5 do
-           for j = 1, 5 do
-               grid[i][j].selectionHighlight = false
-           end
-       end
+        for i = 1, 5 do
+            for j = 1, 5 do
+                grid[i][j].selectionHighlight = false
+            end
+        end
+        if not game1Finished then
+            if whiteWins then
+                game1WhiteWins = true
+            end
+            if blackWins then
+                game1BlackWins = true
+            end
+            game1Finished = true
+        end
     end
 end
 
@@ -2428,22 +2437,24 @@ function PlayState:render()
     end
 
 
-
+---[[
     --WINNING GAMES
-    love.graphics.setFont(benneFont)
-    love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-    love.graphics.print('WHITE' .. '         ' .. 'BLACK', VIRTUAL_WIDTH - 340, 220)
-    love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 270)
-    love.graphics.print('1', VIRTUAL_WIDTH - 500 + 105, 270)
-    --WHITE WINS
-    if game1WhiteWins then
-        love.graphics.print('WINS', VIRTUAL_WIDTH - 330, 270)
-    elseif game1BlackWins then
-        love.graphics.print('WINS', VIRTUAL_WIDTH - 155, 270)
+    if game1Finished then
+        love.graphics.setFont(benneFont)
+        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+        love.graphics.print('WHITE' .. '         ' .. 'BLACK', VIRTUAL_WIDTH - 340, 220)
+        love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 270)
+        love.graphics.print('1', VIRTUAL_WIDTH - 500 + 105, 270)
+        --WHITE WINS
+        if game1WhiteWins then
+            love.graphics.print('WINS', VIRTUAL_WIDTH - 330, 270)
+        elseif game1BlackWins then
+            love.graphics.print('WINS', VIRTUAL_WIDTH - 155, 270)
+        end
+        love.graphics.print(game1WhitePoints, VIRTUAL_WIDTH - 300, 310)
+        love.graphics.print(game1BlackPoints, VIRTUAL_WIDTH - 120, 310)
     end
-
-    love.graphics.print(game1WhitePoints, VIRTUAL_WIDTH - 300, 310)
-    love.graphics.print(game1BlackPoints, VIRTUAL_WIDTH - 120, 310)
+    --]]
 --[[
 	--INSTRUCTIONS
 	love.graphics.setFont(smallerFont)

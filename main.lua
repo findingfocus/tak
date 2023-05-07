@@ -117,7 +117,7 @@ function love.update(dt)
 	if not musicPlayed then
         sounds['8']:setLooping(true)
 		sounds['8']:setVolume(.2)
-	--	sounds['8']:play()
+		--sounds['8']:play()
 		musicPlayed = true
 	end
 end

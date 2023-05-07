@@ -1,46 +1,10 @@
-
-WIN CONDITION
-
-determineHorizontalWin()
-	1. CHECK FOR STACK CONTROL IN EACH COLUMN
-	2. CHECK FOR LATERAL CONNECT WITH MIDDLE STACK CONTROL
-		EACH LEFT ORTHOGONAL MATCH WITH A STACK CONTROL*
-        EACH RIGHT ORTHOGONAL MATCH WITH A STACK CONTROL
-		VERTICAL CONNECT BETWEEN LEFT AND RIGHT MATCH
-			3. CHECK FIRST CONNECT WITH ML MATCHES
-			4. CHECK LAST CONNECT WITH MR MATCHES
-
-
---NEW HORIZONTAL WIN DETECTION
-
-1. First Column
-    Every Stone in our control except standing stone = .potentialRoad
-
-
-for i = 1, 5 do
-	for j = 1, 5 do
-
-if controlInEachColumn then
-
-
-
-
-
-
-determineVerticalWin()
-
-
-
-
-
-
-
-
-
-
-
-
-
+__Win printing for two games
+__Rematch?
+__Player starting move**other player stones
+__Debug red space upon a win
+__Debug Complex move stones
+__Loop songs, random song index so plays forever
+__Loop chatter forever
 
 
 Move
