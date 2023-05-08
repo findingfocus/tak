@@ -5,12 +5,15 @@ function PlayState:init()
     whitePoints = 0
     blackPoints = 0
     game1Finished = false
-    game2 = false
-    game3 = false
+    game2Finished = false
     game1WhitePoints = 0
     game1BlackPoints = 0
+    game2WhitePoints = 0
+    game2BlackPoints = 0
     game1WhiteWins = false
     game1BlackWins = false
+    game2WhiteWins = false
+    game2BlackWins = false
 end
 
 function resetBoard()
@@ -1366,14 +1369,25 @@ function winDetect()
 
     if whiteWins or blackWins then
         scoreUpdate()
-        game1WhitePoints = whitePoints
-        game1BlackPoints = blackPoints
         for i = 1, 5 do
             for j = 1, 5 do
                 grid[i][j].selectionHighlight = false
             end
         end
+        if game1Finished then
+            game2WhitePoints = whitePoints
+            game2BlackPoints = blackPoints
+            if whiteWins then
+                game2WhiteWins = true
+            end
+            if blackWins then
+                game2BlackWins = true
+            end
+            game2Finished = true
+        end
         if not game1Finished then
+        game1WhitePoints = whitePoints
+        game1BlackPoints = blackPoints
             if whiteWins then
                 game1WhiteWins = true
             end
@@ -1486,6 +1500,17 @@ function PlayState:update(dt)
     if blackWins or whiteWins then
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             resetBoard()
+            if game2Finished then
+                whitePoints = 0
+                blackPoints = 0
+                game1Finished = false
+                game2Finished = false
+                game1BlackPoints = 0
+                game1WhitePoints = 0
+                game2Finished = false
+                game2BlackPoints = 0
+                game2WhitePoints = 0
+            end
         end
     else
     ---[[GRID RESET
@@ -2411,7 +2436,7 @@ function PlayState:render()
 ---[[TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(titleFont)
-	love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
+    love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
 --]]
 
 	--HUD
@@ -2447,12 +2472,25 @@ function PlayState:render()
         love.graphics.print('1', VIRTUAL_WIDTH - 500 + 105, 270)
         --WHITE WINS
         if game1WhiteWins then
-            love.graphics.print('WINS', VIRTUAL_WIDTH - 330, 270)
+            love.graphics.print('WINS', VIRTUAL_WIDTH - 325, 270)
         elseif game1BlackWins then
             love.graphics.print('WINS', VIRTUAL_WIDTH - 155, 270)
         end
-        love.graphics.print(game1WhitePoints, VIRTUAL_WIDTH - 300, 310)
-        love.graphics.print(game1BlackPoints, VIRTUAL_WIDTH - 120, 310)
+        love.graphics.print(game1WhitePoints .. ' pts.', VIRTUAL_WIDTH - 300 - 15, 310)
+        love.graphics.print(game1BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 310)
+    end
+
+    if game2Finished then
+        love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 380)
+        love.graphics.print('2', VIRTUAL_WIDTH - 500 + 105, 380)
+        --WHITE WINS
+        if game2WhiteWins then
+            love.graphics.print('WINS', VIRTUAL_WIDTH - 325, 380)
+        elseif game2BlackWins then
+            love.graphics.print('WINS', VIRTUAL_WIDTH - 155, 380)
+        end
+        love.graphics.print(game2WhitePoints .. ' pts.', VIRTUAL_WIDTH - 300 - 15, 420)
+        love.graphics.print(game2BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 420)
     end
     --]]
 --[[
