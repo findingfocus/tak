@@ -14,6 +14,8 @@ function love.load()
 	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
 	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
     benneFont = love.graphics.newFont('fonts/Benne.otf', 32)
+    smallBenneFont = love.graphics.newFont('fonts/Benne.otf', 28)
+    helpBenneFont = love.graphics.newFont('fonts/Benne.otf', 40)
     numberBenneFont = love.graphics.newFont('fonts/Benne.otf', 70)
 
     cursor = love.graphics.newImage('/src/pics/cursor.png')
@@ -44,7 +46,7 @@ function love.load()
 --
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
-		fullscreen = true,
+		fullscreen = false,
 		resizable = false
 	})
 
@@ -108,16 +110,16 @@ function love.update(dt)
 
 	-- sounds[tostring(randomSongIndex)]:setLooping(true)
     if not chatterPlayed then
-        sounds['8']:setLooping(true)
+        sounds['chatter']:setLooping(true)
         sounds['chatter']:setVolume(.2)
-     --   sounds['chatter']:play()
+        sounds['chatter']:play()
         chatterPlayed = true
     end
 
 	if not musicPlayed then
         sounds['8']:setLooping(true)
-		sounds['8']:setVolume(.2)
-		--sounds['8']:play()
+		sounds['8']:setVolume(.1)
+		sounds['8']:play()
 		musicPlayed = true
 	end
 end
@@ -130,7 +132,7 @@ function love.draw()
 	--displayFPS()
 
 	if helpState == 1 then
-		love.graphics.setFont(smallFont)
+		love.graphics.setFont(helpBenneFont)
 		love.graphics.setColor(50/255, 0/255, 200/255, 180/255)
 		love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)

@@ -14,6 +14,7 @@ function PlayState:init()
     game1BlackWins = false
     game2WhiteWins = false
     game2BlackWins = false
+    hudToggle = true
 end
 
 function resetBoard()
@@ -71,7 +72,6 @@ function resetBoard()
     whiteWins = false
     blackWins = false
     toggleMouseStone = false
-    hudToggle = true
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -2451,14 +2451,44 @@ function PlayState:render()
         end
 
         if moveType == 'place' then
+            --love.graphics.print('move type: PLACE', 515, 8)
             love.graphics.print('move type: PLACE', 515, 8)
         elseif moveType == 'move' then
+            --love.graphics.print('move type: MOVE', 515, 8)
             love.graphics.print('move type: MOVE', 515, 8)
         end
 
         --STONE COUNT
         love.graphics.print('White Stones: ' .. tostring(player1stones), 45, VIRTUAL_HEIGHT - 30)
         love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
+
+
+        ---[[
+        --INSTRUCTIONS
+        love.graphics.setFont(smallBenneFont)
+        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+        if movementEvent == 0 then
+            love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('Arrow left or right to select stone type', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2 - 45)
+            love.graphics.print('Arrow up or down swap move types', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+        elseif movementEvent == 1 then
+            love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            --love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 4)
+        elseif movementEvent == 2 then
+            love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('stones that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            love.graphics.print('Press enter to lock in your hand', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+        elseif movementEvent == 3 then
+            love.graphics.print('Click a green grid that you want to move to', INSTRUCTIONX, INSTRUCTIONY)
+            --love.graphics.print('that you want to move to', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+        elseif movementEvent >= 4 then
+            love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('stones that you want to place', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+            love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
+        end
+        --]]
     end
 
 
@@ -2493,31 +2523,6 @@ function PlayState:render()
         love.graphics.print(game2BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 420)
     end
     --]]
---[[
-	--INSTRUCTIONS
-	love.graphics.setFont(smallerFont)
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	if movementEvent == 0 then
-		love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET)
-	elseif movementEvent == 1 then
-		love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		--love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 4)
-	elseif movementEvent == 2 then
-		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('stones that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		love.graphics.print('Press enter to lock in your hand', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
-	elseif movementEvent == 3 then
-		love.graphics.print('Click to select a green grid that you want to move to', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('that you want to move to', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-	elseif movementEvent >= 4 then
-		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('stones that you want to place', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
-		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
-	end
---]]
 --[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
