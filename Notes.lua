@@ -1,10 +1,10 @@
-__Win printing for two games
-__Rematch?
+X_Win printing for two games
+X_Rematch?
 __Player starting move**other player stones
-__Debug red space upon a win
+?_Debug red space upon a win
 __Debug Complex move stones
 __Loop songs, random song index so plays forever
-__Loop chatter forever
+X_Loop chatter forever
 
 
 Move

@@ -88,11 +88,11 @@ function resetBoard()
 		end
 	end
 --[[
-	obstaclePopulate(2, 4, 'SS', 'BLACK')
-	obstaclePopulate(1, 1, 'CS', 'WHITE')
+	--obstaclePopulate(2, 4, 'SS', 'BLACK')
+	--obstaclePopulate(1, 1, 'CS', 'WHITE')
 	testerPopulate(2, 1, 4)
 	testerPopulate(4, 2, 12)
-	testerPopulate(4, 4, 8)
+	testerPopulate(3, 3, 14)
 	testerPopulate(3, 4, 13)
 	testerPopulate(3, 2, 2)
 	testerPopulate(3, 5, 14)
@@ -2490,8 +2490,6 @@ function PlayState:render()
         end
         --]]
     end
-
-
 ---[[
     --WINNING GAMES
     if game1Finished then
@@ -2534,14 +2532,10 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-	    	--love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
-		--love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
-
 	end
-
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2553,14 +2547,8 @@ function PlayState:render()
 		love.graphics.print('thirdMovCol: ' .. tostring(thirdMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('fourthMovRow: ' .. tostring(fourthMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('fourthMovCol: ' .. tostring(fourthMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-		--love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
-		--love.graphics.print('downLOCK: ' .. tostring(downDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		--love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		--love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
-		--love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('LMSSO: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
 	end
-
 	if debugOption == 3 then
 		love.graphics.print('nextMoveRow: ' .. tostring(nextMoveRow), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('nextMoveColumn: ' .. tostring(nextMoveColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2574,13 +2562,11 @@ function PlayState:render()
 		love.graphics.print('whiteWin: ' .. tostring(whiteWins), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('blackWin: ' .. tostring(blackWins), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
 	end
-
     if debugOption == 4 then
 		love.graphics.print('RoadWhiteH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadWhiteH), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('RoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('RoadWhiteV: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadWhiteV), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('RoadBlackV: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackV), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
---		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('rightMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('leftMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
@@ -2588,7 +2574,6 @@ function PlayState:render()
 		love.graphics.print('bottomMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].bottomMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('orthMatchCount: ' .. tostring(functionCount), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
     end
-
     if debugOption == 5 then
 		love.graphics.print('whitePoints: ' .. tostring(whitePoints), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('blackPoints: ' .. tostring(blackPoints), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2597,27 +2582,26 @@ function PlayState:render()
 		love.graphics.print('roadWhitHToggle: ' .. tostring(grid[mouseYGrid][mouseXGrid].roadWhiteHToggle), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
     end
 --]]
-
     --WIN
     if whiteWins then
         love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 14 + 3, VIRTUAL_HEIGHT / 8 + 77 + 3)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10 + 3, VIRTUAL_HEIGHT / 2 + 66 + 3)
+        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 8, VIRTUAL_HEIGHT / 8 + 80)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 4, VIRTUAL_HEIGHT / 2 + 69)
 
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 14, VIRTUAL_HEIGHT / 8 + 77)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10, VIRTUAL_HEIGHT / 2 + 66)
+        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 11, VIRTUAL_HEIGHT / 8 + 77)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 7, VIRTUAL_HEIGHT / 2 + 66)
     elseif blackWins then
         love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 4 + 3, VIRTUAL_HEIGHT / 8 + 77 + 3)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10 + 3, VIRTUAL_HEIGHT / 2 + 66 + 3)
+        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 + 2, VIRTUAL_HEIGHT / 8 + 80)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 4, VIRTUAL_HEIGHT / 2 + 69)
 
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 4, VIRTUAL_HEIGHT / 8 + 77)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10, VIRTUAL_HEIGHT / 2 + 66)
+        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 1, VIRTUAL_HEIGHT / 8 + 77)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 7, VIRTUAL_HEIGHT / 2 + 66)
     end
 end
