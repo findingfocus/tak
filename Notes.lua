@@ -1,11 +1,13 @@
 X_Win printing for two games
 X_Rematch?
 __Player starting move**other player stones
-?_Debug red space upon a win
-__Debug Complex move stones
+__player1 places black stone --limit stone type changes
+__player2 places white stone --limit stone type changes
+__player1 turn placing own stone
+X_Debug red space upon a win
+X_Debug Complex move stones
 __Loop songs, random song index so plays forever
 X_Loop chatter forever
-
 
 Move
 	-Lock in movementOrigin
