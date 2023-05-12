@@ -15,6 +15,7 @@ function PlayState:init()
     game2WhiteWins = false
     game2BlackWins = false
     hudToggle = true
+    turnCount = 1
 end
 
 function resetBoard()
@@ -30,6 +31,7 @@ function resetBoard()
 	stoneSelect = 1
 	movementEvent = 0
 	debugOption = 1
+    turnCount = 1
 	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	currentlyOccupied = true
@@ -1369,6 +1371,7 @@ function winDetect()
 
     if whiteWins or blackWins then
         scoreUpdate()
+        turnCount = 1
         for i = 1, 5 do
             for j = 1, 5 do
                 grid[i][j].selectionHighlight = false
@@ -1532,7 +1535,7 @@ function PlayState:update(dt)
             --mouseStones.occupants = 1
 
             if player == 1 then
-                if love.keyboard.wasPressed('right') then
+                if love.keyboard.wasPressed('right') and turnCount > 2 then
                     sounds['beep']:play()
                     if stoneSelect < p1SelectLimit then
                         stoneSelect = stoneSelect + 1
@@ -1541,7 +1544,7 @@ function PlayState:update(dt)
                     end
                 end
 
-                if love.keyboard.wasPressed('left') then
+                if love.keyboard.wasPressed('left') and turnCount > 2 then
                     sounds['beep']:play()
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
@@ -1551,7 +1554,7 @@ function PlayState:update(dt)
                 end
 
             elseif player == 2 then
-                if love.keyboard.wasPressed('right') then
+                if love.keyboard.wasPressed('right') and turnCount > 2 then
                     sounds['beep']:play()
                     if stoneSelect < p2SelectLimit then
                         stoneSelect = stoneSelect + 1
@@ -1560,7 +1563,7 @@ function PlayState:update(dt)
                     end
                 end
 
-                if love.keyboard.wasPressed('left') then
+                if love.keyboard.wasPressed('left') and turnCount > 2 then
                     sounds['beep']:play()
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
@@ -1622,8 +1625,10 @@ function PlayState:update(dt)
             if allGridsOccupied then
                 moveType = 'move'
             elseif love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
-                sounds['beep']:play()
-                moveType = 'move'
+                if turnCount > 2 then
+                    sounds['beep']:play()
+                    moveType = 'move'
+                end
             end
             if player == 1 and player1stones < 1 then
                 moveType = 'move'
@@ -1660,13 +1665,25 @@ function PlayState:update(dt)
                         if stoneSelect == 1 then --LAYSTONE PLACEMENT
                             grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
                             if player == 1 then
-                                player1stones = player1stones - 1
-                                grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
-                                grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                if turnCount == 1 then
+                                    player2stones = player2stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                else
+                                    player1stones = player1stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                end
                             elseif player == 2 then
-                                player2stones = player2stones - 1
-                                grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
-                                grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                if turnCount == 2 then
+                                    player1stones = player1stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                else
+                                    player2stones = player2stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                end
                             end
                         elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
                                 grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
@@ -1691,6 +1708,7 @@ function PlayState:update(dt)
                                 grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
                             end
                         end
+                        turnCount = turnCount + 1
                         --SWAPS PLAYER AFTER SELECTION
                         player = player == 1 and 2 or 1
                         everyGridOccupied()
@@ -2230,7 +2248,6 @@ function PlayState:update(dt)
 
             elseif movementEvent == 6 then
                 grid[thirdMovementRow][thirdMovementColumn].moveLockedHighlight = true
-
                 if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
                     if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[thirdMovementRow][thirdMovementColumn].stoneControl == 'SS' then
                         capstoneCrush = true
@@ -2407,10 +2424,14 @@ function PlayState:render()
             if moveType == 'place' then
                 if player == 1 and player1stones > 0 then --ask about player stones to fix 1 frame render bug
                     love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+                    if turnCount == 1 then
+                        love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+                    end
                 elseif player == 2 and player2stones > 0 then
                     love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
-                else
-                    love.graphics.setColor(0/255, 0/255, 0/255, 0/255) --to fix one frame render bug
+                    if turnCount == 2 then
+                        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+                    end
                 end
                 if stoneSelect == 1 then
                     love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
@@ -2468,9 +2489,13 @@ function PlayState:render()
         love.graphics.setFont(smallBenneFont)
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         if movementEvent == 0 then
-            love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
-            love.graphics.print('Arrow left or right to select stone type', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2 - 45)
-            love.graphics.print('Arrow up or down swap move types', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+            if turnCount > 2 then
+                love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
+                love.graphics.print('Arrow left or right to select stone type', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2 - 45)
+                love.graphics.print('Arrow up or down swap move types', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+            else
+                love.graphics.print('Place opponent\'s stone in empty grid', INSTRUCTIONX, INSTRUCTIONY)
+            end
         elseif movementEvent == 1 then
             love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
             love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
@@ -2604,4 +2629,5 @@ function PlayState:render()
         love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 1, VIRTUAL_HEIGHT / 8 + 77)
         love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 7, VIRTUAL_HEIGHT / 2 + 66)
     end
+    --love.graphics.print('turnCount: ' .. tostring(turnCount), VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2)
 end
