@@ -2106,7 +2106,7 @@ function PlayState:update(dt)
                         orthogonalMatchFlush()
                         orthogonalMatch()
                         playerSwapGridReset()
-                    elseif offGrid then --CS CRUSH
+                    elseif offGrid then --CS CRUSH ****SNOOP AROUND HERE TO FIX THE BUG WITH OFFGRID
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
                             offGrid = false
                             updateStoneControl(grid[firstMovementRow][firstMovementColumn])
@@ -2484,7 +2484,7 @@ function PlayState:render()
         love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
 
 
-        ---[[
+        --[[
         --INSTRUCTIONS
         love.graphics.setFont(smallBenneFont)
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -2546,7 +2546,7 @@ function PlayState:render()
         love.graphics.print(game2BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 420)
     end
     --]]
---[[
+---[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
