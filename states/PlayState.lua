@@ -1661,6 +1661,7 @@ function PlayState:update(dt)
                         grid[mouseYGrid][mouseXGrid].occupied = true
                         grid[mouseYGrid][mouseXGrid].occupants = 1
                         grid[mouseYGrid][mouseXGrid].members[1].stackOrder = 1
+                        grid[mouseYGrid][mouseXGrid].selectionHighlight = false
 
                         if stoneSelect == 1 then --LAYSTONE PLACEMENT
                             grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
@@ -2108,36 +2109,40 @@ function PlayState:update(dt)
                         playerSwapGridReset()
                     elseif offGrid then --CS CRUSH ****SNOOP AROUND HERE TO FIX THE BUG WITH OFFGRID
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[firstMovementRow][firstMovementColumn])
-                            updateStackControl(grid[firstMovementRow][firstMovementColumn])
-                            grid[firstMovementRow][firstMovementColumn].occupied = true
+                            if firstMovementRow == 1 or firstMovementRow == 5 or firstMovementColumn == 1 or firstMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+                                updateStackControl(grid[firstMovementRow][firstMovementColumn])
+                                grid[firstMovementRow][firstMovementColumn].occupied = true
 
-                            if upDirection then
-                                secondMovementRow = firstMovementRow - 1
-                                secondMovementColumn = firstMovementColumn
-                            elseif downDirection then
-                                secondMovementRow = firstMovementRow + 1
-                                secondMovementColumn = firstMovementColumn
-                            elseif leftDirection then
-                                secondMovementRow = firstMovementRow
-                                secondMovementColumn = firstMovementColumn - 1
-                            elseif rightDirection then
-                                secondMovementRow = firstMovementRow
-                                secondMovementColumn = firstMovementColumn + 1
+                                if upDirection then
+                                    secondMovementRow = firstMovementRow - 1
+                                    secondMovementColumn = firstMovementColumn
+                                elseif downDirection then
+                                    secondMovementRow = firstMovementRow + 1
+                                    secondMovementColumn = firstMovementColumn
+                                elseif leftDirection then
+                                    secondMovementRow = firstMovementRow
+                                    secondMovementColumn = firstMovementColumn - 1
+                                elseif rightDirection then
+                                    secondMovementRow = firstMovementRow
+                                    secondMovementColumn = firstMovementColumn + 1
+                                end
+
+                                if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+                                    clearContol(grid[movementOriginRow][movementOriginColumn])
+                                end
+
+                                nextMoveOffGrid(secondMovementRow, secondMovementColumn)
+
+                                if not offGrid then
+                                    nextMoveIllegal()
+                                end
+
+                                movementEvent = 5
                             end
-
-                            if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-                                clearContol(grid[movementOriginRow][movementOriginColumn])
-                            end
-
-                            nextMoveOffGrid(secondMovementRow, secondMovementColumn)
-
-                            if not offGrid then
-                                nextMoveIllegal()
-                            end
-
-                            movementEvent = 5
                         end
                     elseif not offGrid and droppedInFirstMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
@@ -2198,28 +2203,32 @@ function PlayState:update(dt)
                         playerSwapGridReset()
                     elseif offGrid then
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[secondMovementRow][secondMovementColumn])
-                            updateStackControl(grid[secondMovementRow][secondMovementColumn])
-                            grid[secondMovementRow][secondMovementColumn].occupied = true
+                            if secondMovementRow == 1 or secondMovementRow == 5 or secondMovementColumn == 1 or secondMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[secondMovementRow][secondMovementColumn])
+                                updateStackControl(grid[secondMovementRow][secondMovementColumn])
+                                grid[secondMovementRow][secondMovementColumn].occupied = true
 
-                            if upDirection then
-                                thirdMovementRow = secondMovementRow - 1
-                                thirdMovementColumn = secondMovementColumn
-                            elseif downDirection then
-                                thirdMovementRow = secondMovementRow + 1
-                                thirdMovementColumn = secondMovementColumn
-                            elseif leftDirection then
-                                thirdMovementRow = secondMovementRow
-                                thirdMovementColumn = secondMovementColumn - 1
-                            elseif rightDirection then
-                                thirdMovementRow = secondMovementRow
-                                thirdMovementColumn = secondMovementColumn + 1
+                                if upDirection then
+                                    thirdMovementRow = secondMovementRow - 1
+                                    thirdMovementColumn = secondMovementColumn
+                                elseif downDirection then
+                                    thirdMovementRow = secondMovementRow + 1
+                                    thirdMovementColumn = secondMovementColumn
+                                elseif leftDirection then
+                                    thirdMovementRow = secondMovementRow
+                                    thirdMovementColumn = secondMovementColumn - 1
+                                elseif rightDirection then
+                                    thirdMovementRow = secondMovementRow
+                                    thirdMovementColumn = secondMovementColumn + 1
+                                end
+
+                                nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+                                nextMoveIllegal()
+                                movementEvent = 6
                             end
-
-                            nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-                            nextMoveIllegal()
-                            movementEvent = 6
                         end
                     elseif not offGrid and droppedInSecondMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
@@ -2276,28 +2285,32 @@ function PlayState:update(dt)
                             playerSwapGridReset()
                     elseif offGrid then
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
-                            updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
-                            grid[thirdMovementRow][thirdMovementColumn].occupied = true
+                            if thirdMovementRow == 1 or thirdMovementRow == 5 or thirdMovementColumn == 1 or thirdMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+                                updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+                                grid[thirdMovementRow][thirdMovementColumn].occupied = true
 
-                            if upDirection then
-                                fourthMovementRow = thirdMovementRow - 1
-                                fourthMovementColumn = thirdMovementColumn
-                            elseif downDirection then
-                                fourthMovementRow = thirdMovementRow + 1
-                                fourthMovementColumn = thirdMovementColumn
-                            elseif leftDirection then
-                                fourthMovementRow = thirdMovementRow
-                                fourthMovementColumn = thirdMovementColumn - 1
-                            elseif rightDirection then
-                                fourthMovementRow = thirdMovementRow
-                                fourthMovementColumn = thirdMovementColumn + 1
+                                if upDirection then
+                                    fourthMovementRow = thirdMovementRow - 1
+                                    fourthMovementColumn = thirdMovementColumn
+                                elseif downDirection then
+                                    fourthMovementRow = thirdMovementRow + 1
+                                    fourthMovementColumn = thirdMovementColumn
+                                elseif leftDirection then
+                                    fourthMovementRow = thirdMovementRow
+                                    fourthMovementColumn = thirdMovementColumn - 1
+                                elseif rightDirection then
+                                    fourthMovementRow = thirdMovementRow
+                                    fourthMovementColumn = thirdMovementColumn + 1
+                                end
+
+                                nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+                                --nextMoveIllegal()
+                                movementEvent = 7
                             end
-
-                            nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-                            --nextMoveIllegal()
-                            movementEvent = 7
                         end
                     elseif not offGrid and droppedInThirdMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
@@ -2560,6 +2573,7 @@ function PlayState:render()
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('capstoneCrush: ' .. tostring(capstoneCrush), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
 	end
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
