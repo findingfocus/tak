@@ -2528,7 +2528,7 @@ function PlayState:render()
         end
         --]]
     end
----[[
+--[[
     --WINNING GAMES
     if game1Finished then
         love.graphics.setFont(benneFont)
@@ -2574,6 +2574,7 @@ function PlayState:render()
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('capstoneCrush: ' .. tostring(capstoneCrush), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('getVol: ' .. sounds[tostring(randomSongIndex)]:getVolume(), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 13) --lowestSurroundingOccupants mouseStones.stoneControl
 	end
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
