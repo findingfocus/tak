@@ -6,7 +6,6 @@ function love.load()
 
 	randomSongIndex = math.random(11)
 
-
 	love.graphics.setDefaultFilter('nearest', 'nearest')
 
 	love.window.setTitle('Tak: A Beautiful Game')
@@ -27,7 +26,7 @@ function love.load()
 	sounds = {
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
-		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
+		['stone'] = love.audio.newSource('music/stone2.mp3', 'static'),
 		['crush'] = love.audio.newSource('music/crush.mp3', 'static'),
         ['chatter'] = love.audio.newSource('music/623565__iainmccurdy__kitchen-bar.mp3', 'static'),
 		['1'] = love.audio.newSource('music/1.mp3', 'static'),
@@ -42,6 +41,7 @@ function love.load()
 		['10'] = love.audio.newSource('music/10.mp3', 'static'),
 		['11'] = love.audio.newSource('music/11.mp3', 'static')
 	}
+
 --]]
 --
 --
@@ -123,7 +123,7 @@ function love.update(dt)
 		musicPlayed = true
 	end
 
-    if not sounds[tostring(randomSongIndex)]:getVolume() then
+    if not sounds[tostring(randomSongIndex)]:isPlaying() then
         randomSongIndex = math.random(11)
         musicPlayed = false
     end

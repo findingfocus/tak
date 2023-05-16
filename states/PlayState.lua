@@ -89,7 +89,7 @@ function resetBoard()
 			end
 		end
 	end
---[[
+---[[
 	--obstaclePopulate(2, 4, 'SS', 'BLACK')
 	--obstaclePopulate(1, 1, 'CS', 'WHITE')
 	testerPopulate(2, 1, 4)
@@ -238,6 +238,7 @@ function playerSwapGridReset()
 end
 
 function dropStone(Occupant, Option)
+	sounds['stone']:stop()
 	sounds['stone']:play()
 	Occupant.occupants = Occupant.occupants + 1
 	mouseStones.occupants = mouseStones.occupants - 1
@@ -267,6 +268,7 @@ function dropStone(Occupant, Option)
 end
 
 function pickUpStone(Occupant, Option)
+	sounds['stone']:stop()
 	sounds['stone']:play()
 	occupantIndex = Occupant.occupants
 	Occupant.occupants = Occupant.occupants - 1
@@ -1536,6 +1538,7 @@ function PlayState:update(dt)
 
             if player == 1 then
                 if love.keyboard.wasPressed('right') and turnCount > 2 then
+                    sounds['beep']:stop()
                     sounds['beep']:play()
                     if stoneSelect < p1SelectLimit then
                         stoneSelect = stoneSelect + 1
@@ -1545,6 +1548,7 @@ function PlayState:update(dt)
                 end
 
                 if love.keyboard.wasPressed('left') and turnCount > 2 then
+                    sounds['beep']:stop()
                     sounds['beep']:play()
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
@@ -1555,6 +1559,7 @@ function PlayState:update(dt)
 
             elseif player == 2 then
                 if love.keyboard.wasPressed('right') and turnCount > 2 then
+                    sounds['beep']:stop()
                     sounds['beep']:play()
                     if stoneSelect < p2SelectLimit then
                         stoneSelect = stoneSelect + 1
@@ -1564,6 +1569,7 @@ function PlayState:update(dt)
                 end
 
                 if love.keyboard.wasPressed('left') and turnCount > 2 then
+                    sounds['beep']:stop()
                     sounds['beep']:play()
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
@@ -1626,6 +1632,7 @@ function PlayState:update(dt)
                 moveType = 'move'
             elseif love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
                 if turnCount > 2 then
+                    sounds['beep']:stop()
                     sounds['beep']:play()
                     moveType = 'move'
                 end
@@ -1640,10 +1647,12 @@ function PlayState:update(dt)
             if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
                 if not allGridsOccupied then
                     if player == 1 and player1stones > 0 then
+                        sounds['beep']:stop()
                         sounds['beep']:play()
                         moveType = 'place'
                     end
                     if player == 2 and player2stones > 0 then
+                        sounds['beep']:stop()
                         sounds['beep']:play()
                         moveType = 'place'
                     end
@@ -1657,6 +1666,7 @@ function PlayState:update(dt)
             if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then --ENSURES WE CLICKED WITHIN GRID
                 if moveType == 'place' then
                     if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
+                        sounds['stone']:stop()
                         sounds['stone']:play()
                         grid[mouseYGrid][mouseXGrid].occupied = true
                         grid[mouseYGrid][mouseXGrid].occupants = 1
@@ -2080,6 +2090,7 @@ function PlayState:update(dt)
                         grid[firstMovementRow][firstMovementColumn].members[grid[firstMovementRow][firstMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
                         sounds['crush']:setVolume(.6)
+                        sounds['crush']:stop()
                         sounds['crush']:play()
                     end
                     dropStone(grid[firstMovementRow][firstMovementColumn], 2)
@@ -2181,6 +2192,7 @@ function PlayState:update(dt)
                         grid[secondMovementRow][secondMovementColumn].members[grid[secondMovementRow][secondMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
                         sounds['crush']:setVolume(.6)
+                        sounds['crush']:stop()
                         sounds['crush']:play()
                     end
                     dropStone(grid[secondMovementRow][secondMovementColumn], 3)
@@ -2263,6 +2275,7 @@ function PlayState:update(dt)
                         grid[thirdMovementRow][thirdMovementColumn].members[grid[thirdMovementRow][thirdMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
                         sounds['crush']:setVolume(.6)
+                        sounds['crush']:stop()
                         sounds['crush']:play()
                     end
                     dropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
@@ -2345,6 +2358,7 @@ function PlayState:update(dt)
                         grid[fourthMovementRow][fourthMovementColumn].members[grid[fourthMovementRow][fourthMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
                         sounds['crush']:setVolume(.6)
+                        sounds['crush']:stop()
                         sounds['crush']:play()
                     end
                     dropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
@@ -2574,7 +2588,7 @@ function PlayState:render()
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('capstoneCrush: ' .. tostring(capstoneCrush), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
-		love.graphics.print('getVol: ' .. sounds[tostring(randomSongIndex)]:getVolume(), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 13) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('randomSongIndex: ' .. tostring(randomSongIndex), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 13) --lowestSurroundingOccupants mouseStones.stoneControl
 	end
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
