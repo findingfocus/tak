@@ -5,7 +5,7 @@ Class = require 'dependencies/class'
 require 'dependencies/StateMachine'
 require 'dependencies/BaseState'
 require 'dependencies/Constants'
-require 'dependencies/slam'
+require 'dependencies/tesound'
 
 require 'states/TitleScreenState'
 require 'states/PlayState'

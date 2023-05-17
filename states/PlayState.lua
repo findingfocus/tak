@@ -15,7 +15,10 @@ function PlayState:init()
     game2WhiteWins = false
     game2BlackWins = false
     hudToggle = true
+    mouseOffGrid = false
     turnCount = 1
+    TEsound.volume('crushVolume', .6)
+    TEsound.volume('stoneVolume', 1)
 end
 
 function resetBoard()
@@ -89,11 +92,13 @@ function resetBoard()
 			end
 		end
 	end
----[[
+--[[
 	--obstaclePopulate(2, 4, 'SS', 'BLACK')
 	--obstaclePopulate(1, 1, 'CS', 'WHITE')
 	testerPopulate(2, 1, 4)
 	testerPopulate(4, 2, 12)
+	testerPopulate(2, 4, 12)
+	testerPopulate(4, 4, 12)
 	testerPopulate(3, 3, 14)
 	testerPopulate(3, 4, 13)
 	testerPopulate(3, 2, 2)
@@ -238,8 +243,7 @@ function playerSwapGridReset()
 end
 
 function dropStone(Occupant, Option)
-	sounds['stone']:stop()
-	sounds['stone']:play()
+    TEsound.play('music/stone2.mp3', 'static', 'stoneVolume')
 	Occupant.occupants = Occupant.occupants + 1
 	mouseStones.occupants = mouseStones.occupants - 1
 
@@ -268,8 +272,7 @@ function dropStone(Occupant, Option)
 end
 
 function pickUpStone(Occupant, Option)
-	sounds['stone']:stop()
-	sounds['stone']:play()
+    TEsound.play('music/stone2.mp3', 'static', 'stoneVolume')
 	occupantIndex = Occupant.occupants
 	Occupant.occupants = Occupant.occupants - 1
 	mouseStones.occupants = mouseStones.occupants + 1
@@ -1484,8 +1487,9 @@ function PlayState:update(dt)
 
     --[NILLIFY THE MOUSE COORDINATES IF OFF GRID
     if mouseY < 0 or mouseY > 720 or mouseX < X_OFFSET or mouseX > 720 then --COMMENT OUT TO EASE DEBUG CRASH
-        --mouseY = nil
-        --mouseX = nil
+        mouseOffGrid = true
+    else
+        mouseOffGrid = false
     end
 --]]
 
@@ -1538,8 +1542,7 @@ function PlayState:update(dt)
 
             if player == 1 then
                 if love.keyboard.wasPressed('right') and turnCount > 2 then
-                    sounds['beep']:stop()
-                    sounds['beep']:play()
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect < p1SelectLimit then
                         stoneSelect = stoneSelect + 1
                     elseif stoneSelect == p1SelectLimit then
@@ -1548,8 +1551,7 @@ function PlayState:update(dt)
                 end
 
                 if love.keyboard.wasPressed('left') and turnCount > 2 then
-                    sounds['beep']:stop()
-                    sounds['beep']:play()
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
                     elseif stoneSelect == 1 then
@@ -1559,8 +1561,7 @@ function PlayState:update(dt)
 
             elseif player == 2 then
                 if love.keyboard.wasPressed('right') and turnCount > 2 then
-                    sounds['beep']:stop()
-                    sounds['beep']:play()
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect < p2SelectLimit then
                         stoneSelect = stoneSelect + 1
                     elseif stoneSelect == p2SelectLimit then
@@ -1569,8 +1570,7 @@ function PlayState:update(dt)
                 end
 
                 if love.keyboard.wasPressed('left') and turnCount > 2 then
-                    sounds['beep']:stop()
-                    sounds['beep']:play()
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
                     elseif stoneSelect == 1 then
@@ -1632,8 +1632,7 @@ function PlayState:update(dt)
                 moveType = 'move'
             elseif love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
                 if turnCount > 2 then
-                    sounds['beep']:stop()
-                    sounds['beep']:play()
+                    TEsound.play('music/beep.wav', 'static')
                     moveType = 'move'
                 end
             end
@@ -1643,17 +1642,14 @@ function PlayState:update(dt)
             if player == 2 and player2stones < 1 then
                 moveType = 'move'
             end
-        elseif moveType == 'move'  and movementEvent == 1 then
+        elseif moveType == 'move' and (movementEvent == 1 or movementEvent == 0) then
             if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
                 if not allGridsOccupied then
                     if player == 1 and player1stones > 0 then
-                        sounds['beep']:stop()
-                        sounds['beep']:play()
+                        TEsound.play('music/beep.wav', 'static')
                         moveType = 'place'
-                    end
-                    if player == 2 and player2stones > 0 then
-                        sounds['beep']:stop()
-                        sounds['beep']:play()
+                    elseif player == 2 and player2stones > 0 then
+                        TEsound.play('music/beep.wav', 'static')
                         moveType = 'place'
                     end
                 end
@@ -1663,11 +1659,10 @@ function PlayState:update(dt)
 
     ---[PLACING A STONE IN EMPTY SPOT
         function love.mousepressed(x, y, button)
-            if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then --ENSURES WE CLICKED WITHIN GRID
+            if button == 1 and not mouseOffGrid then --ENSURES WE CLICKED WITHIN GRID
                 if moveType == 'place' then
                     if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
-                        sounds['stone']:stop()
-                        sounds['stone']:play()
+                        TEsound.play('music/stone2.mp3', 'static', 'stoneVolume')
                         grid[mouseYGrid][mouseXGrid].occupied = true
                         grid[mouseYGrid][mouseXGrid].occupants = 1
                         grid[mouseYGrid][mouseXGrid].members[1].stackOrder = 1
@@ -1756,7 +1751,7 @@ function PlayState:update(dt)
                 mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
             end
 
-            if movementEvent == 1 then --LEGAL MOVE HIGHLIGHTS
+            if movementEvent == 1 and not mouseOffGrid then --LEGAL MOVE HIGHLIGHTS
                 if mEvent1LegalMovesPopulated == false then
                     for i = 1, 5 do
                         for j = 1, 5 do
@@ -2089,9 +2084,7 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[firstMovementRow][firstMovementColumn].members[grid[firstMovementRow][firstMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:stop()
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[firstMovementRow][firstMovementColumn], 2)
                     updateStoneControl(grid[firstMovementRow][firstMovementColumn])
@@ -2191,9 +2184,7 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[secondMovementRow][secondMovementColumn].members[grid[secondMovementRow][secondMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:stop()
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[secondMovementRow][secondMovementColumn], 3)
                     updateStoneControl(grid[secondMovementRow][secondMovementColumn])
@@ -2274,9 +2265,7 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[thirdMovementRow][thirdMovementColumn].members[grid[thirdMovementRow][thirdMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:stop()
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
                     updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
@@ -2357,9 +2346,7 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[fourthMovementRow][fourthMovementColumn].members[grid[fourthMovementRow][fourthMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:stop()
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
                     updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
@@ -2397,6 +2384,8 @@ function PlayState:update(dt)
             end
         end
     end
+
+   TEsound.cleanup()
 end
 
 function PlayState:render()
@@ -2511,7 +2500,7 @@ function PlayState:render()
         love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
 
 
-        --[[
+        ---[[
         --INSTRUCTIONS
         love.graphics.setFont(smallBenneFont)
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
@@ -2520,7 +2509,7 @@ function PlayState:render()
                 love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
                 love.graphics.print('Arrow left or right to select stone type', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2 - 45)
                 love.graphics.print('Arrow up or down swap move types', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
-            else
+            elseif not blackWins and not whiteWins then
                 love.graphics.print('Place opponent\'s stone in empty grid', INSTRUCTIONX, INSTRUCTIONY)
             end
         elseif movementEvent == 1 then
@@ -2542,7 +2531,7 @@ function PlayState:render()
         end
         --]]
     end
---[[
+---[[
     --WINNING GAMES
     if game1Finished then
         love.graphics.setFont(benneFont)
@@ -2573,7 +2562,7 @@ function PlayState:render()
         love.graphics.print(game2BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 420)
     end
     --]]
----[[
+--[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('legalMove: ' ..tostring(grid[mouseYGrid][mouseXGrid].legalMove), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2587,7 +2576,7 @@ function PlayState:render()
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
-		love.graphics.print('capstoneCrush: ' .. tostring(capstoneCrush), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('mouseOffGrid: ' .. tostring(mouseOffGrid), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('randomSongIndex: ' .. tostring(randomSongIndex), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 13) --lowestSurroundingOccupants mouseStones.stoneControl
 	end
 	if debugOption == 2 then

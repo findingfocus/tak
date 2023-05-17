@@ -5,9 +5,8 @@ X_player1 places black stone --limit stone type changes
 X_player2 places white stone --limit stone type changes
 X_player1 turn placing own stone
 X_Debug red space upon a win
-__Debug Complex move stones
-__Factor Offgrid into also illegal moves?
-__Loop songs, random song index so plays forever
+X_Debug Complex move stones
+X_Loop songs, random song index so plays forever
 X_Loop chatter forever
 
 Move

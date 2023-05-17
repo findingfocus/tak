@@ -39,7 +39,7 @@ function Occupant:update(dt)
 end
 
 function Occupant:render()
-	if self.selectionHighlight then -- HIGHLIGHTS GRID SPACE OUTLINE
+	if self.selectionHighlight and not mouseOffGrid then -- HIGHLIGHTS GRID SPACE OUTLINE
 		love.graphics.setColor(255/255, 0/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + self.height - OUTLINE + Y_OFFSET, self.width, OUTLINE) --BOTTOM
@@ -47,7 +47,7 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
 
-	if self.legalMoveHighlight then
+	if self.legalMoveHighlight and not mouseOffGrid then
 		love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + self.height - OUTLINE + Y_OFFSET, self.width, OUTLINE) --BOTTOM
