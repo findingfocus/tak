@@ -46,7 +46,6 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --LEFT
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
-
 	if self.legalMoveHighlight and not mouseOffGrid then
 		love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
@@ -54,7 +53,6 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --LEFT
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
-
 	if self.moveLockedHighlight then
 		love.graphics.setColor(0/255, 150/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
@@ -62,7 +60,6 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --LEFT
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
-
 	if self.firstMoveLocked then
 		love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, self.width, OUTLINE) --TOP
@@ -70,7 +67,6 @@ function Occupant:render()
 		love.graphics.rectangle('fill', self.x + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --LEFT
 		love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
 	end
-
     if self.potentialRoadWhiteH then
         if self.roadWhiteHToggle then
             love.graphics.setColor(0/255, 0/255, 255/255, 255/255)
@@ -98,7 +94,6 @@ function Occupant:render()
             love.graphics.rectangle('fill', self.x + self.width - OUTLINE + X_OFFSET, self.y + Y_OFFSET, OUTLINE, self.height) --RIGHT
         end
     end
-
     if self.potentialRoadBlackV then
         if self.roadBlackVToggle then
             love.graphics.setColor(255/255, 200/255, 40/255, 255/255)

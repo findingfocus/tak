@@ -7,7 +7,6 @@ require 'dependencies/BaseState'
 require 'dependencies/Constants'
 require 'dependencies/tesound'
 
-require 'states/TitleScreenState'
 require 'states/PlayState'
 
 require 'src/Board'

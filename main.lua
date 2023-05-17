@@ -1,4 +1,5 @@
 require 'dependencies'
+
 function love.load()
 	math.randomseed(os.time())
 
@@ -26,7 +27,7 @@ function love.load()
 	sounds = {
 		['beep'] = love.audio.newSource('music/beep.wav', 'static'),
 		['select'] = love.audio.newSource('music/select.wav', 'static'),
-		['stone'] = love.audio.newSource('music/stone2.mp3', 'static'),
+		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
 		['crush'] = love.audio.newSource('music/crush.mp3', 'static'),
         ['chatter'] = love.audio.newSource('music/623565__iainmccurdy__kitchen-bar.mp3', 'static'),
 		['1'] = love.audio.newSource('music/1.mp3', 'static'),
@@ -42,10 +43,6 @@ function love.load()
 		['11'] = love.audio.newSource('music/11.mp3', 'static')
 	}
 
-
---]]
---
---
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
 		fullscreen = false,
@@ -55,8 +52,7 @@ function love.load()
     --love.window.setFullscreen(true, "desktop")
 
 	gStateMachine = StateMachine {
-		['titleState'] = function() return TitleScreenState() end,
-		['playState'] = function() return PlayState() end,
+		['playState'] = function() return PlayState() end
 	}
 
 	gStateMachine:change('playState')
@@ -110,7 +106,6 @@ function love.update(dt)
 
 	love.keyboard.keysPressed = {}
 
-	-- sounds[tostring(randomSongIndex)]:setLooping(true)
     if not chatterPlayed then
         sounds['chatter']:setLooping(true)
         sounds['chatter']:setVolume(.2)
@@ -134,8 +129,6 @@ function love.draw()
 	push:start()
 
 	gStateMachine:render()
-
-	--displayFPS()
 
 	if helpState == 1 then
 		love.graphics.setFont(helpBenneFont)
