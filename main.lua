@@ -1,10 +1,11 @@
 require 'dependencies'
+
 function love.load()
 	math.randomseed(os.time())
 
 	love.mouse.setVisible(false)
 
-	randomSongIndex = math.random(6)
+	randomSongIndex = math.random(11)
 
 	love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -14,6 +15,8 @@ function love.load()
 	smallFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 30)
 	smallerFont = love.graphics.newFont('fonts/DejaVuSansMono.ttf', 20)
     benneFont = love.graphics.newFont('fonts/Benne.otf', 32)
+    smallBenneFont = love.graphics.newFont('fonts/Benne.otf', 28)
+    helpBenneFont = love.graphics.newFont('fonts/Benne.otf', 40)
     numberBenneFont = love.graphics.newFont('fonts/Benne.otf', 70)
 
     cursor = love.graphics.newImage('/src/pics/cursor.png')
@@ -27,21 +30,19 @@ function love.load()
 		['stone'] = love.audio.newSource('music/stone.mp3', 'static'),
 		['crush'] = love.audio.newSource('music/crush.mp3', 'static'),
         ['chatter'] = love.audio.newSource('music/623565__iainmccurdy__kitchen-bar.mp3', 'static'),
-		--['1'] = love.audio.newSource('music/1.mp3', 'static'),
-		--['2'] = love.audio.newSource('music/2.mp3', 'static'),
-		--['3'] = love.audio.newSource('music/3.mp3', 'static'),
-		--['4'] = love.audio.newSource('music/4.mp3', 'static'),
-		--['5'] = love.audio.newSource('music/5.mp3', 'static'),
-		--['6'] = love.audio.newSource('music/6.mp3', 'static'),
-		--['7'] = love.audio.newSource('music/7.mp3', 'static'),
-		['8'] = love.audio.newSource('music/8.mp3', 'stream'),
-		--['9'] = love.audio.newSource('music/9.mp3', 'static'),
-		--['10'] = love.audio.newSource('music/10.mp3', 'static'),
-		--['11'] = love.audio.newSource('music/11.mp3', 'static')
+		['1'] = love.audio.newSource('music/1.mp3', 'static'),
+		['2'] = love.audio.newSource('music/2.mp3', 'static'),
+		['3'] = love.audio.newSource('music/3.mp3', 'static'),
+		['4'] = love.audio.newSource('music/4.mp3', 'static'),
+		['5'] = love.audio.newSource('music/5.mp3', 'static'),
+		['6'] = love.audio.newSource('music/6.mp3', 'static'),
+		['7'] = love.audio.newSource('music/7.mp3', 'static'),
+		['8'] = love.audio.newSource('music/8.mp3', 'static'),
+		['9'] = love.audio.newSource('music/9.mp3', 'static'),
+		['10'] = love.audio.newSource('music/10.mp3', 'static'),
+		['11'] = love.audio.newSource('music/11.mp3', 'static')
 	}
---]]
---
---
+
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
 		fullscreen = true,
@@ -51,8 +52,7 @@ function love.load()
     --love.window.setFullscreen(true, "desktop")
 
 	gStateMachine = StateMachine {
-		['titleState'] = function() return TitleScreenState() end,
-		['playState'] = function() return PlayState() end,
+		['playState'] = function() return PlayState() end
 	}
 
 	gStateMachine:change('playState')
@@ -106,32 +106,33 @@ function love.update(dt)
 
 	love.keyboard.keysPressed = {}
 
-	-- sounds[tostring(randomSongIndex)]:setLooping(true)
     if not chatterPlayed then
-        sounds['8']:setLooping(true)
+        sounds['chatter']:setLooping(true)
         sounds['chatter']:setVolume(.2)
-     --   sounds['chatter']:play()
+        sounds['chatter']:play()
         chatterPlayed = true
     end
 
 	if not musicPlayed then
-        sounds['8']:setLooping(true)
-		sounds['8']:setVolume(.2)
-		--sounds['8']:play()
+        sounds[tostring(randomSongIndex)]:setVolume(.5)
+        sounds[tostring(randomSongIndex)]:play()
 		musicPlayed = true
 	end
 
-    playing = sounds['8']:isPlaying()
+    if not sounds[tostring(randomSongIndex)]:isPlaying() then
+        randomSongIndex = math.random(11)
+        musicPlayed = false
+    end
+
+    --playing = sounds['8']:isPlaying()
 end
 function love.draw()
 	push:start()
 
 	gStateMachine:render()
 
-	--displayFPS()
-
 	if helpState == 1 then
-		love.graphics.setFont(smallFont)
+		love.graphics.setFont(helpBenneFont)
 		love.graphics.setColor(50/255, 0/255, 200/255, 180/255)
 		love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 		love.graphics.setColor(255/255, 255/255, 255/255, 255/255)

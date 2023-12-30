@@ -14,6 +14,11 @@ function PlayState:init()
     game1BlackWins = false
     game2WhiteWins = false
     game2BlackWins = false
+    hudToggle = true
+    mouseOffGrid = false
+    turnCount = 1
+    TEsound.volume('crushVolume', .6)
+    TEsound.volume('stoneVolume', 1)
 end
 
 function resetBoard()
@@ -29,6 +34,7 @@ function resetBoard()
 	stoneSelect = 1
 	movementEvent = 0
 	debugOption = 1
+    turnCount = 1
 	lowestSurroundingOccupants = nil
 	mEvent1LegalMovesPopulated = false
 	currentlyOccupied = true
@@ -71,7 +77,6 @@ function resetBoard()
     whiteWins = false
     blackWins = false
     toggleMouseStone = false
-    hudToggle = true
 
 	--POPULATES GRID TABLE WITH PROPER GRID X AND Y FIELDS AND OCCUPANT OBJECTS
 	for i = 1, 5 do
@@ -88,11 +93,6 @@ function resetBoard()
 		end
 	end
 --[[
-	obstaclePopulate(2, 4, 'SS', 'BLACK')
-	obstaclePopulate(1, 1, 'CS', 'WHITE')
-	testerPopulate(2, 1, 4)
-	testerPopulate(4, 2, 12)
-	testerPopulate(4, 4, 8)
 	testerPopulate(3, 4, 13)
 	testerPopulate(3, 2, 2)
 	testerPopulate(3, 5, 14)
@@ -236,7 +236,7 @@ function playerSwapGridReset()
 end
 
 function dropStone(Occupant, Option)
-	sounds['stone']:play()
+    TEsound.play('music/stone.mp3', 'static', 'stoneVolume')
 	Occupant.occupants = Occupant.occupants + 1
 	mouseStones.occupants = mouseStones.occupants - 1
 
@@ -265,7 +265,7 @@ function dropStone(Occupant, Option)
 end
 
 function pickUpStone(Occupant, Option)
-	sounds['stone']:play()
+    TEsound.play('music/stone.mp3', 'static', 'stoneVolume')
 	occupantIndex = Occupant.occupants
 	Occupant.occupants = Occupant.occupants - 1
 	mouseStones.occupants = mouseStones.occupants + 1
@@ -521,7 +521,7 @@ function lowestSurroundingOccupant(originRow, originColumn)
 end
 
 function emptyGridSurrounding(originRow, originColumn)
-	--CC
+	--CORNERCASE
 	if originRow == 1 and originColumn == 1 then
 		if grid[originRow][originColumn + 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then
 			return true
@@ -540,7 +540,7 @@ function emptyGridSurrounding(originRow, originColumn)
 		end
 	end
 
-	--EC
+	--EDGECASE
 	if originRow == 1 and originColumn ~= 1 and originColumn ~= 5 then --TOP EDGE --left, down, right
 		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 then
 			return true
@@ -565,7 +565,7 @@ function emptyGridSurrounding(originRow, originColumn)
 		end
 	end
 
-	--MC
+	--MIDDLECASE
 	if originRow > 1 and originRow < 5 and originColumn > 1 and originColumn < 5 then
 		if grid[originRow][originColumn - 1].occupants == 0 or grid[originRow - 1][originColumn].occupants == 0 or grid[originRow][originColumn + 1].occupants == 0 or grid[originRow + 1][originColumn].occupants == 0 then
 			return true
@@ -577,12 +577,11 @@ end
 
 function CSCrush(originRow, originColumn)
 	if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-		--CC
+		--CORNERCASE
 		if originRow == 1 and originColumn == 1 then
 			if grid[1][2].stoneControl == 'SS' then
 				grid[1][2].legalMove = true
 			end
-
 			if grid[2][1].stoneControl == 'SS' then
 				grid[2][1].legalMove = true
 			end
@@ -590,7 +589,6 @@ function CSCrush(originRow, originColumn)
 			if grid[1][4].stoneControl == 'SS' then
 				grid[1][4].legalMove = true
 			end
-
 			if grid[2][5].stoneControl == 'SS' then
 				grid[2][5].legalMove = true
 			end
@@ -598,7 +596,6 @@ function CSCrush(originRow, originColumn)
 			if grid[4][1].stoneControl == 'SS' then
 				grid[4][1].legalMove = true
 			end
-
 			if grid[5][2].stoneControl == 'SS' then
 				grid[5][2].legalMove = true
 			end
@@ -606,22 +603,18 @@ function CSCrush(originRow, originColumn)
 			if grid[4][5].stoneControl == 'SS' then
 				grid[4][5].legalMove = true
 			end
-
 			if grid[5][4].stoneControl == 'SS' then
 				grid[5][4].legalMove = true
 			end
 		end
-		--EC
 		--TOPEDGE -L,D,R
 		if originRow == 1 and originColumn ~= 1 and originColumn ~= 5 then
 			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
 				grid[originRow][originColumn - 1].legalMove = true
 			end
-
 			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
 				grid[originRow + 1][originColumn].legalMove = true
 			end
-
 			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
 				grid[originRow][originColumn + 1].legalMove = true
 			end
@@ -632,11 +625,9 @@ function CSCrush(originRow, originColumn)
 			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
 				grid[originRow - 1][originColumn].legalMove = true
 			end
-
 			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
 				grid[originRow][originColumn - 1].legalMove = true
 			end
-
 			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
 				grid[originRow + 1][originColumn].legalMove = true
 			end
@@ -647,11 +638,9 @@ function CSCrush(originRow, originColumn)
 			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
 				grid[originRow][originColumn - 1].legalMove = true
 			end
-
 			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
 				grid[originRow - 1][originColumn].legalMove = true
 			end
-
 			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
 				grid[originRow][originColumn + 1].legalMove = true
 			end
@@ -662,11 +651,9 @@ function CSCrush(originRow, originColumn)
 			if grid[originRow - 1][originColumn].stoneControl == 'SS' then
 				grid[originRow - 1][originColumn].legalMove = true
 			end
-
 			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
 				grid[originRow][originColumn + 1].legalMove = true
 			end
-
 			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
 				grid[originRow + 1][originColumn].legalMove = true
 			end
@@ -681,11 +668,9 @@ function CSCrush(originRow, originColumn)
 			if grid[originRow][originColumn + 1].stoneControl == 'SS' then
 				grid[originRow][originColumn + 1].legalMove = true
 			end
-
 			if grid[originRow + 1][originColumn].stoneControl == 'SS' then
 				grid[originRow + 1][originColumn].legalMove = true
 			end
-
 			if grid[originRow][originColumn - 1].stoneControl == 'SS' then
 				grid[originRow][originColumn - 1].legalMove = true
 			end
@@ -1333,7 +1318,6 @@ function potentialRoadV(row)
 end
 
 function scoreUpdate()
-   --Cycle through all grids
    for i = 1, 5 do
         for j = 1, 5 do
             for k = 14, 1, -1 do
@@ -1369,6 +1353,7 @@ function winDetect()
 
     if whiteWins or blackWins then
         scoreUpdate()
+        turnCount = 1
         for i = 1, 5 do
             for j = 1, 5 do
                 grid[i][j].selectionHighlight = false
@@ -1421,11 +1406,11 @@ function PlayState:update(dt)
     if love.keyboard.wasPressed('v') then  --POTENTIAL ROAD TOGGLES
         for i = 1, 5 do
             for j = 1, 5 do
-                    if grid[i][j].roadWhiteHToggle then
-                        grid[i][j].roadWhiteHToggle = false
-                    else
-                        grid[i][j].roadWhiteHToggle = true
-                    end
+                if grid[i][j].roadWhiteHToggle then
+                    grid[i][j].roadWhiteHToggle = false
+                else
+                    grid[i][j].roadWhiteHToggle = true
+                end
             end
         end
     end
@@ -1466,25 +1451,21 @@ function PlayState:update(dt)
         end
     end
 
-
-    --]]
-
---]]
----[[MOUSE POSITION VARIABLES
+    --MOUSE POSITION VARIABLES
     mouseMasterX, mouseMasterY = love.mouse.getPosition()
     mouseX, mouseY = love.mouse.getPosition()
     --SHIFTS MOUSE_X AND MOUSE_Y TO GRID COORDINATES RATHER THAN SCREEN COORDINATES
     mouseY = mouseY - Y_OFFSET
     mouseX = mouseX - X_OFFSET
 
-    --[NILLIFY THE MOUSE COORDINATES IF OFF GRID
+    --NILLIFY THE MOUSE COORDINATES IF OFF GRID
     if mouseY < 0 or mouseY > 720 or mouseX < X_OFFSET or mouseX > 720 then --COMMENT OUT TO EASE DEBUG CRASH
-        --mouseY = nil
-        --mouseX = nil
+        mouseOffGrid = true
+    else
+        mouseOffGrid = false
     end
---]]
 
----[[ASSIGNS SELECTION LIMIT FOR PLAYERS
+    --ASSIGNS SELECTION LIMIT FOR PLAYERS
     if player1capstone == 1 then
         p1SelectLimit = 3
     else
@@ -1496,7 +1477,7 @@ function PlayState:update(dt)
     else
         p2SelectLimit = 2
     end
-    --]]
+
     if blackWins or whiteWins then
         if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             resetBoard()
@@ -1524,44 +1505,36 @@ function PlayState:update(dt)
             toggleMouseStone = toggleMouseStone == false and true or false
         end
     --]]
-
-
     ---[[STONE SELECT
         if moveType == 'place' then
-
-            --mouseStones.occupants = 1
-
-            if player == 1 then
-                if love.keyboard.wasPressed('right') then
-                    sounds['beep']:play()
+           if player == 1 then
+                if love.keyboard.wasPressed('right') and turnCount > 2 then
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect < p1SelectLimit then
                         stoneSelect = stoneSelect + 1
                     elseif stoneSelect == p1SelectLimit then
                         stoneSelect = 1
                     end
                 end
-
-                if love.keyboard.wasPressed('left') then
-                    sounds['beep']:play()
+                if love.keyboard.wasPressed('left') and turnCount > 2 then
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
                     elseif stoneSelect == 1 then
                         stoneSelect = p1SelectLimit
                     end
                 end
-
             elseif player == 2 then
-                if love.keyboard.wasPressed('right') then
-                    sounds['beep']:play()
+                if love.keyboard.wasPressed('right') and turnCount > 2 then
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect < p2SelectLimit then
                         stoneSelect = stoneSelect + 1
                     elseif stoneSelect == p2SelectLimit then
                         stoneSelect = 1
                     end
                 end
-
-                if love.keyboard.wasPressed('left') then
-                    sounds['beep']:play()
+                if love.keyboard.wasPressed('left') and turnCount > 2 then
+                    TEsound.play('music/beep.wav', 'static')
                     if stoneSelect > 1 then
                         stoneSelect = stoneSelect - 1
                     elseif stoneSelect == 1 then
@@ -1570,8 +1543,6 @@ function PlayState:update(dt)
                 end
             end
         end
-    --]]
-
     ---[[POPULATES MOUSE GRID WITH CURSOR LOCATION
         --Math to find which Row mouse is in
         if mouseY ~= nil then
@@ -1612,18 +1583,17 @@ function PlayState:update(dt)
                 grid[i][j]:update(dt)
             end
         end
-    --]]
 
     ---[[SWAP MOVETYPES
         if moveType == 'place' then
-
             movementEvent = 0
-
             if allGridsOccupied then
                 moveType = 'move'
             elseif love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
-                sounds['beep']:play()
-                moveType = 'move'
+                if turnCount > 2 then
+                    TEsound.play('music/beep.wav', 'static')
+                    moveType = 'move'
+                end
             end
             if player == 1 and player1stones < 1 then
                 moveType = 'move'
@@ -1631,42 +1601,52 @@ function PlayState:update(dt)
             if player == 2 and player2stones < 1 then
                 moveType = 'move'
             end
-        elseif moveType == 'move'  and movementEvent == 1 then
+        elseif moveType == 'move' and (movementEvent == 1 or movementEvent == 0) then
             if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('down') then
                 if not allGridsOccupied then
                     if player == 1 and player1stones > 0 then
-                        sounds['beep']:play()
+                        TEsound.play('music/beep.wav', 'static')
                         moveType = 'place'
-                    end
-                    if player == 2 and player2stones > 0 then
-                        sounds['beep']:play()
+                    elseif player == 2 and player2stones > 0 then
+                        TEsound.play('music/beep.wav', 'static')
                         moveType = 'place'
                     end
                 end
             end
         end
     --]]
-
     ---[PLACING A STONE IN EMPTY SPOT
         function love.mousepressed(x, y, button)
-            if button == 1 and mouseXGrid ~= nil and mouseYGrid ~= nil then --ENSURES WE CLICKED WITHIN GRID
+            if button == 1 and not mouseOffGrid then --ENSURES WE CLICKED WITHIN GRID
                 if moveType == 'place' then
                     if not grid[mouseYGrid][mouseXGrid].occupied then --ENSURES STONE CANNOT BE PLACE IN OCCUPIED GRID
-                        sounds['stone']:play()
+                        TEsound.play('music/stone.mp3', 'static', 'stoneVolume')
                         grid[mouseYGrid][mouseXGrid].occupied = true
                         grid[mouseYGrid][mouseXGrid].occupants = 1
                         grid[mouseYGrid][mouseXGrid].members[1].stackOrder = 1
-
+                        grid[mouseYGrid][mouseXGrid].selectionHighlight = false
                         if stoneSelect == 1 then --LAYSTONE PLACEMENT
                             grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'LS'
                             if player == 1 then
-                                player1stones = player1stones - 1
-                                grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
-                                grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                if turnCount == 1 then
+                                    player2stones = player2stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                else
+                                    player1stones = player1stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                end
                             elseif player == 2 then
-                                player2stones = player2stones - 1
-                                grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
-                                grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                if turnCount == 2 then
+                                    player1stones = player1stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'WHITE'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'WHITE'
+                                else
+                                    player2stones = player2stones - 1
+                                    grid[mouseYGrid][mouseXGrid].members[1].stoneColor = 'BLACK'
+                                    grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
+                                end
                             end
                         elseif stoneSelect == 2 then --STANDING STONE PLACEMENT
                                 grid[mouseYGrid][mouseXGrid].members[1].stoneType = 'SS'
@@ -1691,6 +1671,7 @@ function PlayState:update(dt)
                                 grid[mouseYGrid][mouseXGrid].stackControl = 'BLACK'
                             end
                         end
+                        turnCount = turnCount + 1
                         --SWAPS PLAYER AFTER SELECTION
                         player = player == 1 and 2 or 1
                         everyGridOccupied()
@@ -1715,19 +1696,16 @@ function PlayState:update(dt)
                 end
             end
         end
-    --]]
 
         if moveType == 'move' then
             if movementEvent == 0 then
                 movementEvent = 1
             end
-
             for i = 1, MAX_STONE_HEIGHT do --MOUSE STONES POSITION UPDATES
                 mouseStones.members[i].x = mouseMasterX - X_OFFSET - OUTLINE - 60
                 mouseStones.members[i].y = mouseMasterY - Y_OFFSET - OUTLINE - 60
             end
-
-            if movementEvent == 1 then --LEGAL MOVE HIGHLIGHTS
+            if movementEvent == 1 and not mouseOffGrid then --LEGAL MOVE HIGHLIGHTS
                 if mEvent1LegalMovesPopulated == false then
                     for i = 1, 5 do
                         for j = 1, 5 do
@@ -1740,7 +1718,6 @@ function PlayState:update(dt)
                                     grid[i][j].legalMove = true
                                 end
                             end
-
                             --CORNERCASES
                             if i == 1 and j == 1 then
                                 if grid[1][2].stoneControl == 'SS' or grid[1][2].stoneControl == 'CS' or grid[1][2].occupants == 14--[[(math.min(grid[1][1].occupants, 5) + grid[1][2].occupants) > 14]] then
@@ -1749,7 +1726,6 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             if i == 1 and j == 5 then
                                 if grid[1][4].stoneControl == 'SS' or grid[1][4].stoneControl == 'CS' or grid[1][4].occupants == 14 then
                                     if grid[2][5].stoneControl == 'SS' or grid[2][5].stoneControl == 'CS' or grid[2][5].occupants == 14 then
@@ -1757,7 +1733,6 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             if i == 5 and j == 1 then
                                 if grid[4][1].stoneControl == 'SS' or grid[4][1].stoneControl == 'CS' or grid[4][1].occupants == 14 then
                                     if grid[5][2].stoneControl == 'SS' or grid[5][2].stoneControl == 'CS' or grid[5][2].occupants == 14 then
@@ -1765,7 +1740,6 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             if i == 5 and j == 5 then
                                 if grid[4][5].stoneControl == 'SS' or grid[4][5].stoneControl == 'CS' or grid[4][5].occupants == 14 then
                                     if grid[5][4].stoneControl == 'SS' or grid[5][4].stoneControl == 'CS' or grid[5][4].occupants == 14 then
@@ -1773,7 +1747,6 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             --EDGECASES
                             if j == 1 and i ~= 1 and i ~= 5 then --LEFTEDGE
                                 if i == 2 then
@@ -1784,9 +1757,8 @@ function PlayState:update(dt)
                                     leftEdgeIllegalMove(i, j)
                                 end
                             end
-
                             if i == 1 and j ~= 1 and j ~= 5 then --TOPEDGE
-                                if j == 2 then 
+                                if j == 2 then
                                     topEdgeIllegalMove(i, j)
                                 elseif j == 3 then
                                     topEdgeIllegalMove(i, j)
@@ -1794,7 +1766,6 @@ function PlayState:update(dt)
                                     topEdgeIllegalMove(i, j)
                                 end
                             end
-
                             if j == 5 and i ~= 1 and i ~= 5 then --RIGHTEDGE
                                 if i == 2 then
                                     rightEdgeIllegalMove(i, j)
@@ -1804,7 +1775,6 @@ function PlayState:update(dt)
                                     rightEdgeIllegalMove(i, j)
                                 end
                             end
-
                             if i == 5 and j ~= 1 and j ~= 5 then --BOTTOMEDGE
                                 if j == 2 then
                                     bottomEdgeIllegalMove(i, j)
@@ -1814,7 +1784,6 @@ function PlayState:update(dt)
                                     bottomEdgeIllegalMove(i, j)
                                 end
                             end
-
                             if i ~= 1 and i ~= 5 and j ~= 1 and j ~= 5 then --IF GRID IS COMPLETELY SURROUNDED BY ILLEGAL MOVES, THEN WE ARE AN ILLEGAL MOVE
                                 if grid[i][j].legalMove then
                                     if grid[i - 1][j].stoneControl == 'SS' or grid[i - 1][j].stoneControl == 'CS' or grid[i - 1][j].occupants == 14 then--(math.min(grid[i][j].occupants, 5) + grid[i - 1][j].occupants > 14) then --TOP
@@ -1828,7 +1797,6 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             for i = 1, 5 do --ENABLES CS TO BE LEGAL MOVE EVEN IF SURROUNDED BY SS
                                 for j = 1, 5 do
                                     if player == 1 and grid[i][j].stackControl == 'WHITE' then
@@ -1861,17 +1829,14 @@ function PlayState:update(dt)
                 function love.mousepressed(x, y, button) --LOCK IN MOVEMENT ORIGIN GRID
                     if button == 1 then
                         if grid[mouseYGrid][mouseXGrid].legalMove then
-                            --grid[mouseYGrid][mouseXGrid].legalMove = false
                             movementOriginRow = mouseYGrid
                             movementOriginColumn = mouseXGrid
                             lowestSurroundingOccupant(movementOriginRow, movementOriginColumn)
-
                             if grid[mouseYGrid][mouseXGrid].occupants >= 5 then
                                 stonesToCopy = 5
                             else
                                 stonesToCopy = grid[mouseYGrid][mouseXGrid].occupants
                             end
-
                             for i = 1, stonesToCopy do
                                 if i == stonesToCopy then
                                     lowestMSStackOrder = grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder
@@ -1884,15 +1849,12 @@ function PlayState:update(dt)
                                 grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneColor = nil
                                 grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stoneType = nil
                                 grid[mouseYGrid][mouseXGrid].members[grid[mouseYGrid][mouseXGrid].occupants].stackOrder = nil
-
                                 mouseStones.occupants = mouseStones.occupants + 1
                                 grid[mouseYGrid][mouseXGrid].occupants = grid[mouseYGrid][mouseXGrid].occupants - 1
                             end
-
                             updateStoneControl(mouseStones)
                             updateStoneControl(grid[mouseYGrid][mouseXGrid])
                             updateStackControl(grid[mouseYGrid][mouseXGrid])
-
                             falsifyAllOccupantsLegalMove() --FALSIFY ALL LEGAL MOVES ONCE MOVEMENTORIGIN LOCKED
 
                             --CORNERCASES
@@ -1909,7 +1871,6 @@ function PlayState:update(dt)
                                 grid[5][4].legalMove = true
                                 grid[4][5].legalMove = true
                             end
-
                             --EDGECASES
                             if movementOriginColumn == 1 and movementOriginRow ~= 1 and movementOriginRow ~= 5 then --LEFT EDGE
                                 grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
@@ -1928,8 +1889,6 @@ function PlayState:update(dt)
                                 grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
                                 grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
                             end
-
-
                             --MIDDLECASES
                             if movementOriginColumn > 1 and movementOriginColumn < 5 and movementOriginRow > 1 and movementOriginRow < 5 then
                                 grid[movementOriginRow - 1][movementOriginColumn].legalMove = true
@@ -1937,7 +1896,6 @@ function PlayState:update(dt)
                                 grid[movementOriginRow][movementOriginColumn + 1].legalMove = true
                                 grid[movementOriginRow][movementOriginColumn - 1].legalMove = true
                             end
-
                             for i = 1, 5 do
                                 for j = 1, 5 do
                                     if grid[i][j].stoneControl == 'CS' or grid[i][j].stoneControl == 'SS' then --MAKES MOVEMENT ON A CAPSTONE OR SS IMPOSSIBLE
@@ -1945,18 +1903,15 @@ function PlayState:update(dt)
                                     end
                                 end
                             end
-
                             for i = 1, MAX_STONE_HEIGHT do --FIX THIS FOR PICKING UP MORE THAN 5
                                 if mouseStones.members[i].stackOrder ~= nil then
                                     --lowestMSStackOrder = mouseStones.members[i].stackOrder
                                 end
                             end
-
                             movementEvent = 2
                         end
                     end
                 end
-
             elseif movementEvent == 2 then --LOCKS STONES IN HAND FOR FIRST MOVEMENT
                 if mouseStones.occupants == 1 and skipMovementEvent2 then
                     updateStoneControl(grid[movementOriginRow][movementOriginColumn])
@@ -2000,7 +1955,6 @@ function PlayState:update(dt)
                         movementEvent = 3
                     end
                 end
-
             elseif movementEvent == 3 then --SELECT FM GRID
                 for i = 1, 5 do
                     for j = 1, 5 do
@@ -2011,13 +1965,11 @@ function PlayState:update(dt)
                         else
                             grid[i][j].moveLockedHighlight = false
                         end
-
                         if grid[i][j].occupants == 14 then
                             grid[i][j].legalMove = false
                         end
                     end
                 end
-
                 function love.mousepressed(x, y, button) --SELECTING FM GRID
                     if button == 1 then
                         for i = 1, 5 do
@@ -2029,7 +1981,6 @@ function PlayState:update(dt)
                                         grid[i][j].legalMove = false
                                         firstMovementRow = i
                                         firstMovementColumn = j
-
                                         if movementOriginRow < firstMovementRow then
                                             downDirection = true
                                         elseif movementOriginRow > firstMovementRow then
@@ -2045,7 +1996,6 @@ function PlayState:update(dt)
                                             nextMoveIllegal()
                                         end
                                         --IF NEXTGRID .STONECONTROL == 'CS' or 'SS' THEN offGRID = True
-
                                         movementEvent = 4
                                     end
                                 end
@@ -2053,26 +2003,22 @@ function PlayState:update(dt)
                         end
                     end
                 end
-
             elseif movementEvent == 4 then --LOCKS IN STONES IN HAND FOR OUR SECOND MOVEMENT
                 if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
                     if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[firstMovementRow][firstMovementColumn].stoneControl == 'SS' then
                         capstoneCrush = true
                         grid[firstMovementRow][firstMovementColumn].members[grid[firstMovementRow][firstMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[firstMovementRow][firstMovementColumn], 2)
                     updateStoneControl(grid[firstMovementRow][firstMovementColumn])
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('up') and droppedInFirstMovement > 0 and not capstoneCrush then
                     pickUpStone(grid[firstMovementRow][firstMovementColumn], 2)
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
                     if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
@@ -2088,44 +2034,42 @@ function PlayState:update(dt)
                         orthogonalMatchFlush()
                         orthogonalMatch()
                         playerSwapGridReset()
-                    elseif offGrid then --CS CRUSH
+                    elseif offGrid then --CS CRUSH ****SNOOP AROUND HERE TO FIX THE BUG WITH OFFGRID
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[firstMovementRow][firstMovementColumn])
-                            updateStackControl(grid[firstMovementRow][firstMovementColumn])
-                            grid[firstMovementRow][firstMovementColumn].occupied = true
-
-                            if upDirection then
-                                secondMovementRow = firstMovementRow - 1
-                                secondMovementColumn = firstMovementColumn
-                            elseif downDirection then
-                                secondMovementRow = firstMovementRow + 1
-                                secondMovementColumn = firstMovementColumn
-                            elseif leftDirection then
-                                secondMovementRow = firstMovementRow
-                                secondMovementColumn = firstMovementColumn - 1
-                            elseif rightDirection then
-                                secondMovementRow = firstMovementRow
-                                secondMovementColumn = firstMovementColumn + 1
+                            if firstMovementRow == 1 or firstMovementRow == 5 or firstMovementColumn == 1 or firstMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[firstMovementRow][firstMovementColumn])
+                                updateStackControl(grid[firstMovementRow][firstMovementColumn])
+                                grid[firstMovementRow][firstMovementColumn].occupied = true
+                                if upDirection then
+                                    secondMovementRow = firstMovementRow - 1
+                                    secondMovementColumn = firstMovementColumn
+                                elseif downDirection then
+                                    secondMovementRow = firstMovementRow + 1
+                                    secondMovementColumn = firstMovementColumn
+                                elseif leftDirection then
+                                    secondMovementRow = firstMovementRow
+                                    secondMovementColumn = firstMovementColumn - 1
+                                elseif rightDirection then
+                                    secondMovementRow = firstMovementRow
+                                    secondMovementColumn = firstMovementColumn + 1
+                                end
+                                if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
+                                    clearContol(grid[movementOriginRow][movementOriginColumn])
+                                end
+                                nextMoveOffGrid(secondMovementRow, secondMovementColumn)
+                                if not offGrid then
+                                    nextMoveIllegal()
+                                end
+                                movementEvent = 5
                             end
-
-                            if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
-                                clearContol(grid[movementOriginRow][movementOriginColumn])
-                            end
-
-                            nextMoveOffGrid(secondMovementRow, secondMovementColumn)
-
-                            if not offGrid then
-                                nextMoveIllegal()
-                            end
-
-                            movementEvent = 5
                         end
                     elseif not offGrid and droppedInFirstMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[firstMovementRow][firstMovementColumn])
                         updateStackControl(grid[firstMovementRow][firstMovementColumn])
                         grid[firstMovementRow][firstMovementColumn].occupied = true
-
                         if upDirection then
                             secondMovementRow = firstMovementRow - 1
                             secondMovementColumn = firstMovementColumn
@@ -2139,11 +2083,9 @@ function PlayState:update(dt)
                             secondMovementRow = firstMovementRow
                             secondMovementColumn = firstMovementColumn + 1
                         end
-
                         if grid[movementOriginRow][movementOriginColumn].occupants == 0 then
                             clearContol(grid[movementOriginRow][movementOriginColumn])
                         end
-
                         nextMoveOffGrid(secondMovementRow, secondMovementColumn)
                         nextMoveIllegal()
                         movementEvent = 5
@@ -2157,19 +2099,16 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[secondMovementRow][secondMovementColumn].members[grid[secondMovementRow][secondMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[secondMovementRow][secondMovementColumn], 3)
                     updateStoneControl(grid[secondMovementRow][secondMovementColumn])
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('up') and droppedInSecondMovement > 0 and not capstoneCrush then
                     pickUpStone(grid[secondMovementRow][secondMovementColumn], 3)
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
                     if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
@@ -2180,34 +2119,35 @@ function PlayState:update(dt)
                         playerSwapGridReset()
                     elseif offGrid then
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[secondMovementRow][secondMovementColumn])
-                            updateStackControl(grid[secondMovementRow][secondMovementColumn])
-                            grid[secondMovementRow][secondMovementColumn].occupied = true
-
-                            if upDirection then
-                                thirdMovementRow = secondMovementRow - 1
-                                thirdMovementColumn = secondMovementColumn
-                            elseif downDirection then
-                                thirdMovementRow = secondMovementRow + 1
-                                thirdMovementColumn = secondMovementColumn
-                            elseif leftDirection then
-                                thirdMovementRow = secondMovementRow
-                                thirdMovementColumn = secondMovementColumn - 1
-                            elseif rightDirection then
-                                thirdMovementRow = secondMovementRow
-                                thirdMovementColumn = secondMovementColumn + 1
+                            if secondMovementRow == 1 or secondMovementRow == 5 or secondMovementColumn == 1 or secondMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[secondMovementRow][secondMovementColumn])
+                                updateStackControl(grid[secondMovementRow][secondMovementColumn])
+                                grid[secondMovementRow][secondMovementColumn].occupied = true
+                                if upDirection then
+                                    thirdMovementRow = secondMovementRow - 1
+                                    thirdMovementColumn = secondMovementColumn
+                                elseif downDirection then
+                                    thirdMovementRow = secondMovementRow + 1
+                                    thirdMovementColumn = secondMovementColumn
+                                elseif leftDirection then
+                                    thirdMovementRow = secondMovementRow
+                                    thirdMovementColumn = secondMovementColumn - 1
+                                elseif rightDirection then
+                                    thirdMovementRow = secondMovementRow
+                                    thirdMovementColumn = secondMovementColumn + 1
+                                end
+                                nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+                                nextMoveIllegal()
+                                movementEvent = 6
                             end
-
-                            nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-                            nextMoveIllegal()
-                            movementEvent = 6
                         end
                     elseif not offGrid and droppedInSecondMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[secondMovementRow][secondMovementColumn])
                         updateStackControl(grid[secondMovementRow][secondMovementColumn])
                         grid[secondMovementRow][secondMovementColumn].occupied = true
-
                         if upDirection then
                             thirdMovementRow = secondMovementRow - 1
                             thirdMovementColumn = secondMovementColumn
@@ -2221,7 +2161,6 @@ function PlayState:update(dt)
                             thirdMovementRow = secondMovementRow
                             thirdMovementColumn = secondMovementColumn + 1
                         end
-
                         nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
                         nextMoveIllegal()
                         movementEvent = 6
@@ -2230,25 +2169,21 @@ function PlayState:update(dt)
 
             elseif movementEvent == 6 then
                 grid[thirdMovementRow][thirdMovementColumn].moveLockedHighlight = true
-
                 if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
                     if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' and grid[thirdMovementRow][thirdMovementColumn].stoneControl == 'SS' then
                         capstoneCrush = true
                         grid[thirdMovementRow][thirdMovementColumn].members[grid[thirdMovementRow][thirdMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[thirdMovementRow][thirdMovementColumn], 4)
                     updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('up') and droppedInThirdMovement > 0 and not capstoneCrush then
                     pickUpStone(grid[thirdMovementRow][thirdMovementColumn], 4)
                     nextMoveIllegal()
                 end
-
                 if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
                     if mouseStones.occupants == 0 then --OFFGRID ENDING TURN
                             updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
@@ -2259,34 +2194,35 @@ function PlayState:update(dt)
                             playerSwapGridReset()
                     elseif offGrid then
                         if mouseStones.occupants == 1 and mouseStones.stoneControl == 'CS' then
-                            offGrid = false
-                            updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
-                            updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
-                            grid[thirdMovementRow][thirdMovementColumn].occupied = true
-
-                            if upDirection then
-                                fourthMovementRow = thirdMovementRow - 1
-                                fourthMovementColumn = thirdMovementColumn
-                            elseif downDirection then
-                                fourthMovementRow = thirdMovementRow + 1
-                                fourthMovementColumn = thirdMovementColumn
-                            elseif leftDirection then
-                                fourthMovementRow = thirdMovementRow
-                                fourthMovementColumn = thirdMovementColumn - 1
-                            elseif rightDirection then
-                                fourthMovementRow = thirdMovementRow
-                                fourthMovementColumn = thirdMovementColumn + 1
+                            if thirdMovementRow == 1 or thirdMovementRow == 5 or thirdMovementColumn == 1 or thirdMovementRow == 1 then
+                                --DOESNT DO ANYTHING IF CAPSTONE WOULD MOVE INTO OFFGRID
+                            else
+                                offGrid = false
+                                updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
+                                updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
+                                grid[thirdMovementRow][thirdMovementColumn].occupied = true
+                                if upDirection then
+                                    fourthMovementRow = thirdMovementRow - 1
+                                    fourthMovementColumn = thirdMovementColumn
+                                elseif downDirection then
+                                    fourthMovementRow = thirdMovementRow + 1
+                                    fourthMovementColumn = thirdMovementColumn
+                                elseif leftDirection then
+                                    fourthMovementRow = thirdMovementRow
+                                    fourthMovementColumn = thirdMovementColumn - 1
+                                elseif rightDirection then
+                                    fourthMovementRow = thirdMovementRow
+                                    fourthMovementColumn = thirdMovementColumn + 1
+                                end
+                                nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
+                                nextMoveIllegal() --HAD OFF FOR TESTING
+                                movementEvent = 7
                             end
-
-                            nextMoveOffGrid(thirdMovementRow, thirdMovementColumn)
-                            --nextMoveIllegal()
-                            movementEvent = 7
                         end
                     elseif not offGrid and droppedInThirdMovement > 0 then --ENTER PRESSED AFTER DROPPING SOME STONES
                         updateStoneControl(grid[thirdMovementRow][thirdMovementColumn])
                         updateStackControl(grid[thirdMovementRow][thirdMovementColumn])
                         grid[thirdMovementRow][thirdMovementColumn].occupied = true
-
                         if upDirection then
                             fourthMovementRow = thirdMovementRow - 1
                             fourthMovementColumn = thirdMovementColumn
@@ -2300,13 +2236,11 @@ function PlayState:update(dt)
                             fourthMovementRow = thirdMovementRow
                             fourthMovementColumn = thirdMovementColumn + 1
                         end
-
                         nextMoveOffGrid(fourthMovementRow, fourthMovementColumn)
-                        --nextMoveIllegal()
+                        nextMoveIllegal() --HAD OFF FOR TESTING
                         movementEvent = 7
                     end
                 end
-
             elseif movementEvent == 7 then
                 grid[fourthMovementRow][fourthMovementColumn].moveLockedHighlight = true
                 if love.keyboard.wasPressed('down') and mouseStones.occupants > 0 then
@@ -2314,13 +2248,11 @@ function PlayState:update(dt)
                         capstoneCrush = true
                         grid[fourthMovementRow][fourthMovementColumn].members[grid[fourthMovementRow][fourthMovementColumn].occupants].stoneType = 'LS'
                         updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
-                        sounds['crush']:setVolume(.6)
-                        sounds['crush']:play()
+                        TEsound.play('music/crush.mp3', 'static', 'crushVolume')
                     end
                     dropStone(grid[fourthMovementRow][fourthMovementColumn], nil)
                     updateStoneControl(grid[fourthMovementRow][fourthMovementColumn])
                 end
-
                 if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
                     if mouseStones.occupants == 0 then
                         orthogonalMatchFlush()
@@ -2330,17 +2262,13 @@ function PlayState:update(dt)
                     end
                 end
             end
-
         end
-        --]]
 
-    ---[[MOVEMENT ORIGIN HIGHLIGHT
+        --MOVEMENT ORIGIN HIGHLIGHT
         if movementOriginRow ~= nil and movementOriginColumn ~= nil then
             grid[movementOriginRow][movementOriginColumn].legalMoveHighlight = true
         end
-
-    --]]
-    ---[[LEGAL MOVES HIGHLIGHTS
+        --LEGAL MOVES HIGHLIGHTS
         for i = 1, 5 do
             for j = 1, 5 do
                 if moveType == 'place' then
@@ -2353,15 +2281,13 @@ function PlayState:update(dt)
             end
         end
     end
+   TEsound.cleanup()
 end
 
 function PlayState:render()
-
-	--love.graphics.clear(80/255, 80/255, 80/255, 255/255)
-	--love.graphics.clear(255/255, 255/255, 255/255, 255/255)
 	board:render()
 
----[[RENDERS PLACED STONES
+    --RENDERS PLACED STONES
 	for i = 1, 5 do
 		for j = 1, 5 do
 			if moveType == 'place' then
@@ -2369,13 +2295,11 @@ function PlayState:render()
 				if grid[i][j].selectionHighlight and not grid[i][j].occupied then
 					grid[i][j]:render()
 				end
-
 			elseif moveType == 'move' then
 				if grid[i][j].legalMoveHighlight or grid[i][j].moveLockedHighlight then
 					grid[i][j]:render()
 				end
 			end
-
 			--RENDERS MEMBER STONES
 			for i = 1, 5 do
 				for j = 1, 5 do
@@ -2384,9 +2308,7 @@ function PlayState:render()
 					end
 				end
 			end
-
 		end
-
         for i = 1, 5 do --POTENTIAL ROAD RENDER TOGGLE
             for j = 1, 5 do
                 if grid[i][j].potentialRoadWhiteH or grid[i][j].potentialRoadBlackH then
@@ -2398,19 +2320,21 @@ function PlayState:render()
            end
         end
 	end
---]]
 
-    --love.graphics.draw(cursor, mouseMasterX - 60, mouseMasterY - 60)
----[[RENDERS STONE SELECTION AT MOUSE POSITION
+    --RENDERS STONE SELECTION AT MOUSE POSITION
 	if not toggleMouseStone then
         if not whiteWins and not blackWins then
             if moveType == 'place' then
                 if player == 1 and player1stones > 0 then --ask about player stones to fix 1 frame render bug
                     love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+                    if turnCount == 1 then
+                        love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
+                    end
                 elseif player == 2 and player2stones > 0 then
                     love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
-                else
-                    love.graphics.setColor(0/255, 0/255, 0/255, 0/255) --to fix one frame render bug
+                    if turnCount == 2 then
+                        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+                    end
                 end
                 if stoneSelect == 1 then
                     love.graphics.rectangle('fill', mouseMasterX - 60, mouseMasterY - 60, 120, 120)
@@ -2431,13 +2355,10 @@ function PlayState:render()
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         love.graphics.draw(cursor, mouseX + X_OFFSET, mouseY + Y_OFFSET)
     end
---]]
-
----[[TITLE
+    --TITLE
 	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
 	love.graphics.setFont(titleFont)
     love.graphics.print('TAK', VIRTUAL_WIDTH - 400, 40)
---]]
 
 	--HUD
     if hudToggle then
@@ -2449,20 +2370,44 @@ function PlayState:render()
             love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
             love.graphics.print('It is Black\'s move', 45, 8)
         end
-
         if moveType == 'place' then
             love.graphics.print('move type: PLACE', 515, 8)
         elseif moveType == 'move' then
             love.graphics.print('move type: MOVE', 515, 8)
         end
-
         --STONE COUNT
         love.graphics.print('White Stones: ' .. tostring(player1stones), 45, VIRTUAL_HEIGHT - 30)
         love.graphics.print('Black Stones: ' .. tostring(player2stones), 560, VIRTUAL_HEIGHT - 30)
+        ---[[INSTRUCTIONS
+        love.graphics.setFont(smallBenneFont)
+        love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
+        if movementEvent == 0 then
+            if turnCount > 2 then
+                love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
+                love.graphics.print('Arrow left or right to select stone type', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2 - 45)
+                love.graphics.print('Arrow up or down swap move types', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+            elseif not blackWins and not whiteWins then
+                love.graphics.print('Place opponent\'s stone in empty grid', INSTRUCTIONX, INSTRUCTIONY)
+            end
+        elseif movementEvent == 1 then
+            love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            --love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 4)
+        elseif movementEvent == 2 then
+            love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('stones that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            love.graphics.print('Press enter to lock in your hand', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+        elseif movementEvent == 3 then
+            love.graphics.print('Click a green grid that you want to move to', INSTRUCTIONX, INSTRUCTIONY)
+            --love.graphics.print('that you want to move to', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+        elseif movementEvent >= 4 then
+            love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
+            love.graphics.print('stones that you want to place', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
+            love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
+            love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
+        end
+        --]]
     end
-
-
----[[
     --WINNING GAMES
     if game1Finished then
         love.graphics.setFont(benneFont)
@@ -2479,11 +2424,9 @@ function PlayState:render()
         love.graphics.print(game1WhitePoints .. ' pts.', VIRTUAL_WIDTH - 300 - 15, 310)
         love.graphics.print(game1BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 310)
     end
-
     if game2Finished then
         love.graphics.print('GAME', VIRTUAL_WIDTH - 500, 380)
         love.graphics.print('2', VIRTUAL_WIDTH - 500 + 105, 380)
-        --WHITE WINS
         if game2WhiteWins then
             love.graphics.print('WINS', VIRTUAL_WIDTH - 325, 380)
         elseif game2BlackWins then
@@ -2492,32 +2435,6 @@ function PlayState:render()
         love.graphics.print(game2WhitePoints .. ' pts.', VIRTUAL_WIDTH - 300 - 15, 420)
         love.graphics.print(game2BlackPoints .. ' pts.', VIRTUAL_WIDTH - 120 - 15, 420)
     end
-    --]]
---[[
-	--INSTRUCTIONS
-	love.graphics.setFont(smallerFont)
-	love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
-	if movementEvent == 0 then
-		love.graphics.print('Click to place your stone in an empty grid', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET)
-	elseif movementEvent == 1 then
-		love.graphics.print('Click to select a stack in your control', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		--love.graphics.print('Arrow up or down to move a stack instead', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 4)
-	elseif movementEvent == 2 then
-		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('stones that you want to move', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		love.graphics.print('Press enter to lock in your hand', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
-	elseif movementEvent == 3 then
-		love.graphics.print('Click to select a green grid that you want to move to', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('that you want to move to', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-	elseif movementEvent >= 4 then
-		love.graphics.print('Arrow up or down to select amount of', INSTRUCTIONX, INSTRUCTIONY)
-		love.graphics.print('stones that you want to place', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET - 25)
-		love.graphics.print('Press enter to lock in amount', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 2)
-		love.graphics.print('of stones dropped', INSTRUCTIONX, INSTRUCTIONY + INSTRUCTIONYOFFSET * 3 - 25)
-	end
---]]
 --[[
 	if debugOption == 1 then
 		love.graphics.print('GRID[' .. tostring(mouseYGrid) .. '][' .. tostring(mouseXGrid) .. ']', VIRTUAL_WIDTH - 490, DEBUGY)
@@ -2529,14 +2446,12 @@ function PlayState:render()
 		love.graphics.print('LMS stackOrder: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('LM Highlight: : ' .. tostring(grid[mouseYGrid][mouseXGrid].legalMoveHighlight), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('movementEvent#: ' .. tostring(movementEvent), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
-	    	--love.graphics.print('Stone2Copy: ' .. tostring(stonesToCopy), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
         love.graphics.print('leftMatchWhite: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchWhite), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('lowestSurrOcc: ' .. tostring(lowestSurroundingOccupants), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10) --lowestSurroundingOccupants mouseStones.stoneControl
-		--love.graphics.print('MSStoneContrl: ' .. tostring(mouseStones.stoneControl), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
 		love.graphics.print('potentialRoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 11) --lowestSurroundingOccupants mouseStones.stoneControl
-
+		love.graphics.print('mouseOffGrid: ' .. tostring(mouseOffGrid), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 12) --lowestSurroundingOccupants mouseStones.stoneControl
+		love.graphics.print('randomSongIndex: ' .. tostring(randomSongIndex), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 13) --lowestSurroundingOccupants mouseStones.stoneControl
 	end
-
 	if debugOption == 2 then
 		love.graphics.print('mOriginRow: ' .. tostring(movementOriginRow), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('mOriginColumn: ' .. tostring(movementOriginColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2548,14 +2463,8 @@ function PlayState:render()
 		love.graphics.print('thirdMovCol: ' .. tostring(thirdMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
 		love.graphics.print('fourthMovRow: ' .. tostring(fourthMovementRow), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('fourthMovCol: ' .. tostring(fourthMovementColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
-		--love.graphics.print('upLOCK: ' .. tostring(upDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
-		--love.graphics.print('downLOCK: ' .. tostring(downDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
-		--love.graphics.print('leftLOCK: ' .. tostring(leftDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
-		--love.graphics.print('rightLOCK: ' .. tostring(rightDirection), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
-		--love.graphics.print('dropFirstMovement: ' .. tostring(droppedInFirstMovement), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 8)
 		love.graphics.print('LMSSO: ' .. tostring(lowestMSStackOrder), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
 	end
-
 	if debugOption == 3 then
 		love.graphics.print('nextMoveRow: ' .. tostring(nextMoveRow), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('nextMoveColumn: ' .. tostring(nextMoveColumn), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2569,13 +2478,11 @@ function PlayState:render()
 		love.graphics.print('whiteWin: ' .. tostring(whiteWins), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('blackWin: ' .. tostring(blackWins), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
 	end
-
     if debugOption == 4 then
 		love.graphics.print('RoadWhiteH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadWhiteH), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('RoadBlackH: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackH), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
 		love.graphics.print('RoadWhiteV: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadWhiteV), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 2)
 		love.graphics.print('RoadBlackV: ' .. tostring(grid[mouseYGrid][mouseXGrid].potentialRoadBlackV), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 3)
---		love.graphics.print('column5SC: ' .. tostring(column5SC), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
 		love.graphics.print('HColumnSCCheck: ' .. tostring(horizontalColumnSCCheck), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 5)
 		love.graphics.print('rightMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].rightMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 6)
 		love.graphics.print('leftMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].leftMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 7)
@@ -2583,7 +2490,6 @@ function PlayState:render()
 		love.graphics.print('bottomMatchBlack: ' .. tostring(grid[mouseYGrid][mouseXGrid].bottomMatchBlack), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 9)
 		love.graphics.print('orthMatchCount: ' .. tostring(functionCount), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 10)
     end
-
     if debugOption == 5 then
 		love.graphics.print('whitePoints: ' .. tostring(whitePoints), VIRTUAL_WIDTH - 490, DEBUGY)
 		love.graphics.print('blackPoints: ' .. tostring(blackPoints), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET)
@@ -2592,27 +2498,26 @@ function PlayState:render()
 		love.graphics.print('roadWhitHToggle: ' .. tostring(grid[mouseYGrid][mouseXGrid].roadWhiteHToggle), VIRTUAL_WIDTH - 490, DEBUGY + DEBUGYOFFSET * 4)
     end
 --]]
-
     --WIN
     if whiteWins then
         love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 14 + 3, VIRTUAL_HEIGHT / 8 + 77 + 3)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10 + 3, VIRTUAL_HEIGHT / 2 + 66 + 3)
+        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 8, VIRTUAL_HEIGHT / 8 + 80)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 4, VIRTUAL_HEIGHT / 2 + 69)
 
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 14, VIRTUAL_HEIGHT / 8 + 77)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10, VIRTUAL_HEIGHT / 2 + 66)
+        love.graphics.print('WHITE', VIRTUAL_WIDTH / 8 - 11, VIRTUAL_HEIGHT / 8 + 77)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 7, VIRTUAL_HEIGHT / 2 + 66)
     elseif blackWins then
         love.graphics.setColor(0/255, 0/255, 0/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 4 + 3, VIRTUAL_HEIGHT / 8 + 77 + 3)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10 + 3, VIRTUAL_HEIGHT / 2 + 66 + 3)
+        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 + 2, VIRTUAL_HEIGHT / 8 + 80)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 4, VIRTUAL_HEIGHT / 2 + 69)
 
         love.graphics.setColor(255/255, 255/255, 255/255, 255/255)
         love.graphics.setFont(titleFont)
-        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 4, VIRTUAL_HEIGHT / 8 + 77)
-        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 10, VIRTUAL_HEIGHT / 2 + 66)
+        love.graphics.print('BLACK', VIRTUAL_WIDTH / 8 - 1, VIRTUAL_HEIGHT / 8 + 77)
+        love.graphics.print('WINS', VIRTUAL_WIDTH / 6 - 7, VIRTUAL_HEIGHT / 2 + 66)
     end
 end
