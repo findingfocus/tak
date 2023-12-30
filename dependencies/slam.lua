@@ -23,7 +23,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
 --
-
+--[[
 local newInstance = love.audio.newSource
 local stop = love.audio.stop
 
@@ -186,3 +186,4 @@ love.audio.tags = setmetatable({}, {
 		return tag
 	end,
 })
+-]]

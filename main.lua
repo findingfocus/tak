@@ -34,7 +34,7 @@ function love.load()
 		--['5'] = love.audio.newSource('music/5.mp3', 'static'),
 		--['6'] = love.audio.newSource('music/6.mp3', 'static'),
 		--['7'] = love.audio.newSource('music/7.mp3', 'static'),
-		['8'] = love.audio.newSource('music/8.mp3', 'static'),
+		['8'] = love.audio.newSource('music/8.mp3', 'stream'),
 		--['9'] = love.audio.newSource('music/9.mp3', 'static'),
 		--['10'] = love.audio.newSource('music/10.mp3', 'static'),
 		--['11'] = love.audio.newSource('music/11.mp3', 'static')
@@ -120,8 +120,9 @@ function love.update(dt)
 		--sounds['8']:play()
 		musicPlayed = true
 	end
-end
 
+    playing = sounds['8']:isPlaying()
+end
 function love.draw()
 	push:start()
 
