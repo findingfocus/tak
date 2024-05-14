@@ -1,13 +1,13 @@
 require 'dependencies'
 
 function love.load()
+	love.graphics.setDefaultFilter('nearest', 'nearest')
 	math.randomseed(os.time())
 
 	love.mouse.setVisible(false)
 
 	randomSongIndex = math.random(11)
 
-	love.graphics.setDefaultFilter('nearest', 'nearest')
 
 	love.window.setTitle('Tak: A Beautiful Game')
 
@@ -45,7 +45,7 @@ function love.load()
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
 		vsync = true,
-		fullscreen = false,
+		fullscreen = true,
 		resizable = false
 	})
 
